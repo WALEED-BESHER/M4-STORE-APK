@@ -1,0 +1,9 @@
+# ignore global things
+.DS_Store
+*.log
+
+# ignore env globally (احتياط)
+.env
+
+# optional (لو فيه)
+node_modules/
