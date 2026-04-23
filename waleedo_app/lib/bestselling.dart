@@ -21,6 +21,10 @@ class _BestsellingState extends State<Bestselling> {
       "title": " مشير جديد زيرو",
       "newPrice": 1866,
       "oldPrice": 2133,
+      "usage": true,
+      "sold": 10,
+      "date": DateTime(2026, 4, 20, 14, 20),
+      "rating": 3.7,
     },
     {
       "id": 2,
@@ -29,6 +33,10 @@ class _BestsellingState extends State<Bestselling> {
       "newPrice": 3200,
       "oldPrice": 3733,
       "type": ProductCardType.hideBoth,
+      "usage": false,
+      "sold": 7,
+      "date": DateTime(2026, 4, 20, 14, 30),
+      "rating": 4.5,
     },
     {
       "id": 3,
@@ -36,6 +44,10 @@ class _BestsellingState extends State<Bestselling> {
       "title": "ام فور امريكي درجه اولى",
       "newPrice": 5000,
       "oldPrice": 5700,
+      "usage": false,
+      "sold": 20,
+      "date": DateTime(2025, 7, 8, 7, 00),
+      "rating": 5.0,
     },
     {
       "id": 4,
@@ -43,14 +55,18 @@ class _BestsellingState extends State<Bestselling> {
       "title": "كلوك نمساوي درجه اولى",
       "newPrice": 2800,
       "oldPrice": 3500,
-      "type": ProductCardType.hideOldPrice
+      "type": ProductCardType.hideOldPrice,
+      "usage": true,
+      "sold": 5,
+      "date": DateTime(2025, 10, 2, 7, 15),
+      "rating": 4.7,
     },
   ];
 
   // القائمة الجديدة الذي يحصل بها الفلتره ويتم عرضها للمستخدم
   List<Map<String, dynamic>> filteredList = [];
 
-  // قيمه متغير الفلتره 
+  // قيمه متغير الفلتره
   String selectedFilter = "";
 
   @override
@@ -59,29 +75,33 @@ class _BestsellingState extends State<Bestselling> {
     filteredList = List.from(BestSelling);
   }
 
-  // داله فتح شاشة الفلترة 
+  // داله فتح شاشة الفلترة
   void openFilter() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: color.dark2,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20)
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateSheet) {
             return Container(
               padding: const EdgeInsets.all(16),
-              height: MediaQuery.of(context).size.height * 0.80,// طول شاشه الفلتره
-              width: MediaQuery.of(context).size.width * 0.95,// عرض شاشه الفلتره
+              height:
+                  MediaQuery.of(context).size.height * 0.80, // طول شاشه الفلتره
+              width:
+                  MediaQuery.of(context).size.width * 0.95, // عرض شاشه الفلتره
               child: Column(
                 children: [
                   // 🔹 الهيدر
-                  p_appbar(title: "فلترة",centerTheTitles: true,iconcolor: color.white,),
-                  
+                  p_appbar(
+                    title: "فلترة",
+                    centerTheTitles: true,
+                    iconcolor: color.white,
+                  ),
+
                   // const SizedBox(height: 6),
 
                   Expanded(
@@ -124,8 +144,8 @@ class _BestsellingState extends State<Bestselling> {
                     children: [
                       Expanded(
                         child: p_button(
-                          title: "إعادة تعيين", 
-                          onPressed: (){
+                          title: "إعادة تعيين",
+                          onPressed: () {
                             setState(() {
                               selectedFilter = "";
                               filteredList = List.from(BestSelling);
@@ -140,8 +160,8 @@ class _BestsellingState extends State<Bestselling> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: p_button(
-                          title: "تطبيق", 
-                          onPressed: (){
+                          title: "تطبيق",
+                          onPressed: () {
                             applyFilter();
                             Navigator.pop(context);
                           },
@@ -162,9 +182,10 @@ class _BestsellingState extends State<Bestselling> {
   // ⭐ عنصر radio
   Widget radioItem(String value, Function setStateSheet) {
     return Directionality(
-      textDirection: TextDirection.rtl, 
+      textDirection: TextDirection.rtl,
       child: RadioListTile(
-        title: Text(value, style: fonts.ms.copyWith(color: color.g300)),// حجم و خط الراديو
+        title: Text(value,
+            style: fonts.ms.copyWith(color: color.g300)), // حجم و خط الراديو
         value: value,
         groupValue: selectedFilter,
         activeColor: color.p500,
@@ -182,7 +203,7 @@ class _BestsellingState extends State<Bestselling> {
   Widget buildSection({required String title, required List<Widget> children}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: color.dark1,
         borderRadius: BorderRadius.circular(24),
@@ -194,7 +215,9 @@ class _BestsellingState extends State<Bestselling> {
             padding: EdgeInsets.only(right: 10),
             child: Text(title, style: fonts.xlb.copyWith(color: color.white)),
           ),
-          const Divider(color: color.dark3,),
+          const Divider(
+            color: color.dark3,
+          ),
           ...children
         ],
       ),
@@ -209,6 +232,18 @@ class _BestsellingState extends State<Bestselling> {
       temp.sort((a, b) => b["newPrice"].compareTo(a["newPrice"]));
     } else if (selectedFilter == "الأرخص") {
       temp.sort((a, b) => a["newPrice"].compareTo(b["newPrice"]));
+    } else if (selectedFilter == "مستخدم") {
+      temp = temp.where((item) => item["usage"] == true).toList();
+    } else if (selectedFilter == "جديد") {
+      temp = temp.where((item) => item["usage"] == false).toList();
+    } else if (selectedFilter == "الأكثر شيوعاً") {
+      temp.sort((a, b) => b["sold"].compareTo(a["sold"]));
+    } else if (selectedFilter == "الأحدث") {
+      temp.sort((a, b) => b["date"].compareTo(a["date"]));
+    } else if (selectedFilter == "الأقدم") {
+      temp.sort((a, b) => a["date"].compareTo(b["date"]));
+    } else if (selectedFilter == "موصى به") {
+      temp.sort((a, b) => b["rating"].compareTo(a["rating"]));
     }
 
     setState(() {
