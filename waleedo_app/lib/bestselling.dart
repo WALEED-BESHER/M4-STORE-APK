@@ -59,32 +59,32 @@ class _BestsellingState extends State<Bestselling> {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
         child: Directionality(
-  textDirection: TextDirection.rtl, // ⭐ بس للشبكة
-  child: GridView.builder(
-    itemCount: BestSelling.length,
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 2,
-      crossAxisSpacing: 6,
-      mainAxisSpacing: 8,
-      childAspectRatio: 0.70,
-    ),
-    itemBuilder: (context, index) {
-      final product = BestSelling[index];
+          textDirection: TextDirection.rtl, 
+          child: GridView.builder(
+            itemCount: BestSelling.length, // عدد المنتجات (غيره حسب بياناتك)
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // ⭐ كل صف فيه 2
+              crossAxisSpacing: 6, // مسافة بين الأعمدة
+              mainAxisSpacing: 8, // مسافة بين الصفوف
+              childAspectRatio: 0.70, // ⭐ يتحكم في طول الكرت
+            ),
+            itemBuilder: (context, index){
+              final product = BestSelling[index];
 
-      return Directionality(
-        textDirection: TextDirection.ltr, // ⭐ يرجع الكرت طبيعي
-        child: ProductCard(
-          id: product["id"],
-          image: product["image"],
-          title: product["title"],
-          newPrice: product["newPrice"],
-          oldPrice: product["oldPrice"],
-          type: product["type"] ?? ProductCardType.full,
+              return Directionality(
+                textDirection: TextDirection.ltr, 
+                child: ProductCard(
+                  id: product["id"],
+                  image: product["image"],
+                  title: product["title"],
+                  newPrice: product["newPrice"],
+                  oldPrice: product["oldPrice"],
+                  type: product["type"] ?? ProductCardType.full,
+                ),
+              );
+            },
+          ),
         ),
-      );
-    },
-  ),
-)
       ),
     );
   }
