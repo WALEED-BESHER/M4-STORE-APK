@@ -53,7 +53,7 @@ class p_appbar extends StatelessWidget implements PreferredSizeWidget {
     // title
     required this.title,
     this.titleStyle = fonts.xlb,
-    this.titleColor = Colors.white,
+    this.titleColor = color.white,
     this.centerTheTitles = false,
 
     // action
