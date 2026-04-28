@@ -13,6 +13,7 @@ class Bestselling extends StatefulWidget {
 }
 
 class _BestsellingState extends State<Bestselling> {
+  
   // القائمة الأصلية للمنتجات
   final List<Map<String, dynamic>> BestSelling = [
     {
@@ -21,7 +22,7 @@ class _BestsellingState extends State<Bestselling> {
       "title": " مشير جديد زيرو",
       "newPrice": 1866,
       "oldPrice": 2133,
-      "usage": true,
+      "usage": false,
       "sold": 10,
       "date": DateTime(2026, 4, 20, 14, 20),
       "rating": 3.7,
@@ -56,7 +57,7 @@ class _BestsellingState extends State<Bestselling> {
       "newPrice": 2800,
       "oldPrice": 3500,
       "type": ProductCardType.hideOldPrice,
-      "usage": true,
+      "usage": false,
       "sold": 5,
       "date": DateTime(2025, 10, 2, 7, 15),
       "rating": 4.7,
@@ -179,7 +180,7 @@ class _BestsellingState extends State<Bestselling> {
     );
   }
 
-  // ⭐ عنصر radio
+  // عنصر radio
   Widget radioItem(String value, Function setStateSheet) {
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -264,30 +265,58 @@ class _BestsellingState extends State<Bestselling> {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
         child: Directionality(
           textDirection: TextDirection.rtl,
-          child: GridView.builder(
-            itemCount: filteredList.length, // ⭐ استخدمنا الجديدة
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 6,
-              mainAxisSpacing: 8,
-              childAspectRatio: 0.70,
-            ),
-            itemBuilder: (context, index) {
-              final product = filteredList[index];
+          child: filteredList.isEmpty
+              ? Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.80,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset("assets/images/Nodata.png"),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "لا توجد نتائج مطابقة",
+                          style: fonts.h5.copyWith(color: color.white),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Text(
+                          "حاول تعديل خيارات الفلترة للحصول على نتائج أفضل",
+                          style: fonts.lm.copyWith(color: color.white),textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : GridView.builder(
+                  itemCount: filteredList.length, // ⭐ استخدمنا الجديدة
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 6,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 0.70,
+                  ),
+                  itemBuilder: (context, index) {
+                    final product = filteredList[index];
 
-              return Directionality(
-                textDirection: TextDirection.ltr,
-                child: ProductCard(
-                  id: product["id"],
-                  image: product["image"],
-                  title: product["title"],
-                  newPrice: product["newPrice"],
-                  oldPrice: product["oldPrice"],
-                  type: product["type"] ?? ProductCardType.full,
+                    return Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: ProductCard(
+                        id: product["id"],
+                        image: product["image"],
+                        title: product["title"],
+                        newPrice: product["newPrice"],
+                        oldPrice: product["oldPrice"],
+                        type: product["type"] ?? ProductCardType.full,
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ),
     );

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waleedo_app/account.dart';
 import 'package:waleedo_app/bestselling.dart';
@@ -23,6 +26,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     getUserName();
+    startTimerOfBestoffers();
   }
 
   //الحصول على اسم المستخدم براس الصفحه
@@ -43,14 +47,19 @@ class _HomeState extends State<Home> {
     "assets/images/dakm4.jpg",
   ];
 
-  // قاىمه المنتجات المعروضه في الاكثر مبيعا
-  final List<Map<String, dynamic>> BestSelling = [
+  // القائمة الأساسية لجميع المنتجات (مصدر البيانات الرئيسي)
+  final List<Map<String, dynamic>> Products = [
     {
       "id": 1,
       "image": "assets/images/Mosher.jpg",
       "title": " مشير جديد زيرو",
       "newPrice": 1866,
       "oldPrice": 2133,
+      "usage": false,
+      "sold": 10,
+      "date": DateTime(2026, 4, 20, 14, 20),
+      "rating": 3.7,
+      "bestOffer": false,
     },
     {
       "id": 2,
@@ -58,23 +67,170 @@ class _HomeState extends State<Home> {
       "title": "موتمر نيكل جديد بلقرطاس",
       "newPrice": 3200,
       "oldPrice": 3733,
+      "type": ProductCardType.hideBoth,
+      "usage": false,
+      "sold": 7,
+      "date": DateTime(2026, 4, 20, 14, 30),
+      "rating": 4.5,
+      "bestOffer": true,
     },
     {
       "id": 3,
       "image": "assets/images/M41.jpg",
-      "title": "ام فور امريكي درجه اولى مع التوابع",
+      "title": "ام فور امريكي درجه اولى",
       "newPrice": 5000,
       "oldPrice": 5700,
+      "usage": false,
+      "sold": 20,
+      "date": DateTime(2025, 7, 8, 7, 00),
+      "rating": 4.9,
+      "bestOffer": true,
     },
     {
       "id": 4,
       "image": "assets/images/Glock.jpg",
       "title": "كلوك نمساوي درجه اولى",
-      "newPrice": 3500,
-      "oldPrice": 2800,
+      "newPrice": 2800,
+      "oldPrice": 3500,
+      "type": ProductCardType.hideOldPrice,
+      "usage": false,
+      "sold": 5,
+      "date": DateTime(2025, 10, 2, 7, 15),
+      "rating": 4.7,
+      "bestOffer": true,
+    },
+    {
+      "id": 5,
+      "image": "assets/images/Mosher.jpg",
+      "title": " مشير جديد زي رو",
+      "newPrice": 2546,
+      "oldPrice": 3200,
+      "usage": false,
+      "sold": 19,
+      "date": DateTime(2026, 2, 8, 14, 20),
+      "rating": 3.0,
+      "bestOffer": false,
+    },
+    {
+      "id": 6,
+      "image": "assets/images/Motamarn.jpg",
+      "title": "موتمر ني كل جديد بلقرطاس",
+      "newPrice": 6200,
+      "oldPrice": 7000,
+      "type": ProductCardType.hideBoth,
+      "usage": false,
+      "sold": 14,
+      "date": DateTime(2026, 4, 10, 14, 30),
+      "rating": 4.0,
+      "bestOffer": true,
+    },
+    {
+      "id": 7,
+      "image": "assets/images/M41.jpg",
+      "title": "ام فور امري كي درجه اولى",
+      "newPrice": 8000,
+      "oldPrice": 9500,
+      "usage": false,
+      "sold": 27,
+      "date": DateTime(2025, 7, 18, 7, 00),
+      "rating": 5.0,
+      "bestOffer": true,
+    },
+    {
+      "id": 8,
+      "image": "assets/images/Glock.jpg",
+      "title": "كلوك نم ساوي درجه اولى",
+      "newPrice": 2400,
+      "oldPrice": 6300,
+      "type": ProductCardType.hideOldPrice,
+      "usage": false,
+      "sold": 7,
+      "date": DateTime(2025, 9, 2, 7, 15),
+      "rating": 4.1,
+      "bestOffer": true,
     },
   ];
 
+
+  // variables and functions of best offers section start here 
+  //(متغيرات و دوال قسم افضل العروض يبداء هنا)
+  // قاىمه المنتجات المعروضه في افضل العروض
+  List<Map<String, dynamic>> get BestOffers => Products.where((product) => product["bestOffer"] == true).toList();
+  
+  // تصميم صندوق عداد افضل العروض 
+  Widget _timeItem(String value, String label) {
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            border: Border.all(color: color.p500),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            value,
+            style: fonts.sb.copyWith(color: color.white),
+          ),
+        ),
+        SizedBox(height: 2),
+        Text(
+          label,
+          style: fonts.xss.copyWith(color: color.g500),
+        ),
+      ],
+    );
+  }
+  // الفاصل حق الوقت في صفحه افضل العروض
+  Widget _colon() {
+    return SizedBox(
+      height: 48,
+      child: Padding(
+        padding: EdgeInsets.only(right: 1, top: 8),
+        child: Text(
+          " : ",
+          style: fonts.sb.copyWith(color: color.white),
+        ),
+      ),
+    );
+  }
+  // متغرات العداد + اظهار قسم افضل العروض
+  Duration bestOffersRemainingTime = Duration(days: 10,hours: 1,minutes: 5 , seconds: 30);//ادخل قيمه الوقت الذي تريده يشتغل هنا
+  Timer? timer;
+  bool showBestOffers = true;
+  // بداء موقت صفحة افضل العروض
+  void startTimerOfBestoffers() {
+    timer = Timer.periodic(Duration(seconds: 1), (t) {
+      if (bestOffersRemainingTime.inSeconds > 0) {
+        setState(() {
+          bestOffersRemainingTime = bestOffersRemainingTime - Duration(seconds: 1);
+        });
+      } else {
+        t.cancel();
+
+        setState(() {
+          showBestOffers = false; 
+        });
+      }
+    });
+  }
+  // متغبرات الوقت لقسم افضل العروض
+  String twoDigits(int n) => n.toString().padLeft(2, '0');
+  int get days => bestOffersRemainingTime.inDays;
+  int get hours => bestOffersRemainingTime.inHours % 24;
+  int get minutes => bestOffersRemainingTime.inMinutes % 60;
+  int get seconds => bestOffersRemainingTime.inSeconds % 60;
+
+
+  //قسم الاكثر مبيعاء 
+  // قاىمه المنتجات المعروضه في الاكثر مبيعا
+  List<Map<String, dynamic>> get BestSelling {
+    List<Map<String, dynamic>> temp = List.from(Products);
+    temp.sort((a, b) => b["sold"].compareTo(a["sold"]));
+    return temp;
+  }
+  
+
+  
   // الفئات
   List<String> categories = [
     "الكل",
@@ -87,11 +243,14 @@ class _HomeState extends State<Home> {
   // bottomNavigationBar
   int Footer_currentIndex = 3;
 
-// الفئة المختارة
+  // الفئة المختارة
   int selectedCategory = 0;
+
+  
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: color.dark1,
       appBar: AppBar(
@@ -241,7 +400,125 @@ class _HomeState extends State<Home> {
                 paintStyle: PaintingStyle.fill,
               ),
             ),
-            Container(// ========= الاكثر مبيعا ======
+
+            SizedBox(height: 8,),
+
+            showBestOffers ? Container(
+              // ===========قسم افضل العروض يبدا هنا ===========
+              width: double.infinity,
+              color: color.black,
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // ================= HEADER =================
+                  // title + counter
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: 6),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: 5,
+                          right: -5,
+                          bottom: -8,
+                          child: Image.asset(
+                            "assets/images/background_of_bestoffers.png",
+                            // width: 140,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 12, left: 6),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "ينتهي العرض خلال",
+                                    style:
+                                        fonts.xsm.copyWith(color: color.g500),
+                                  ),
+                                  SizedBox(height: 6),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      _timeItem(twoDigits(days), "يوم"),
+                                      _colon(),
+                                      _timeItem(twoDigits(hours), "ساعة"),
+                                      _colon(),
+                                      _timeItem(twoDigits(minutes), "دقيقة"),
+                                      _colon(),
+                                      _timeItem(twoDigits(seconds), "ثانية"),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      "أفضــل العــروض🔥",
+                                      style: fonts.xlb
+                                          .copyWith(color: color.white),
+                                      textDirection: TextDirection.rtl,
+                                    ),
+                                    SizedBox(height: 4),
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 16),
+                                      child: Text(
+                                        "عروض محدودة لفترة قصيرة",
+                                        style: TextStyle(
+                                            fontFamily: 'Cairo',
+                                            fontSize: 9,
+                                            color: color.g400,
+                                            fontWeight: FontWeight.w600),
+                                        textDirection: TextDirection.rtl,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // products of best offers
+                  SizedBox(
+                    height: 242,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      reverse: true,
+                      itemCount: BestOffers.length,
+                      itemBuilder: (context, index) {
+                        final product = BestOffers.toList()[index];
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 1),
+                          child: ProductCard(
+                            id: product["id"],
+                            image: product["image"]!,
+                            title: product["title"]!,
+                            newPrice: product["newPrice"],
+                            oldPrice: product["oldPrice"],
+                          ),
+                        );
+                      }
+                    ),
+                  ),
+                ],
+              ),
+            ) : SizedBox(),
+
+            Container(
+              // ========= الاكثر مبيعا ======
               padding: EdgeInsets.symmetric(vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,7 +534,7 @@ class _HomeState extends State<Home> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Bestselling()),
+                                  builder: (context) => Bestselling()),
                             );
                           },
                           child: Text(
@@ -283,7 +560,7 @@ class _HomeState extends State<Home> {
                     reverse: true,
                     child: Row(
                       textDirection: TextDirection.rtl,
-                      children: BestSelling.take(3).map((product) {
+                      children: BestSelling.take(5).map((product) {
                         return ProductCard(
                           id: product["id"],
                           image: product["image"]!,
@@ -297,9 +574,11 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
+
             SizedBox(
               height: 10,
             ),
+            
             SizedBox(
               //catagorize
               height: 45,
@@ -328,7 +607,9 @@ class _HomeState extends State<Home> {
                         alignment: Alignment.center,
                         child: Text(
                           categories[index],
-                          style: isActive ? fonts.mb.copyWith(color: color.g50) : fonts.ms.copyWith(color: color.g400) ,
+                          style: isActive
+                              ? fonts.mb.copyWith(color: color.g50)
+                              : fonts.ms.copyWith(color: color.g400),
                           // fonts.ms.copyWith( color: isActive ? Colors.white : color.g400, )
                         ),
                       ),
@@ -337,7 +618,6 @@ class _HomeState extends State<Home> {
                 }),
               ),
             ),
-
           ],
         ),
       ),
