@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../constants/colors.dart';
 import '../../constants/fonts.dart';
+import '../../productdetails.dart';
 enum ProductCardType {
   full,
   hideDiscount,
@@ -58,14 +59,14 @@ if (widget.oldPrice != null && showDiscount) {
     return GestureDetector(
       onTap: () {
         // الانتقال لصفحة التفاصيل
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (_) => ProductDetailsPage(
-        //       productId: widget.id,
-        //     ),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => Productdetails(
+              productId: widget.id,
+            ),
+          ),
+        );
         // print(widget.id);
       },
       child: Container(
@@ -167,7 +168,7 @@ if (widget.oldPrice != null && showDiscount) {
                   // ===== الزر + القلب =====
                   Row(
                     children: [
-                      // ❤️ القلب (ثابت)
+                      // ❤️ القلب 
                       GestureDetector(
                         onTap: () {
                           setState(() {

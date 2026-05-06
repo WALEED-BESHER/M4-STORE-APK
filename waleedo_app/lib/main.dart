@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:waleedo_app/account.dart';
-import 'package:waleedo_app/bestselling.dart';
+import 'package:waleedo_app/productdetails.dart';
 import 'package:waleedo_app/home.dart';
 import 'package:waleedo_app/login.dart';
 import 'package:waleedo_app/notification.dart';
@@ -32,10 +32,10 @@ class MyApp extends StatelessWidget {
         "cart":(context)=>Cart(),
         "orders":(context)=>Orders(),
         "account":(context)=>Account(),
-        "bestselling":(context)=>Bestselling(),
         "otp":(context)=>OtpPage(),
         "notifications":(context)=>Notifications(),
         "search":(context)=>SearchPage(),
+        
       },
      
     );

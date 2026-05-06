@@ -6,7 +6,8 @@ import 'Design System/AppBar/primary_appbar.dart';
 import 'Design System/Buttons/primary_button.dart';
 
 class Bestselling extends StatefulWidget {
-  const Bestselling({super.key});
+  final List<Map<String, dynamic>> products;
+  const Bestselling({super.key , required this.products});
 
   @override
   State<Bestselling> createState() => _BestsellingState();
@@ -14,55 +15,8 @@ class Bestselling extends StatefulWidget {
 
 class _BestsellingState extends State<Bestselling> {
   
-  // القائمة الأصلية للمنتجات
-  final List<Map<String, dynamic>> BestSelling = [
-    {
-      "id": 1,
-      "image": "assets/images/Mosher.jpg",
-      "title": " مشير جديد زيرو",
-      "newPrice": 1866,
-      "oldPrice": 2133,
-      "usage": false,
-      "sold": 10,
-      "date": DateTime(2026, 4, 20, 14, 20),
-      "rating": 3.7,
-    },
-    {
-      "id": 2,
-      "image": "assets/images/Motamarn.jpg",
-      "title": "موتمر نيكل جديد بلقرطاس",
-      "newPrice": 3200,
-      "oldPrice": 3733,
-      "type": ProductCardType.hideBoth,
-      "usage": false,
-      "sold": 7,
-      "date": DateTime(2026, 4, 20, 14, 30),
-      "rating": 4.5,
-    },
-    {
-      "id": 3,
-      "image": "assets/images/M41.jpg",
-      "title": "ام فور امريكي درجه اولى",
-      "newPrice": 5000,
-      "oldPrice": 5700,
-      "usage": false,
-      "sold": 20,
-      "date": DateTime(2025, 7, 8, 7, 00),
-      "rating": 5.0,
-    },
-    {
-      "id": 4,
-      "image": "assets/images/Glock.jpg",
-      "title": "كلوك نمساوي درجه اولى",
-      "newPrice": 2800,
-      "oldPrice": 3500,
-      "type": ProductCardType.hideOldPrice,
-      "usage": false,
-      "sold": 5,
-      "date": DateTime(2025, 10, 2, 7, 15),
-      "rating": 4.7,
-    },
-  ];
+  
+  late List<Map<String, dynamic>> BestSelling;
 
   // القائمة الجديدة الذي يحصل بها الفلتره ويتم عرضها للمستخدم
   List<Map<String, dynamic>> filteredList = [];
@@ -73,6 +27,7 @@ class _BestsellingState extends State<Bestselling> {
   @override
   void initState() {
     super.initState();
+    BestSelling = widget.products;
     filteredList = List.from(BestSelling);
   }
 
@@ -308,7 +263,7 @@ class _BestsellingState extends State<Bestselling> {
                       textDirection: TextDirection.ltr,
                       child: ProductCard(
                         id: product["id"],
-                        image: product["image"],
+                        image: product["images"][0],
                         title: product["title"],
                         newPrice: product["newPrice"],
                         oldPrice: product["oldPrice"],

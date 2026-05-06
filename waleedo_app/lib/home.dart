@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waleedo_app/account.dart';
 import 'package:waleedo_app/bestselling.dart';
@@ -40,7 +38,7 @@ class _HomeState extends State<Home> {
 
   //قاىمه الصور الذي في السلايدر
   int slidercurrentindex = 0;
-  final List<String> slider_images = [
+  final List<String> sliderImages = [
     "assets/images/MainLogo.png",
     "assets/images/45.jpg",
     "assets/images/Glock.jpg",
@@ -51,73 +49,129 @@ class _HomeState extends State<Home> {
   final List<Map<String, dynamic>> Products = [
     {
       "id": 1,
-      "image": "assets/images/Mosher.jpg",
-      "title": " مشير جديد زيرو",
-      "newPrice": 1866,
-      "oldPrice": 2133,
+      "images": [
+        "assets/images/Ak1.jpg",
+        "assets/images/Ak2.jpg",
+        "assets/images/Ak3.jpg",
+        "assets/images/Ak4.jpg",
+      ],
+      "title": "ايكي روسي طويل وكاله AK-103  زيرو ما قد استخدم",
+      "newPrice": 3200,
+      "oldPrice": 3800,
+      "Description":"يُعد AK-103 من أحدث إصدارات عائلة الكلاشينكوف، حيث يجمع بين التصميم الكلاسيكي والمواد الحديثة. يتميز بقوة اعتماديته العالية في مختلف الظروف، سواء في البيئات الصحراوية أو الرطبة، بالإضافة إلى دقته المحسّنة مقارنة بالإصدارات القديمة. كما أن استخدامه الواسع في العديد من الجيوش حول العالم جعله من أكثر الأسلحة انتشارًا وتأثيرًا.",
+      "caliber": "7.62×39",// عيار
+      "capacity": "30", //السعه 
+      "category": "بنادق",// الفىه
+      "ProductType": "ايكي", // نوع السلاح
+      "length":"طويل",
+      "model": "AK-103",// مودل السلاح
+      "weight": "3.4",// وزن السلاح
+      "manufacturing_countrey": "روسيا",// بلاد الصنيع
+      "manufacturing_company": "Kalashnikov Concern",// الشركه المصنعه
       "usage": false,
-      "sold": 10,
+      "sold": 22,
       "date": DateTime(2026, 4, 20, 14, 20),
-      "rating": 3.7,
-      "bestOffer": false,
+      "rating": 4.5,
+      "bestOffer": true, // ينعرض في افضل العروض
     },
     {
       "id": 2,
-      "image": "assets/images/Motamarn.jpg",
-      "title": "موتمر نيكل جديد بلقرطاس",
-      "newPrice": 3200,
+      "images": [
+        "assets/images/Ak_s_1.jpg",
+        "assets/images/Ak_s_2.jpg",
+        "assets/images/Ak_s_3.jpg",
+        "assets/images/Ak_s_4.jpg",
+      ],
+      "title": " ايكي AK-104 روسي قصير أسود مقرطس ",
+      "newPrice": 3250,
       "oldPrice": 3733,
-      "type": ProductCardType.hideBoth,
-      "usage": false,
-      "sold": 7,
-      "date": DateTime(2026, 4, 20, 14, 30),
-      "rating": 4.5,
+      "Description": "يُعد AK-104 من الإصدارات القصيرة لعائلة الكلاشينكوف، حيث يجمع بين القوة العالية والحجم المدمج، مما يجعله مناسبًا للعمليات السريعة والتنقل. يتميز باعتماديته الكبيرة في مختلف الظروف، وسهولة الاستخدام والصيانة مثل باقي عائلة AK، كما أنه خيار مفضل في البيئات الحضرية بسبب حجمه القصير مقارنة بالإصدارات التقليدية.",
+      "caliber": "7.62×39",// عيار
+      "capacity": "30", //السعه 
+      "category": "بنادق",// الفىه
+      "ProductType": "ايكي", // نوع السلاح
+      "ProductType2":"جفري",
+      "length":"قصير",
+      "model": "AK-104",// مودل السلاح
+      "weight": "3.2",// وزن السلاح
+      "manufacturing_countrey": "روسيا",// بلاد الصنيع
+      "manufacturing_company": "Kalashnikov Concern",// الشركه المصنعه
+      "usage": true,
+      "sold": 27,
+      "date": DateTime(2026, 2, 25, 13, 00),
+      "rating": 4.6,
       "bestOffer": true,
     },
     {
       "id": 3,
-      "image": "assets/images/M41.jpg",
-      "title": "ام فور امريكي درجه اولى",
-      "newPrice": 5000,
-      "oldPrice": 5700,
-      "usage": false,
-      "sold": 20,
-      "date": DateTime(2025, 7, 8, 7, 00),
-      "rating": 4.9,
-      "bestOffer": true,
+      "images": [
+        "assets/images/Sharma1.jpg",
+        "assets/images/Sharma2.jpg",
+        "assets/images/Sharma3.jpg",
+      ],
+      "title": "شرمه جديد مع التوابع استخدام اسبوع فقط",
+      "newPrice": 3466,
+      "oldPrice": 3950,
+      "Description": "يُعد هذا السلاح من عائلة الكلاشينكوف المعروفة بمتانتها واعتماديتها العالية في أصعب الظروف. يتميز بسهولة الاستخدام والصيانة، إضافة إلى قوته في الأداء واستمراريته في العمل حتى في البيئات القاسية. كما أن انتشاره الواسع واستخدامه في العديد من الدول جعله من أكثر الأسلحة شهرة وتأثيرًا في العالم.",
+      "caliber": "7.62×39",
+      "capacity": "30",
+      "category": "بنادق",// الفىه
+      "ProductType": "شرمه",
+      "ProductType2":"ايكي",
+      "length":"طويل",
+      "model": "AK Variant",
+      "weight": "3.3",
+      "manufacturing_countrey": "روسيا",
+      "manufacturing_company": "Kalashnikov Concern",
+      "usage": true,
+      "sold": 11,
+      "date": DateTime(2025, 1, 25, 10, 30),
+      "rating": 3.9,
+      "bestOffer": false,
     },
     {
       "id": 4,
-      "image": "assets/images/Glock.jpg",
-      "title": "كلوك نمساوي درجه اولى",
-      "newPrice": 2800,
-      "oldPrice": 3500,
-      "type": ProductCardType.hideOldPrice,
-      "usage": false,
-      "sold": 5,
-      "date": DateTime(2025, 10, 2, 7, 15),
-      "rating": 4.7,
+      "images": [
+        "assets/images/Mosher.jpg",
+        "assets/images/Mosher_1.jpg",
+        "assets/images/Mosher_2.jpg",
+        "assets/images/Mosher_3.jpg",
+      ],
+      "title": " مشير مستخدم نظيف كرت",
+      "newPrice": 1860,
+      // "oldPrice": 2250,
+      "Description": "يُعد هذا السلاح من عائلة الكلاشينكوف المعروفة بقوتها واعتماديتها العالية في مختلف الظروف. يتميز ببساطة التصميم وسهولة الاستخدام والصيانة، بالإضافة إلى قدرته على العمل بكفاءة حتى في البيئات القاسية. كما أن انتشاره الواسع جعله من أكثر الأسلحة تأثيرًا في العالم.",
+      "caliber": "7.62×39",
+      "capacity": "30",
+      "category": "بنادق",// الفىه
+      "ProductType": "مشير",
+      "length":"قصير",
+      "model": "AK Variant",
+      "weight": "3.0",
+      "manufacturing_countrey": "روسيا",
+      "manufacturing_company": "Kalashnikov Concern",
+      "usage": true,
+      "sold": 19,
+      "date": DateTime(2026, 2, 8, 14, 20),
+      "rating": 3.7,
       "bestOffer": true,
     },
     {
       "id": 5,
-      "image": "assets/images/Mosher.jpg",
-      "title": " مشير جديد زي رو",
-      "newPrice": 2546,
-      "oldPrice": 3200,
-      "usage": false,
-      "sold": 19,
-      "date": DateTime(2026, 2, 8, 14, 20),
-      "rating": 3.0,
-      "bestOffer": false,
-    },
-    {
-      "id": 6,
-      "image": "assets/images/Motamarn.jpg",
+      "images": ["assets/images/Motamarn.jpg",],
       "title": "موتمر ني كل جديد بلقرطاس",
-      "newPrice": 6200,
-      "oldPrice": 7000,
-      "type": ProductCardType.hideBoth,
+      "newPrice": 4300,
+      // "oldPrice": 6100,
+      "Description": "يُعد هذا السلاح من النسخ القصيرة لعائلة الكلاشينكوف، ويتميز بحجمه الصغير وسهولة حمله، مما يجعله مثاليًا للعمليات السريعة والأماكن الضيقة. يتمتع بنفس اعتمادية الكلاشينكوف المعروفة، مع قدرة عالية على التحمل في الظروف القاسية. كما أن انتشاره بين القوات الخاصة وبعض الوحدات العسكرية زاد من شهرته بشكل كبير.",
+      "caliber": "5.45×39",
+      "capacity": "30",
+      "category": "بنادق",
+      "ProductType": "موتمر",
+      "length":"قصير",
+      "model": "AKS-74U",
+      "weight": "2.7",
+      "manufacturing_countrey": "بلغاريا",
+      "manufacturing_company": "Arsenal AD",
       "usage": false,
       "sold": 14,
       "date": DateTime(2026, 4, 10, 14, 30),
@@ -125,32 +179,113 @@ class _HomeState extends State<Home> {
       "bestOffer": true,
     },
     {
-      "id": 7,
-      "image": "assets/images/M41.jpg",
-      "title": "ام فور امري كي درجه اولى",
-      "newPrice": 8000,
-      "oldPrice": 9500,
+      "id": 6,
+      "images": [
+        "assets/images/Mp5_1.jpg",
+        "assets/images/Mp5_2.jpg",
+        "assets/images/Mp5_3.jpg",
+        "assets/images/Mp5_4.jpg",
+      ],
+      "title": "امبي فايف MP5 ألماني  وكاله مقرطس",
+      "newPrice": 1350,
+      "oldPrice": 1800,
+      "Description" : "يُعد MP5 من أشهر الرشاشات الخفيفة في العالم بسبب اعتماديته العالية واستخدامه الواسع لدى القوات الخاصة ووحدات الشرطة. يتميز بدقة ممتازة مقارنة بفئته، وسهولة التحكم أثناء الإطلاق، خاصة في المسافات القريبة. كما أن تصميمه المدمج جعله الخيار الأول للعمليات داخل المدن والمباني، وكان له تأثير كبير على تطوير الأسلحة الحديثة المشابهة.",
+      "caliber" :  "9×19",// عيار 
+      "capacity" : " 30 ",// السعه
+      "category": "مسدسات",// الفىه  
+      "ProductType" : "امبي فايف",
+      "length":"قصير",
+      "model": "MP5",
+      "weight": "2.5",
+      "manufacturing_countrey" :  "ألمانيا",
+      "manufacturing_company":"Heckler & Koch",
       "usage": false,
-      "sold": 27,
-      "date": DateTime(2025, 7, 18, 7, 00),
-      "rating": 5.0,
+      "sold": 18,
+      "date": DateTime(2025, 7, 18, 7, 20),
+      "rating": 3.4,
       "bestOffer": true,
     },
     {
-      "id": 8,
-      "image": "assets/images/Glock.jpg",
-      "title": "كلوك نم ساوي درجه اولى",
+      "id": 7,
+      "images": [
+        "assets/images/Makraf1.jpg",
+        "assets/images/Makraf2.jpg",
+        "assets/images/Makraf3.jpg",
+        "assets/images/Makraf4.jpg",
+      ],
+      "title":  "مسدس مكروف حكومي روسي  وكاله",
       "newPrice": 2400,
-      "oldPrice": 6300,
-      "type": ProductCardType.hideOldPrice,
+      "oldPrice": 3200,
+      "Description": "يُعد مسدس مكروف من أشهر المسدسات العسكرية بسبب اعتماديته العالية وبساطة تصميمه، حيث تم اعتماده كسلاح رسمي في الاتحاد السوفيتي لسنوات طويلة. يتميز بسهولة الاستخدام والصيانة، بالإضافة إلى تحمله للظروف القاسية، مما جعله خيارًا مفضلًا لدى العسكريين والأمن. كما أن تصميمه البسيط كان له تأثير واضح على العديد من المسدسات التي جاءت بعده.",
+      "caliber": "9×18",
+      "capacity": "8",
+      "category": "مسدسات",
+      "ProductType": "مكروف",
+      "length":"قصير",
+      "model": "Makarov PM",
+      "weight": "0.73",
+      "manufacturing_countrey": "روسيا",
+      "manufacturing_company": "Izhevsk Mechanical Plant",
       "usage": false,
-      "sold": 7,
+      "sold": 9,
       "date": DateTime(2025, 9, 2, 7, 15),
       "rating": 4.1,
       "bestOffer": true,
     },
+    {
+      "id": 8,
+      "images": [
+        "assets/images/Gefri_1.jpg",
+        "assets/images/Gefri_2.jpg",
+        "assets/images/Gefri_3.jpg",
+        "assets/images/Gefri_4.jpg",
+        "assets/images/Gefri_5.jpg",
+      ],
+      "title": " جفري فتاحي مسمارين موديل 92 مع التوابع",
+      "newPrice": 9800,
+      "oldPrice": 11470,
+      "Description": "يُعد هذا النوع من عائلة الكلاشينكوف من أكثر الأسلحة انتشارًا بسبب قوته واعتماديته العالية في مختلف الظروف. يتميز بحجمه القصير وسهولة حمله، مما يجعله مناسبًا للعمليات السريعة والتنقل. كما أن تصميمه البسيط يجعله سهل الصيانة والاستخدام، وله تأثير كبير في عالم الأسلحة الخفيفة.",
+      "caliber": "7.62×39",
+      "capacity": "30",
+      "category": "بنادق",
+      "ProductType": "جفري",
+      "length":"قصير",
+      "model": "AKS-74U",
+      "weight": "2.9",
+      "manufacturing_countrey": "روسيا",
+      "manufacturing_company": "Kalashnikov Concern",
+      "usage": false,
+      "sold": 39,
+      "date": DateTime(2025, 9, 2, 7, 15),
+      "rating": 4.9,
+      "bestOffer": true,
+    },
+    {
+      "id": 9,
+      "images": [
+        "assets/images/Bergonof_1.jpg",
+        "assets/images/Bergonof_2.jpg",
+      ],
+      "title": "قناصة دراغونوف روسية وكاله نظيفة مع كامل الملحقات",
+      "newPrice": 10200,
+      "oldPrice": 10900,
+      "Description": "تُعد قناصة دراغونوف من أشهر البنادق القنص العسكرية بسبب دقتها العالية واعتماديتها في مختلف الظروف القتالية. تم تطويرها لتكون سلاح دعم للقوات البرية، حيث تجمع بين القوة والمدى الجيد وسرعة الإطلاق مقارنة بالقناصات التقليدية. كما أنها استخدمت في العديد من الجيوش حول العالم، مما جعلها واحدة من أكثر القناصات شهرة وتأثيرًا.",
+      "caliber": "7.62×54R",
+      "capacity": "10",
+      "category": "قناصات",
+      "ProductType": "دراغونوف",
+      "length":"طويل",
+      "model": "SVD Dragunov",
+      "weight": "4.3",
+      "manufacturing_countrey": "روسيا",
+      "manufacturing_company": "Kalashnikov Concern",
+      "usage": true,
+      "sold": 57,
+      "date": DateTime(2026, 2, 22, 10, 00),
+      "rating": 4.6,
+      "bestOffer": false,
+    },
   ];
-
 
   // variables and functions of best offers section start here 
   //(متغيرات و دوال قسم افضل العروض يبداء هنا)
@@ -220,31 +355,62 @@ class _HomeState extends State<Home> {
   int get minutes => bestOffersRemainingTime.inMinutes % 60;
   int get seconds => bestOffersRemainingTime.inSeconds % 60;
 
-
   //قسم الاكثر مبيعاء 
   // قاىمه المنتجات المعروضه في الاكثر مبيعا
+  bool showBestSelling = true;
   List<Map<String, dynamic>> get BestSelling {
     List<Map<String, dynamic>> temp = List.from(Products);
     temp.sort((a, b) => b["sold"].compareTo(a["sold"]));
     return temp;
   }
-  
+
+  // قسم البانر حق الاعلانات
+  bool showBanner = true;
+
+  // قسم المنجات الجديده
+  bool showNewProducts =true;
+  List<Map<String, dynamic>> get News{
+    List<Map<String, dynamic>> temp = List.from(Products);
+    temp.sort((a, b) => b["date"].compareTo(a["date"]));
+    return temp;
+  }
 
   
   // الفئات
-  List<String> categories = [
+  List<String> categoriesName = [
     "الكل",
     "مسدسات",
-    "الآلي",
+    "بنادق",
+    "قناصات",
     "قنابل",
-    "رصاص",
+    "ذخاير",
   ];
-
-  // bottomNavigationBar
-  int Footer_currentIndex = 3;
-
   // الفئة المختارة
   int selectedCategory = 0;
+  //
+  List<Map<String, dynamic>> get filteredProduct{
+    String selected = categoriesName[selectedCategory];
+
+    if(selected == "الكل"){
+      return Products;
+    }
+    if(selected == "بنادق"){
+      return Products.where((p) => p["category"] == "بنادق").toList();
+    }
+    if(selected == "مسدسات"){
+      return Products.where((p) => p["category"] == "مسدسات").toList();
+    }
+    if(selected == "قناصات"){
+      return Products.where((p) => p["category"] == "قناصات").toList();
+    }
+    
+    return [];
+  }
+
+
+
+  // bottomNavigationBar
+  int footerCurrentIndex = 3;
 
   
 
@@ -353,11 +519,11 @@ class _HomeState extends State<Home> {
               height: 5,
             ),
             CarouselSlider(
-              //===============slider start here======
+              //===============السلايدر يبدا هنا======
               options: CarouselOptions(
                 autoPlay: true,
-                autoPlayInterval: Duration(seconds: 1),
-                autoPlayAnimationDuration: Duration(milliseconds: 400),
+                autoPlayInterval: const Duration(seconds: 1),
+                autoPlayAnimationDuration: const Duration(milliseconds: 400),
                 height: 170,
                 enlargeCenterPage: true,
                 onPageChanged: (index, reason) {
@@ -366,7 +532,7 @@ class _HomeState extends State<Home> {
                   });
                 },
               ),
-              items: slider_images.map((item) {
+              items: sliderImages.map((item) {
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 6),
                   padding: EdgeInsets.all(10),
@@ -385,12 +551,12 @@ class _HomeState extends State<Home> {
                 );
               }).toList(),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            AnimatedSmoothIndicator(
+            AnimatedSmoothIndicator(//=============== نقاط السلايدر يبداء هنا ======
               activeIndex: slidercurrentindex,
-              count: slider_images.length,
+              count: sliderImages.length,
               effect: const WormEffect(
                 dotHeight: 8,
                 dotWidth: 8,
@@ -403,7 +569,8 @@ class _HomeState extends State<Home> {
 
             SizedBox(height: 8,),
 
-            showBestOffers ? Container(
+            if(showBestOffers)
+            Container(
               // ===========قسم افضل العروض يبدا هنا ===========
               width: double.infinity,
               color: color.black,
@@ -411,7 +578,7 @@ class _HomeState extends State<Home> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // ================= HEADER =================
+                  // ================= راس القسم بداء هنا =================
                   // title + counter
                   Container(
                     width: double.infinity,
@@ -457,7 +624,7 @@ class _HomeState extends State<Home> {
                                   ),
                                 ],
                               ),
-                              Expanded(
+                              Expanded(//=============== عنوان افضل العروض ======
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -490,10 +657,9 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                   ),
-
-                  // products of best offers
+                  //=============== منتجات قسم افضل العروض ======
                   SizedBox(
-                    height: 242,
+                    height: 245,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       reverse: true,
@@ -504,10 +670,11 @@ class _HomeState extends State<Home> {
                           padding: EdgeInsets.symmetric(horizontal: 1),
                           child: ProductCard(
                             id: product["id"],
-                            image: product["image"]!,
+                            image: product["images"][0],
                             title: product["title"]!,
                             newPrice: product["newPrice"],
                             oldPrice: product["oldPrice"],
+                            type: product["type"] ?? ProductCardType.full,
                           ),
                         );
                       }
@@ -515,10 +682,11 @@ class _HomeState extends State<Home> {
                   ),
                 ],
               ),
-            ) : SizedBox(),
+            ),
 
+            // ========= الاكثر مبيعا ======
+            if(showBestSelling)
             Container(
-              // ========= الاكثر مبيعا ======
               padding: EdgeInsets.symmetric(vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -534,7 +702,9 @@ class _HomeState extends State<Home> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Bestselling()),
+                                  builder: (context) => Bestselling(
+                                    products: BestSelling.skip(5).toList(),
+                                  )),
                             );
                           },
                           child: Text(
@@ -553,7 +723,6 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                   ),
-
                   //========= المنتجات =========
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -563,10 +732,11 @@ class _HomeState extends State<Home> {
                       children: BestSelling.take(5).map((product) {
                         return ProductCard(
                           id: product["id"],
-                          image: product["image"]!,
+                          image: product["images"][0],
                           title: product["title"]!,
                           newPrice: product["newPrice"],
                           oldPrice: product["oldPrice"],
+                          type: product["type"] ?? ProductCardType.full,
                         );
                       }).toList(),
                     ),
@@ -574,55 +744,189 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-
-            SizedBox(
+            //=============== البانر حق الاعلانات يبداء هنا ======
+            if(showBanner)
+            GestureDetector(
+              onTap: (){},
+              child: Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.25,
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+                decoration: BoxDecoration(
+                  color: color.dark2,
+                  borderRadius: BorderRadius.circular(48)
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset(
+                        "assets/images/MainLogo.png",
+                        width: MediaQuery.of(context).size.width *0.4,
+                        height:MediaQuery.of(context).size.height *0.2 ,
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text("M4_STORE اسم يستحق الثقه",
+                            style: fonts.lb.copyWith(color: color.g100),
+                            textAlign: TextAlign.start,
+                            textDirection: TextDirection.rtl,
+                            )
+                          ],
+                        )
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            //=============== قسم المنتجات الجديده ======
+            if(showNewProducts)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 8,bottom: 8),
+                    child: Text(
+                      "المنتجات الجديده",
+                      style: fonts.h6.copyWith(color: color.g100),textAlign: TextAlign.end,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 245,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      reverse: true,
+                      itemCount: News.length,
+                      itemBuilder: (context, index) {
+                        final product = News.toList()[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 1),
+                          child: ProductCard(
+                            id: product["id"],
+                            image: product["images"][0],
+                            title: product["title"]!,
+                            newPrice: product["newPrice"],
+                            oldPrice: product["oldPrice"],
+                            type: product["type"] ?? ProductCardType.full,
+                          ),
+                        );
+                      }
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
               height: 10,
             ),
-            
-            SizedBox(
-              //catagorize
-              height: 45,
-              child: Row(
-                textDirection: TextDirection.rtl,
-                children: List.generate(categories.length, (index) {
-                  bool isActive = selectedCategory == index;
 
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedCategory = index;
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 2),
-                        decoration: BoxDecoration(
-                          color: isActive ? color.p900 : Colors.transparent,
-                          borderRadius: BorderRadius.circular(48),
-                          border: Border.all(
-                            color: isActive ? color.p500 : Colors.transparent,
-                            width: 2,
+            //=============== الفئات تبداء هنا ======
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.symmetric(vertical: 6),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // عرض صناديق الفئات اسماء الفئات
+                  SizedBox(
+                    height: 45,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      reverse: true,
+                      itemCount: categoriesName.length,
+                      itemBuilder: (context , index){
+                        bool isActive = selectedCategory == index;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedCategory = index;
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 16), 
+                            decoration: BoxDecoration(
+                              color: isActive ? color.p900 : Colors.transparent,
+                              borderRadius: BorderRadius.circular(48),
+                              border: Border.all(
+                                color: isActive ? color.p500 : Colors.transparent,
+                                width: 2,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              categoriesName[index],
+                              style: isActive
+                                  ? fonts.mb.copyWith(color: color.g50)
+                                  : fonts.ms.copyWith(color: color.g400),
+                            ),
                           ),
+                        );
+                      }
+                    ),
+                  ),
+                  // عرض منجات الفئات 
+                  filteredProduct.isNotEmpty 
+                  ?Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: filteredProduct.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 4,
+                          mainAxisSpacing: 8,
+                          childAspectRatio: 0.70,
                         ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          categories[index],
-                          style: isActive
-                              ? fonts.mb.copyWith(color: color.g50)
-                              : fonts.ms.copyWith(color: color.g400),
-                          // fonts.ms.copyWith( color: isActive ? Colors.white : color.g400, )
-                        ),
+                        itemBuilder: (context, index) {
+                          final product = filteredProduct[index];
+                          return Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: ProductCard(
+                              id: product["id"],
+                              image: product["images"][0],
+                              title: product["title"],
+                              newPrice: product["newPrice"],
+                              oldPrice: product["oldPrice"],
+                              type: product["type"] ?? ProductCardType.full,
+                            ),
+                          );
+                        }
                       ),
                     ),
-                  );
-                }),
+                  )
+                  :SizedBox(
+                    height: 150,
+                    child: Center(
+                      child: Text(
+                        "لا توجد منتجات في هذه الفئة حالياً، يمكنك تصفح فئات أخرى", 
+                        style: fonts.h6.copyWith(color: color.g100),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
+
+      //=============== الازرار السفليه تبداء هنا ======
       bottomNavigationBar: Container(
-        //bottom Navigation bar start here
         decoration: BoxDecoration(
           color: color.dark2,
           borderRadius: BorderRadius.only(
@@ -639,7 +943,7 @@ class _HomeState extends State<Home> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(30),
           child: BottomNavigationBar(
-            currentIndex: Footer_currentIndex,
+            currentIndex: footerCurrentIndex,
             backgroundColor: color.dark2,
             selectedItemColor: color.p400,
             unselectedItemColor: color.g400,
@@ -648,30 +952,34 @@ class _HomeState extends State<Home> {
             showUnselectedLabels: true,
             onTap: (index) {
               if (index == 0) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Account()),
-                );
+                Navigator.pushNamed(context, "account");
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => Account()),
+                // );
               }
               if (index == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Cart()),
-                );
+                Navigator.pushNamed(context, "cart");
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => Cart()),
+                // );
               }
 
               if (index == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Orders()),
-                );
+                Navigator.pushNamed(context, "orders");
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => Orders()),
+                // );
               }
 
               if (index == 3) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Home()),
-                );
+                Navigator.pushNamed(context, "/");
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => Home()),
+                // );
               }
             },
             items: const [
