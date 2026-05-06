@@ -23,34 +23,45 @@ enum OrderStatus {
   onTheWay,
 }
 
-Widget _orderbox( BuildContext context ,OrderStatus status) {
+Widget _orderbox(
+  BuildContext context,
+  Map order,
+  List<Map<String, dynamic>> orderItems,
+) {
+  OrderStatus status;
   String title;
   IconData icon;
-  switch (status) {
-    case OrderStatus.done:
+  switch (order["status"]) {
+    case "done":
+      status = OrderStatus.done;
       title = "تم التوصيل";
       icon = Icons.check_circle;
       break;
-    case OrderStatus.reject:
+    case "reject":
+      status = OrderStatus.reject;
       title = "مرفوض";
       icon = Icons.cancel;
       break;
-    case OrderStatus.processing:
-      title = "قيد المعالجة";
-      icon = Icons.hourglass_bottom;
-      break;
-    case OrderStatus.onTheWay:
+    case "onTheWay":
+      status = OrderStatus.onTheWay;
       title = "في الطريق اليك";
       icon = Icons.local_shipping;
       break;
-    // default:OrderStatus.processing;
+    default:
+      status = OrderStatus.processing;
+      title = "قيد المعالجة";
+      icon = Icons.hourglass_bottom;
   }
   return InkWell(
     borderRadius: BorderRadius.circular(10),
-    onTap: (){
+    onTap: () {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => OrderDetails()),
+        MaterialPageRoute(
+            builder: (context) => OrderDetails(
+                  order: order,
+                  orderItems: orderItems,
+                )),
       );
     },
     child: Container(
@@ -84,24 +95,27 @@ Widget _orderbox( BuildContext context ,OrderStatus status) {
                         EdgeInsets.only(left: 8, right: 16, top: 8, bottom: 8),
                     child: InkWell(
                       onTap: () {
-                        Clipboard.setData(ClipboardData(text: "3583133"));
+                        Clipboard.setData(
+                            ClipboardData(text: order["id"].toString()));
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(seconds: 2),
-                            margin: EdgeInsets.all(12),
-                            backgroundColor: color.p,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)
-                            ),
-                            content: Text("تم نسخ رقم الطلب",style: fonts.mb.copyWith(color: color.white),textAlign: TextAlign.end,)
-                          ),
+                              behavior: SnackBarBehavior.floating,
+                              duration: Duration(seconds: 2),
+                              margin: EdgeInsets.all(12),
+                              backgroundColor: color.p,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              content: Text(
+                                "تم نسخ رقم الطلب",
+                                style: fonts.mb.copyWith(color: color.white),
+                                textAlign: TextAlign.end,
+                              )),
                         );
                       },
                       child: Row(
                         children: [
                           Text(
-                            "3583133",
+                            order["id"].toString(),
                             style: fonts.mb.copyWith(color: color.white),
                           ),
                           SizedBox(
@@ -121,8 +135,8 @@ Widget _orderbox( BuildContext context ,OrderStatus status) {
                     width: double.infinity,
                     padding: EdgeInsets.only(top: 7, bottom: 7, right: 10),
                     decoration: BoxDecoration(
-                      border:
-                          Border(bottom: BorderSide(color: color.g400, width: 2)),
+                      border: Border(
+                          bottom: BorderSide(color: color.g400, width: 2)),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -155,7 +169,7 @@ Widget _orderbox( BuildContext context ,OrderStatus status) {
                       border: Border(
                           bottom: BorderSide(color: color.g400, width: 1))),
                   child: Text(
-                    " السبب .....",
+                    order["why"],
                     style: fonts.ms.copyWith(color: color.white),
                     textAlign: TextAlign.start,
                     textDirection: TextDirection.rtl,
@@ -167,7 +181,8 @@ Widget _orderbox( BuildContext context ,OrderStatus status) {
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: color.g400, width: 1))),
+                border:
+                    Border(bottom: BorderSide(color: color.g400, width: 1))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -176,7 +191,7 @@ Widget _orderbox( BuildContext context ,OrderStatus status) {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      "19:20",
+                      order["time"],
                       style: fonts.mb.copyWith(color: color.white),
                     ),
                     SizedBox(
@@ -197,7 +212,7 @@ Widget _orderbox( BuildContext context ,OrderStatus status) {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      "04-02-2026",
+                      order["date"],
                       style: fonts.mb.copyWith(color: color.white),
                     ),
                     SizedBox(
@@ -227,7 +242,7 @@ Widget _orderbox( BuildContext context ,OrderStatus status) {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "0 \$",
+                  order["grand_total"].toString() + "\$",
                   style: fonts.lb.copyWith(color: color.white),
                 ),
                 Text(
@@ -244,11 +259,130 @@ Widget _orderbox( BuildContext context ,OrderStatus status) {
 }
 
 // bottomNavigationBar
-  int footerCurrentIndex = 2;
+int footerCurrentIndex = 2;
 
 class _OrdersState extends State<Orders> {
+  //list
+  List<Map<String, dynamic>> orders = [
+    {
+      "id": 1,
+      "user_id": 5,
+      "total": 9916,
+      "delivery": 5,
+      "grand_total": 9921,
+      "status": "done",
+      "date": "2026-05-04",
+      "time": "19:20",
+      "payment": "عند الاستلام",
+      "location": " شارع بيروت جوار شركه العملاق للصرافة والتحويلات ",
+      "orderNote": " يرجى الاسراع",
+    },
+    {
+      "id": 2,
+      "user_id": 6,
+      "total": 6450,
+      "delivery": 5,
+      "grand_total": 6455,
+      "status": "processing",
+      "date": "2026-05-05",
+      "time": "19:20",
+      "payment": "حواله",
+      "location": "   جوار شركه العملاق للصرافة والتحويلات ",
+      "orderNote": " يرجى الاسراع",
+    },
+    {
+      "id": 3,
+      "user_id": 6,
+      "total": 6450,
+      "delivery": 5,
+      "grand_total": 6455,
+      "status": "onTheWay",
+      "date": "2026-05-05",
+      "time": "19:20",
+      "payment": "حواله",
+      "location": "   جوار شركه العملاق للصرافة والتحويلات ",
+      "orderNote": " يرجى الاسراع",
+    },
+    {
+      "id": 4,
+      "user_id": 6,
+      "total": 0,
+      "delivery": 0,
+      "grand_total": 0,
+      "status": "reject",
+      "why":" الحواله مزوره",
+      "date": "2026-05-05",
+      "time": "19:20",
+      "payment": "حواله",
+      "location": "   جوار شركه العملاق للصرافة والتحويلات ",
+      "orderNote": " يرجى الاسراع",
+    },
+  ];
+
+  List<Map<String, dynamic>> orderItems = [
+    {
+      "id": 1,
+      "order_id": 1,
+      "product": "ايكي روسي طويل وكاله AK-103  زيرو ما قد استخدم",
+      "price": 3200,
+      "qty": 1,
+    },
+    {
+      "id": 2,
+      "order_id": 1,
+      "product": " ايكي AK-104 روسي قصير أسود مقرطس ",
+      "price": 3250,
+      "qty": 1,
+    },
+    {
+      "id": 3,
+      "order_id": 1,
+      "product": "شرمه جديد مع التوابع استخدام اسبوع فقط",
+      "price": 3466,
+      "qty": 1,
+    },
+    {
+      "id": 4,
+      "order_id": 2,
+      "product": "ايكي روسي طويل وكاله AK-103  زيرو ما قد استخدم",
+      "price": 3200,
+      "qty": 1,
+    },
+    {
+      "id": 5,
+      "order_id": 2,
+      "product": " ايكي AK-104 روسي قصير أسود مقرطس ",
+      "price": 3250,
+      "qty": 1,
+    },
+    {
+      "id": 6,
+      "order_id": 3,
+      "product": "ايكي روسي طويل وكاله AK-103  زيرو ما قد استخدم",
+      "price": 3200,
+      "qty": 1,
+    },
+    {
+      "id": 7,
+      "order_id": 3,
+      "product": " ايكي AK-104 روسي قصير أسود مقرطس ",
+      "price": 3250,
+      "qty": 1,
+    },
+    {
+      "id": 8,
+      "order_id": 4,
+      "product": " ايكي AK-104 روسي قصير أسود مقرطس ",
+      "price": 3250,
+      "qty": 1,
+    },
+  ];
   @override
   Widget build(BuildContext context) {
+    //
+    var rejectOrders = orders.where((o) => o["status"] == "reject").toList();
+    var doneOrders = orders.where((o) => o["status"] == "done").toList();
+
     return Scaffold(
       backgroundColor: color.dark1,
       appBar: p_appbar(
@@ -337,42 +471,53 @@ class _OrdersState extends State<Orders> {
                   Container(
                       width: double.infinity,
                       child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            _orderbox(context,OrderStatus.reject),
-                            _orderbox(context,OrderStatus.reject),
-                            _orderbox(context,OrderStatus.reject),
-                          ],
-                        ),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: rejectOrders.length,
+                            itemBuilder: (context, index) {
+                              var order = rejectOrders[index];
+                              var currentOrderItems = orderItems.where((item) {
+                                return item["order_id"] == order["id"];
+                              }).toList();
+                              return _orderbox(
+                                  context, order, currentOrderItems);
+                            }),
                       )),
 
                   // 🔹 تم التوصيل
                   Container(
                       width: double.infinity,
                       child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            _orderbox(context,OrderStatus.done),
-                            _orderbox(context,OrderStatus.done),
-                            _orderbox(context,OrderStatus.done),
-                            _orderbox(context,OrderStatus.done),
-                            _orderbox(context,OrderStatus.done),
-                            _orderbox(context,OrderStatus.done),                   
-                          ],
-                        ),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: doneOrders.length,
+                            itemBuilder: (context, index) {
+                              var order = doneOrders[index];
+                              var currentOrderItems = orderItems.where((item) {
+                                return item["order_id"] == order["id"];
+                              }).toList();
+                              return _orderbox(
+                                  context, order, currentOrderItems);
+                            }),
                       )),
                   // 🔹 الكل
                   Container(
                       width: double.infinity,
                       child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            _orderbox(context,OrderStatus.processing),
-                            _orderbox(context,OrderStatus.onTheWay),
-                            _orderbox(context,OrderStatus.reject),
-                            _orderbox(context,OrderStatus.done),
-                          ],
-                        ),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: orders.length,
+                            itemBuilder: (context, index) {
+                              var order = orders[index];
+                              var currentOrderItems = orderItems.where((item) {
+                                return item["order_id"] == order["id"];
+                              }).toList();
+                              return _orderbox(
+                                  context, order, currentOrderItems);
+                            }),
                       )),
                 ],
               ),
