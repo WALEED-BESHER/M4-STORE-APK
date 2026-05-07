@@ -41,6 +41,7 @@ dependencies:
   crypto: ^3.0.3
   http: ^0.13.6
   dotted_border: ^2.1.0
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:

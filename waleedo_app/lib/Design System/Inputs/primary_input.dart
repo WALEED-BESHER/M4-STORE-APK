@@ -15,6 +15,7 @@ class p_input extends StatefulWidget {
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  final FocusNode? focusNode;
 
   final Color background;
   final Color borderColor;
@@ -36,6 +37,7 @@ class p_input extends StatefulWidget {
     required this.controller,
     this.keyboardType,
     this.inputFormatters,
+    this.focusNode,
     this.background = color.dark2,
     this.borderColor = color.g500,
     this.focusedBorderColor = color.p600,
@@ -68,6 +70,7 @@ class _p_inputState extends State<p_input> {
         textDirection: TextDirection.rtl,
         child: TextFormField(
           validator: widget.validator,
+          focusNode: widget.focusNode,
           textAlign: textRight ? TextAlign.right : TextAlign.left,
           textDirection: textRight ? TextDirection.rtl : TextDirection.ltr,
           obscureText: ishidden,

@@ -16,7 +16,7 @@ class OrderDetails extends StatefulWidget {
   State<OrderDetails> createState() => _OrderDetailsState();
 }
 
-//
+// تشكيله كل الصناديق الاساسيه
 Widget theBoxShape(Widget finish) {
   return Container(
     width: double.infinity,

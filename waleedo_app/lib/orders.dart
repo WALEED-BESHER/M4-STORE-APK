@@ -567,10 +567,7 @@ class _OrdersState extends State<Orders> {
               }
 
               if (index == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Orders()),
-                );
+                return ;
               }
 
               if (index == 3) {
