@@ -50,39 +50,3 @@ class CartData {
 
   }
 }
-
-
-// class CartData {
-
-//   // المنتجات داخل السلة
-//   static List<Map<String, dynamic>> cartItems = [];
-
-//   // إضافة منتج
-//   static void addToCart(Map<String, dynamic> product, int quantity) {
-
-//     // هل المنتج موجود مسبقاً؟
-//     int index = cartItems.indexWhere(
-//       (item) => item["id"] == product["id"],
-//     );
-
-//     if (index != -1) {
-
-//       // إذا موجود زيد الكمية
-//       cartItems[index]["quantity"] += quantity;
-
-//     } else {
-
-//       // إذا غير موجود أضفه
-//       cartItems.add({
-//         ...product,
-//         "quantity": quantity,
-//       });
-
-//     }
-//   }
-
-//   // حذف منتج
-//   static void removeFromCart(int id) {
-//     cartItems.removeWhere((item) => item["id"] == id);
-//   }
-// }

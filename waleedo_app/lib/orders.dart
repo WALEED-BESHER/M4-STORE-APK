@@ -7,6 +7,7 @@ import 'package:waleedo_app/home.dart';
 import 'package:waleedo_app/order_details.dart';
 import 'Design System/AppBar/primary_appbar.dart';
 import 'package:flutter/services.dart';
+import 'cart_data.dart';
 
 class Orders extends StatefulWidget {
   const Orders({super.key});
@@ -310,7 +311,7 @@ class _OrdersState extends State<Orders> {
       "delivery": 0,
       "grand_total": 0,
       "status": "reject",
-      "why":" الحواله مزوره",
+      "why": " الحواله مزوره",
       "date": "2026-05-05",
       "time": "19:20",
       "payment": "حواله",
@@ -377,6 +378,17 @@ class _OrdersState extends State<Orders> {
       "qty": 1,
     },
   ];
+
+  int get cartSize {
+    int cartCount = 0;
+
+    for (var item in CartData.cartItems) {
+      cartCount += item["quantity"] as int;
+    }
+
+    return cartCount;
+  }
+
   @override
   Widget build(BuildContext context) {
     //
@@ -567,7 +579,7 @@ class _OrdersState extends State<Orders> {
               }
 
               if (index == 2) {
-                return ;
+                return;
               }
 
               if (index == 3) {
@@ -577,15 +589,81 @@ class _OrdersState extends State<Orders> {
                 );
               }
             },
-            items: const [
+            items: [
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline),
                 activeIcon: Icon(Icons.person),
                 label: "حسابي",
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_cart_outlined),
-                activeIcon: Icon(Icons.shopping_cart),
+                icon: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(Icons.shopping_cart_outlined),
+                    if (cartSize > 0)
+                      Positioned(
+                        right: -6,
+                        top: -6,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: color.p500,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: color.dark2,
+                              width: 1.5,
+                            ),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+                          child: Center(
+                            child: Text(
+                              "${cartSize.toStringAsFixed(0)}",
+                              style: fonts.xsb.copyWith(
+                                color: color.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                activeIcon: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(Icons.shopping_cart),
+                    if (cartSize > 0)
+                      Positioned(
+                        right: -6,
+                        top: -6,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: color.p500,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: color.dark2,
+                              width: 1.5,
+                            ),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+                          child: Center(
+                            child: Text(
+                              "${cartSize.toStringAsFixed(0)}",
+                              style: fonts.xsb.copyWith(
+                                color: color.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
                 label: "السلة",
               ),
               BottomNavigationBarItem(

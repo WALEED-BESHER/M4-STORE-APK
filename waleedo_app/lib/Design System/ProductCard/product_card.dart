@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../constants/colors.dart';
 import '../../constants/fonts.dart';
 import '../../productdetails.dart';
+import '../../cart_data.dart';
 enum ProductCardType {
   full,
   hideDiscount,
@@ -36,8 +37,7 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
   bool isFavorite = false;
-  bool inCart = false;
-  int quantity = 1;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -45,17 +45,21 @@ class _ProductCardState extends State<ProductCard> {
     widget.type == ProductCardType.full ||
     widget.type == ProductCardType.hideOldPrice;
 
-bool showOldPrice =
-    widget.type == ProductCardType.full ||
-    widget.type == ProductCardType.hideDiscount;
+    bool showOldPrice =
+        widget.type == ProductCardType.full ||
+        widget.type == ProductCardType.hideDiscount;
+    int? discount;
 
-int? discount;
+    if (widget.oldPrice != null && showDiscount) {
+      discount =
+          (((widget.oldPrice! - widget.newPrice) / widget.oldPrice!) * 100)
+              .toInt();
+    }
 
-if (widget.oldPrice != null && showDiscount) {
-  discount =
-      (((widget.oldPrice! - widget.newPrice) / widget.oldPrice!) * 100)
-          .toInt();
-}
+    final existingProduct = CartData.getProduct(widget.id);
+    bool inCart = existingProduct != null;
+    int quantity = inCart ? existingProduct["quantity"] : 1;
+
     return GestureDetector(
       onTap: () {
         // الانتقال لصفحة التفاصيل
@@ -202,10 +206,16 @@ if (widget.oldPrice != null && showDiscount) {
                                           setState(() {
                                             if (quantity > 1) {
                                               quantity--;
+                                              CartData.setProduct({
+                                                "id": widget.id,
+                                                "title": widget.title,
+                                                "newPrice": widget.newPrice,
+                                                "oldPrice": widget.oldPrice,
+                                                "images": [widget.image],
+                                              }, quantity);
                                             } else {
                                               // يرجع زر السلة
-                                              inCart = false;
-                                              quantity = 0;
+                                              CartData.removeFromCart(widget.id);
                                             }
                                           });
                                         },
@@ -237,6 +247,13 @@ if (widget.oldPrice != null && showDiscount) {
                                         onPressed: () {
                                           setState(() {
                                             quantity++;
+                                            CartData.setProduct({
+                                              "id": widget.id,
+                                              "title": widget.title,
+                                              "newPrice": widget.newPrice,
+                                              "oldPrice": widget.oldPrice,
+                                              "images": [widget.image],
+                                            }, quantity);
                                           });
                                         },
                                         icon: Icon(Icons.add,
@@ -254,8 +271,13 @@ if (widget.oldPrice != null && showDiscount) {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     setState(() {
-                                      inCart = true;
-                                      quantity = 1;
+                                      CartData.setProduct({
+                                        "id": widget.id,
+                                        "title": widget.title,
+                                        "newPrice": widget.newPrice,
+                                        "oldPrice": widget.oldPrice,
+                                        "images": [widget.image],
+                                      }, 1);
                                     });
                                   },
                                   style: ElevatedButton.styleFrom(

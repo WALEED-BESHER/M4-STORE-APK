@@ -789,7 +789,7 @@ class _ProductdetailsState extends State<Productdetails> {
           right: 10,
           child: Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 1),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 1),
             decoration: BoxDecoration(
               color: color.p500,
               borderRadius: BorderRadius.circular(48),
@@ -803,7 +803,7 @@ class _ProductdetailsState extends State<Productdetails> {
                     IconButton(onPressed: (){
                       Navigator.pushNamed(context, "cart");
                     }, 
-                    icon: Icon(Icons.arrow_back),color: color.white,),
+                    icon: Icon(Icons.arrow_back_ios_new),color: color.white,),
                     SizedBox(width: 6,),
                     Text( 
                       "\$ ${totalPrice}",

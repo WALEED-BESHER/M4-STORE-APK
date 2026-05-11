@@ -17,6 +17,7 @@ class p_input extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final FocusNode? focusNode;
 
+  final TextStyle style;
   final Color background;
   final Color borderColor;
   final Color focusedBorderColor;
@@ -38,6 +39,7 @@ class p_input extends StatefulWidget {
     this.keyboardType,
     this.inputFormatters,
     this.focusNode,
+    this.style = fonts.mb,
     this.background = color.dark2,
     this.borderColor = color.g500,
     this.focusedBorderColor = color.p600,
@@ -78,7 +80,7 @@ class _p_inputState extends State<p_input> {
           keyboardType: widget.keyboardType,
           cursorColor: widget.textColor,
           inputFormatters: widget.inputFormatters,
-          style: fonts.mb.copyWith(color: widget.textColor),
+          style: widget.style.copyWith(color: widget.textColor),
           decoration: InputDecoration(
             filled: true,
             fillColor: widget.background,
