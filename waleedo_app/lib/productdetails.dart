@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'constants/colors.dart';
 import 'constants/fonts.dart';
 import 'Design System/ProductCard/product_card.dart';
 import 'Design System/Buttons/primary_button.dart';
+import 'cart_data.dart';
 
 class Productdetails extends StatefulWidget {
   final int productId;
@@ -15,6 +15,23 @@ class Productdetails extends StatefulWidget {
 
 class _ProductdetailsState extends State<Productdetails> {
   @override
+
+  @override
+  void initState() {
+    super.initState();
+
+    final existingProduct = CartData.getProduct(widget.productId);
+    if (existingProduct != null) {
+      inCart = true;
+      quantity = existingProduct["quantity"];
+
+    } else {
+
+      inCart = false;
+      quantity = 1;
+
+    }
+  }
 
   // القائمة الأساسية لجميع المنتجات (مصدر البيانات الرئيسي)
   final List<Map<String, dynamic>> Products = [
@@ -323,8 +340,8 @@ class _ProductdetailsState extends State<Productdetails> {
   bool isFavorite = false;
 
   // متغيرات زر اضافه الى السله
-  bool inCart = false;
-  int quantity = 1;
+  late bool inCart;
+  late int quantity;
   
 
   Widget build(BuildContext context) {
@@ -702,10 +719,12 @@ class _ProductdetailsState extends State<Productdetails> {
                               setState(() {
                                 if (quantity > 1) {
                                   quantity--;
+                                  CartData.setProduct(product, quantity);
                                 } else {
                                   // يرجع زر السلة
                                   inCart = false;
                                   quantity = 0;
+                                  CartData.removeFromCart(product["id"]);
                                 }
                               });
                             }, 
@@ -736,6 +755,7 @@ class _ProductdetailsState extends State<Productdetails> {
                             onPressed: (){
                               setState(() {
                                 quantity++;
+                                CartData.setProduct(product, quantity);
                               });
                             }, 
                             icon: Icon(Icons.add, color: color.g100, size: 24),
@@ -753,6 +773,7 @@ class _ProductdetailsState extends State<Productdetails> {
                         inCart = true;
                         quantity = 1;
                       });
+                      CartData.setProduct(product, quantity);
                     },
                     height: 32,
                   ),
@@ -779,7 +800,9 @@ class _ProductdetailsState extends State<Productdetails> {
 
                 Row(
                   children: [
-                    IconButton(onPressed: (){}, 
+                    IconButton(onPressed: (){
+                      Navigator.pushNamed(context, "cart");
+                    }, 
                     icon: Icon(Icons.arrow_back),color: color.white,),
                     SizedBox(width: 6,),
                     Text( 

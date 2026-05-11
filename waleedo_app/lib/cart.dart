@@ -4,6 +4,7 @@ import 'constants/colors.dart';
 import 'constants/fonts.dart';
 import 'Design System/AppBar/primary_appbar.dart';
 import 'Design System/Inputs/primary_input.dart';
+import 'cart_data.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -361,150 +362,150 @@ class _CartState extends State<Cart> {
                 ),
               ),
 
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 6),
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                decoration: BoxDecoration(
-                  color: color.dark2,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
 
-                  // ========= صورة المنتج =========
-                  trailing: Container(
-                    width: 63,
-                    height: 63,
+              Column(
+                children: CartData.cartItems.map((item) {
+                  int quantity = item["quantity"];
+
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
-                      color: color.white,
-                      borderRadius: BorderRadius.circular(48),
+                      color: color.dark2,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(48)
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Image.asset(
-                          "assets/images/Sharma3.jpg",
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
+
+                    child: ListTile(
+
+                      // الصورة
+                      trailing: Container(
+                        width: 63,
+                        height: 63,
+                        decoration: BoxDecoration(
+                          color: color.white,
+                          borderRadius: BorderRadius.circular(48),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.asset(
+                            item["images"][0],
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    )
-                  ),
 
-                  // ========= حذف =========
-                  leading: IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.delete_outline,
-                      color: color.p500,
-                      size: 20,
-                    ),
-                  ),
+                      // حذف
+                      leading: IconButton(
+                        onPressed: () {
 
-                  // ========= اسم المنتج =========
-                  title: Text(
-                    "امفور امريكي وكاله",
-                    textAlign: TextAlign.right,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: fonts.mb.copyWith(
-                      color: color.white,
-                    ),
-                  ),
+                          setState(() {
+                            CartData.removeFromCart(item["id"]);
+                          });
 
-                  // ========= السعر + الكمية =========
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
+                        },
 
-                      const SizedBox(height: 4),
+                        icon: Icon(
+                          Icons.delete_outline,
+                          color: color.p500,
+                        ),
+                      ),
 
-                      Text(
-                        "5500 \$",
+                      // اسم المنتج
+                      title: Text(
+                        item["title"],
+                        textAlign: TextAlign.right,
                         style: fonts.mb.copyWith(
                           color: color.white,
                         ),
                       ),
 
-                      const SizedBox(height: 8),
-
-                      Container(
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: color.dark1, // الخلفية الداكنة
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          children: [
-                            // ➖ ناقص
-                            Expanded(
-                              child: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    if (quantity > 1) {
-                                      quantity--;
-                                    } else {
-                                      quantity = 1;
-                                    }
-                                  });
-                                },
-                                icon: Icon(Icons.remove,
-                                    color: color.g200, size: 18),
-                                padding: EdgeInsets.zero,
-                                constraints: BoxConstraints(),
-                              ),
+                      // السعر والكمية
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const SizedBox(height: 4),
+                          Text(
+                            "${item["newPrice"]} \$",
+                            style: fonts.mb.copyWith(
+                              color: color.white,
                             ),
-
-                            // 🔢 العدد
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: color.p500,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                "$quantity",
-                                style: fonts.sb
-                                    .copyWith(color: color.g200),
-                              ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: color.dark1,
+                              borderRadius: BorderRadius.circular(16),
                             ),
+                            child: Row(
+                              children: [
+                                // ناقص
+                                Expanded(
+                                  child: IconButton(
+                                    onPressed: () {
 
-                            // ➕ زائد
-                            Expanded(
-                              child: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    quantity++;
-                                  });
-                                },
-                                icon: Icon(Icons.add,
-                                    color: color.g200, size: 18),
-                                padding: EdgeInsets.zero,
-                                constraints: BoxConstraints(),
-                              ),
+                                      setState(() {
+
+                                        if (item["quantity"] > 1) {
+                                          item["quantity"]--;
+                                        }
+                                      });
+
+                                    },
+                                    icon: Icon(
+                                      Icons.remove,
+                                      color: color.g200,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                                // العدد
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+
+                                  decoration: BoxDecoration(
+                                    color: color.p500,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+
+                                  child: Text(
+                                    "${item["quantity"]}",
+                                    style: fonts.sb.copyWith(
+                                      color: color.g200,
+                                    ),
+                                  ),
+                                ),
+                                // زائد
+                                Expanded(
+                                  child: IconButton(
+                                    onPressed: () {
+
+                                      setState(() {
+                                        item["quantity"]++;
+                                      });
+
+                                    },
+                                    icon: Icon(
+                                      Icons.add,
+                                      color: color.g200,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      )
-
-                      
-                    ],
-                  ),
-
-                  
-
-
-                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
 
               
-
             ],
           ),
         ),
