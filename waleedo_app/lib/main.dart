@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:waleedo_app/account.dart';
-import 'package:waleedo_app/productdetails.dart';
 import 'package:waleedo_app/home.dart';
 import 'package:waleedo_app/login.dart';
 import 'package:waleedo_app/notification.dart';
@@ -8,6 +7,7 @@ import 'package:waleedo_app/orders.dart';
 import 'package:waleedo_app/cart.dart';
 import 'package:waleedo_app/otp.dart';
 import 'package:waleedo_app/search.dart';
+import 'checkout.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         "otp":(context)=>OtpPage(),
         "notifications":(context)=>Notifications(),
         "search":(context)=>SearchPage(),
-        
+        "checkout":(context)=>Checkout(),
       },
      
     );

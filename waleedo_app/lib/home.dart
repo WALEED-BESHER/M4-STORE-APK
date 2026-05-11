@@ -2,13 +2,11 @@ import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:waleedo_app/account.dart';
 import 'package:waleedo_app/bestselling.dart';
 import 'package:waleedo_app/constants/colors.dart';
 import 'package:waleedo_app/constants/fonts.dart';
 import 'package:waleedo_app/Design System/ProductCard/product_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:waleedo_app/orders.dart';
 import 'cart_data.dart';
 
 class Home extends StatefulWidget {
@@ -309,7 +307,7 @@ class _HomeState extends State<Home> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding:const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             border: Border.all(color: color.p500),
             borderRadius: BorderRadius.circular(8),
@@ -319,7 +317,7 @@ class _HomeState extends State<Home> {
             style: fonts.sb.copyWith(color: color.white),
           ),
         ),
-        SizedBox(height: 2),
+        const SizedBox(height: 2),
         Text(
           label,
           style: fonts.xss.copyWith(color: color.g500),
@@ -333,7 +331,7 @@ class _HomeState extends State<Home> {
     return SizedBox(
       height: 48,
       child: Padding(
-        padding: EdgeInsets.only(right: 1, top: 8),
+        padding:const EdgeInsets.only(right: 1, top: 8),
         child: Text(
           " : ",
           style: fonts.sb.copyWith(color: color.white),
@@ -343,7 +341,7 @@ class _HomeState extends State<Home> {
   }
 
   // متغرات العداد + اظهار قسم افضل العروض
-  Duration bestOffersRemainingTime = Duration(
+  Duration bestOffersRemainingTime =const Duration(
       days: 10,
       hours: 1,
       minutes: 5,
@@ -352,11 +350,11 @@ class _HomeState extends State<Home> {
   bool showBestOffers = true;
   // بداء موقت صفحة افضل العروض
   void startTimerOfBestoffers() {
-    timer = Timer.periodic(Duration(seconds: 1), (t) {
+    timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (bestOffersRemainingTime.inSeconds > 0) {
         setState(() {
           bestOffersRemainingTime =
-              bestOffersRemainingTime - Duration(seconds: 1);
+              bestOffersRemainingTime - const Duration(seconds: 1);
         });
       } else {
         t.cancel();
@@ -531,7 +529,7 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 7),
+            padding: const EdgeInsets.only(right: 7),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -575,7 +573,7 @@ class _HomeState extends State<Home> {
                   items: sliderImages.map((item) {
                     return Container(
                       margin: const EdgeInsets.symmetric(horizontal: 6),
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: color.dark2,
                         borderRadius: BorderRadius.circular(12),
@@ -608,7 +606,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
 
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
 
@@ -625,7 +623,7 @@ class _HomeState extends State<Home> {
                         // title + counter
                         Container(
                           width: double.infinity,
-                          margin: EdgeInsets.only(bottom: 6),
+                          margin:const EdgeInsets.only(bottom: 6),
                           child: Stack(
                             children: [
                               Positioned(
@@ -639,7 +637,7 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: 12, left: 6),
+                                padding:const EdgeInsets.only(right: 12, left: 6),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -653,7 +651,7 @@ class _HomeState extends State<Home> {
                                           style: fonts.xsm
                                               .copyWith(color: color.g500),
                                         ),
-                                        SizedBox(height: 6),
+                                        const SizedBox(height: 6),
                                         Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
@@ -685,7 +683,7 @@ class _HomeState extends State<Home> {
                                                 .copyWith(color: color.white),
                                             textDirection: TextDirection.rtl,
                                           ),
-                                          SizedBox(height: 4),
+                                          const SizedBox(height: 4),
                                           const Padding(
                                             padding: EdgeInsets.only(right: 16),
                                             child: Text(
@@ -717,7 +715,7 @@ class _HomeState extends State<Home> {
                               itemBuilder: (context, index) {
                                 final product = BestOffers.toList()[index];
                                 return Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 1),
+                                  padding:const EdgeInsets.symmetric(horizontal: 1),
                                   child: ProductCard(
                                     id: product["id"],
                                     image: product["images"][0],
@@ -737,7 +735,7 @@ class _HomeState extends State<Home> {
                 // ========= الاكثر مبيعا ======
                 if (showBestSelling)
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
+                    padding:const EdgeInsets.symmetric(vertical: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -846,7 +844,7 @@ class _HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(right: 8, bottom: 8),
+                          padding:const EdgeInsets.only(right: 8, bottom: 8),
                           child: Text(
                             "المنتجات الجديده",
                             style: fonts.h6.copyWith(color: color.g100),
@@ -887,8 +885,8 @@ class _HomeState extends State<Home> {
                 Container(
                   width: double.infinity,
                   margin: inCart
-                      ? EdgeInsets.only(top: 6, bottom: 40)
-                      : EdgeInsets.symmetric(vertical: 6),
+                      ?const EdgeInsets.only(top: 6, bottom: 40)
+                      :const EdgeInsets.symmetric(vertical: 6),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -944,7 +942,7 @@ class _HomeState extends State<Home> {
                                 textDirection: TextDirection.rtl,
                                 child: GridView.builder(
                                     shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
+                                    physics:const NeverScrollableScrollPhysics(),
                                     itemCount: filteredProduct.length,
                                     gridDelegate:
                                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -998,7 +996,7 @@ class _HomeState extends State<Home> {
                 },
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 8,
                     vertical: 12,
                   ),
@@ -1018,12 +1016,12 @@ class _HomeState extends State<Home> {
                     children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.arrow_back_ios_new,
                             color: color.white,
                             size: 24,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                             "${totalPrice.toStringAsFixed(0)} \$",
                             style: fonts.lb.copyWith(
@@ -1052,7 +1050,7 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: color.dark2,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(48),
               bottomRight: Radius.circular(48)),
           boxShadow: [
@@ -1106,7 +1104,7 @@ class _HomeState extends State<Home> {
               }
             },
             items: [
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline),
                 activeIcon: Icon(Icons.person),
                 label: "حسابي",
@@ -1182,12 +1180,12 @@ class _HomeState extends State<Home> {
                 ),
                 label: "السلة",
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.receipt_long_outlined),
                 activeIcon: Icon(Icons.receipt_long),
                 label: "طلباتي",
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.home_outlined),
                 activeIcon: Icon(Icons.home),
                 label: "الرئيسية",

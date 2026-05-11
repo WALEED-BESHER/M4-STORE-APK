@@ -771,10 +771,10 @@ class _CartState extends State<Cart> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          // Navigator.pushNamed(
-                          //   context,
-                          //   "invoice",
-                          // );
+                          Navigator.pushNamed(
+                            context,
+                            "checkout",
+                          );
                         },
                         icon: Icon(
                           Icons.arrow_back_ios_new,
