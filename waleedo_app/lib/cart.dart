@@ -15,7 +15,7 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  //
+  // شكل الصندوق الخارجي
   Widget theBoxShape(Widget finish) {
     return Container(
       width: double.infinity,
@@ -405,6 +405,8 @@ class _CartState extends State<Cart> {
                                                         .text
                                                     : "إضافة منتج مخصص",
                                                 textAlign: TextAlign.right,
+                                                textDirection:
+                                                    TextDirection.rtl,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: fonts.mr.copyWith(
                                                   color: color.white,

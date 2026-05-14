@@ -1,6 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:waleedo_app/constants/colors.dart';
 import 'package:waleedo_app/constants/fonts.dart';
 import 'Design System/AppBar/primary_appbar.dart';
