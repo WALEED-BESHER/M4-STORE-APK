@@ -5,7 +5,8 @@ import 'Design System/AppBar/primary_appbar.dart';
 import 'Design System/Buttons/primary_button.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'cart_data.dart';
-
+import 'package:flutter/services.dart';
+import 'Design System/SnackBar/primary_snackbar.dart';
 class Checkout extends StatefulWidget {
   const Checkout({super.key});
 
@@ -97,7 +98,7 @@ Widget _Box1_sections(String btnText,String title , IconData icon , VoidCallback
   );
 }
 
-//
+// عنوان طرق الدفع
 Widget paymentTitle(String selectedPayment){
   return Container(
     width: double.infinity,
@@ -175,7 +176,7 @@ Widget paymentOption({
 }
 
 
-// العناوين حق الصناديق
+//  عنوان المنتجات المطلوبه
 Widget boxTitles({
   required bool show,
   required String title,
@@ -220,6 +221,7 @@ Widget boxTitles({
   );
 }
 
+// جدول المنتجات المطلوبه 
 Widget orderedProducts(String product, String price, String qty, String total,
     {bool? isHeader}) {
   isHeader = isHeader ?? false;
@@ -228,7 +230,7 @@ Widget orderedProducts(String product, String price, String qty, String total,
     decoration: BoxDecoration(
         border: Border(
             bottom: BorderSide(color: color.g400, width: isHeader ? 2 : 1)),
-        color: color.f_secondary),
+        color: isHeader ? color.f_secondary : Colors.transparent),
     child: Row(
       children: [
         Expanded(
@@ -276,10 +278,12 @@ Widget orderedProducts(String product, String price, String qty, String total,
     ),
   );
 }
-// الكلام داخل  الصندوق
-Widget boxBody(String title, String body, {TextStyle? st, bool? isprice}) {
+
+// السعر الاجمالي + سعر التوصيل + نسبه الخصم اذا وجد
+Widget boxBody(String title, String body, {TextStyle? st, bool? isprice, Color? discount }) {
   TextStyle trying = st ?? fonts.sb;
   bool ispriceing = isprice ?? false;
+  Color maincolor = discount ?? color.white;
   return Container(
     //===========  تاريخ الطلب  =========
     width: double.infinity,
@@ -291,11 +295,11 @@ Widget boxBody(String title, String body, {TextStyle? st, bool? isprice}) {
       children: [
         Text(
           body,
-          style: trying.copyWith(color: color.white),
+          style: trying.copyWith(color: maincolor),
         ),
         Text(
           title,
-          style: trying.copyWith(color: color.white),
+          style: trying.copyWith(color: maincolor),
         ),
       ],
     ),
@@ -304,25 +308,180 @@ Widget boxBody(String title, String body, {TextStyle? st, bool? isprice}) {
 
 
 class _CheckoutState extends State<Checkout> {
+  // افراغ السله
+  void clearCartDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: color.dark2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            "إفراغ السلة",
+            textAlign: TextAlign.center,
+            style: fonts.lb.copyWith(
+              color: color.white,
+            ),
+          ),
+          content: Text(
+            "هل انت متأكد انك تريد افراغ السلة؟",
+            textAlign: TextAlign.center,
+            style: fonts.sm.copyWith(
+              color: color.g200,
+            ),
+          ),
+          actions: [
+            // زر الغاء
+            Row(
+              children: [
+                Expanded(
+                  child: p_button(
+                    title: "نعم", 
+                    onPressed: (){
+                      setState(() {
+                        CartData.cartItems.clear();
+                      });
+                      p_snackbar.show(
+                        context: context,
+                        title: 'تم افراغ السله بنجاح',
+                        timer: Duration(seconds: 3),             
+                      );
+                      Navigator.pop(context);
+                      Navigator.pushReplacementNamed(context, "/");
+                    },
+                    fontType: fonts.sb,
+                  ),
+                ),
+                SizedBox(width: 4,),
+                Expanded(
+                  child: p_button(
+                    title: "الغاء", 
+                    onPressed: (){
+                      Navigator.pop(context);
+                    },
+                    fontType: fonts.sb,
+                    background: color.dark1,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // كنترولر الخاص بي القسيمه
+  TextEditingController couponController = TextEditingController(text: CartData.couponCode);
+  // اظهار ال input
+  bool showCouponInput = false;
+  // هل تم تفعيل القسيمه
+  bool couponApplied = CartData.couponApplied;
+  // رساله الخطاء
+  String couponError = "";
+  // قيمة الخصم
+  double discountAmount = CartData.discountAmount;
+
+  List<Map<String, dynamic>> coupons = [
+    // خصم نسبة
+    {
+      "code": "1234",
+      "type": "percent",
+      "value": 10,
+    },
+    // خصم مبلغ ثابت
+    {
+      "code": "5555",
+      "type": "fixed",
+      "value": 5,
+    },
+    {
+      "code": "9999",
+      "type": "fixed",
+      "value": 20,
+    },
+  ];
+
+  // حساب نسبه الخصم
+  void applyCoupon(double totalPrice){
+    String enteredCode = couponController.text.trim();
+    couponError = "";
+    final coupon = coupons.firstWhere(
+      (item) => item["code"] == enteredCode,
+      orElse: () => {},
+    );
+    // اذا القسيمه غير موجوده
+    if(coupon.isEmpty){
+      setState(() {
+        couponApplied = false;
+        discountAmount = 0;
+        couponError = "قسيمة التخفيض غير صحيحة";
+      });
+      return;
+    }
+    double discount = 0;
+    // خصم نسبة
+    if(coupon["type"] == "percent"){
+      discount = totalPrice * (coupon["value"] / 100);
+    }
+    // خصم مبلغ ثابت
+    else if(coupon["type"] == "fixed"){
+      discount = coupon["value"].toDouble();
+    }
+    // منع الخصم اذا اكبر من السعر
+    if(discount > totalPrice){
+      discount = totalPrice;
+    }
+    setState(() {
+      couponApplied = true;
+      discountAmount = discount;
+      couponError = "";
+      CartData.couponApplied = true;
+      CartData.discountAmount = discount;
+      CartData.couponCode = enteredCode;
+    });
+  }
+
+
+  // ================= ملاحظة الطلب =================
+  bool showOrderNoteInput = false;
+  bool orderNoteSaved = false;
+  TextEditingController orderNoteController = TextEditingController(text: CartData.orderNote);
+  FocusNode orderNoteFocus = FocusNode();
+
+
+
   // اختيار طريقه الدفع
-  String selectedPayment = "عند الاستلام";
+  String selectedPayment = CartData.selectedPayment;
 
-  TextEditingController networkName = TextEditingController();
-  TextEditingController transferNumber = TextEditingController();
+  // متغيرات اسم شبكه التحويل + رقم الحواله
+  TextEditingController networkName = TextEditingController(text: CartData.networkName);
+  TextEditingController transferNumber = TextEditingController(text: CartData.transferNumber);
 
+  // اظهار المنتجات و اخفائها
   bool showneededProducts = false;
+
+
+
+
   
+
   
   @override
   Widget build(BuildContext context) {
+    // حساب اجمالي سعر المنتجات متغير + داله
     double totalPrice = 0;
-
     for (var item in CartData.cartItems) {
       totalPrice +=item["newPrice"] * item["quantity"];
     }
-    double deliveryPrice = 5;
 
-    double grandTotal = totalPrice + deliveryPrice;
+    // سعر التوصيل
+    double deliveryPrice = 5;
+    // اجمالس سعر المنتجات مع التوصيل 
+    double grandTotal = totalPrice + deliveryPrice - discountAmount;
+
     return Scaffold(
       backgroundColor: color.dark1,
       appBar: p_appbar(
@@ -331,9 +490,9 @@ class _CheckoutState extends State<Checkout> {
         showLeading: true,
         showbtn1: false,
         showLeadingBorder: false,
-        btn2icon: Icons.refresh,
+        btn2icon: Icons.delete,
         btn2_Onprss: () {
-          setState(() {});
+          clearCartDialog();
         },
       ),
 
@@ -349,18 +508,187 @@ class _CheckoutState extends State<Checkout> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+
                     // قسيمة التخفيض
-                    _Box1_sections(
-                      "إضافة",
-                      "هل لديك قسيمة تخفيض؟",
-                      Icons.card_giftcard,
-                      (){}
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 4,
+                      ),
+                      child: Row(
+                        mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                        children: [
+                          // الزر
+                          InkWell(
+                            borderRadius: BorderRadius.circular(48),
+                            onTap: () {
+                              // اول ضغطه
+                              if(!showCouponInput){
+                                setState(() {
+                                  showCouponInput = true;
+                                });
+                              }
+                              // بعد ظهور input
+                              else if(!couponApplied){
+                                applyCoupon(totalPrice);
+                              }
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(4),
+                              child: Text(
+                                couponApplied
+                                ? "تم احتساب الخصم"
+                                : showCouponInput
+                                  ? "تأكيد"
+                                  : "إضافة",
+                                style: fonts.xss.copyWith(
+                                  color: couponApplied
+                                  ? Colors.green
+                                  : color.info,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+
+                          // المحتوى
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                // قبل ظهور input
+                                if(!showCouponInput)
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      "هل لديك قسيمة تخفيض؟",
+                                      style: fonts.sm.copyWith(
+                                        color: color.white,
+                                      ),
+                                    ),
+                                    SizedBox(width: 6),
+                                    Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: color.p500,
+                                        borderRadius: BorderRadius.circular(48),
+                                      ),
+                                      child: Icon(
+                                        Icons.card_giftcard,
+                                        color: color.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                
+                                // بعد ظهور input
+                                if(showCouponInput)
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    //الايقونة + المدخل حق الخصم
+                                    couponApplied 
+                                      ? SizedBox()
+                                      :Expanded( 
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                horizontal: 12,
+                                                vertical: 6,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: color.dark2,
+                                                borderRadius: BorderRadius.circular(14),
+                                                border: Border.all(
+                                                  color:
+                                                  couponError.isNotEmpty
+                                                    ? Colors.red
+                                                    : color.g500,
+                                                ),
+                                              ),
+                                              child: TextField(
+                                                controller: couponController,
+                                                // ارقام فقط
+                                                keyboardType: TextInputType.number,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter.digitsOnly,
+                                                ],
+                                                style:fonts.xsb.copyWith(
+                                                  color: color.white,
+                                                ),
+                                                textAlign: TextAlign.right,
+                                                decoration:InputDecoration(
+                                                  border: InputBorder.none,
+                                                  isCollapsed: true,
+                                                  hintText: "ادخل كود الخصم",
+                                                  hintStyle: fonts.xsb.copyWith(
+                                                    color: color.g400,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            // الخطأ
+                                            if(couponError.isNotEmpty)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 4,
+                                                right: 4,
+                                              ),
+                                              child: Text(
+                                                couponError,
+                                                style: fonts.xss.copyWith(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ), 
+                                          ],
+                                        ),
+                                      ),
+
+                                    // لقد حصلت على تخفيض
+                                    couponApplied 
+                                      ?Text(
+                                        "لقد حصلت  على تخفيض : ${discountAmount} \$ ",
+                                        style: fonts.xsm.copyWith(
+                                          color: color.success,
+                                        ),
+                                        textDirection: TextDirection.rtl,
+                                      )
+                                      :SizedBox(),
+                                    SizedBox(width: 6),
+
+                                    // الايقونه
+                                    Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: color.p500,
+                                        borderRadius: BorderRadius.circular(48),
+                                      ),
+                                      child: Icon(
+                                        Icons.card_giftcard,
+                                        color: color.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Divider(
                       color: color.g400,
                       height: 4,
                     ),
-                    // العنوان
+
+                    // العنوان المحدد
                     _Box1_sections(
                       "تغير",
                       "شارع بيروت جوار شركه العملاق للصرافة والتحويلات ",
@@ -372,14 +700,149 @@ class _CheckoutState extends State<Checkout> {
                       color: color.g400,
                       height: 4,
                     ),
-                    // ملاحظه الطلب
-                    _Box1_sections(
-                      "إضافة",
-                      "ملاحظة الطلب",
-                      Icons.note_alt_outlined,
-                      (){}
+                   
+                    // ================= ملاحظة الطلب =================
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 4,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // ================= الزر =================
+                          InkWell(
+                            borderRadius: BorderRadius.circular(48),
+                            onTap: () {
+                              // اول ضغطه = اظهار input
+                              if (!showOrderNoteInput &&!orderNoteSaved) {
+                                setState(() {
+                                  showOrderNoteInput = true;
+                                });
+                                Future.delayed(
+                                  Duration(milliseconds: 100),
+                                  () {
+                                    orderNoteFocus.requestFocus();
+                                  },
+                                );
+                              }
+                              // تاكيد
+                              else if (showOrderNoteInput && !orderNoteSaved) {
+                                setState(() {
+                                  showOrderNoteInput = false;
+                                  orderNoteSaved = true;
+                                  CartData.orderNote = orderNoteController.text.trim();
+                                });
+                              }
+                              // تعديل
+                              else if (orderNoteSaved) {
+                                setState(() {
+                                  showOrderNoteInput = true;
+                                  orderNoteSaved = false;
+                                });
+                                Future.delayed(
+                                  Duration(milliseconds: 100),
+                                  () {
+                                    orderNoteFocus.requestFocus();
+                                  },
+                                );
+                              }
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(4),
+                              child: Text(
+                                orderNoteSaved
+                                  ? "تعديل"
+                                  : showOrderNoteInput
+                                      ? "تأكيد"
+                                      : "إضافة",
+                                style: fonts.xss.copyWith(
+                                  color: color.info,
+                                  decoration:TextDecoration.underline,
+                                  decorationColor: color.info,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+
+                          // ================= المحتوى =================
+                          Expanded(
+                            child: Row(
+                              children: [
+                                // النص او input
+                                Expanded(
+                                  child: showOrderNoteInput
+                                    // ================= input =================
+                                    ? Container(
+                                        padding:EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: color.dark2,
+                                          borderRadius:BorderRadius.circular(14),
+                                          border: Border.all(
+                                            color: color.g500,
+                                          ),
+                                        ),
+                                        child: TextFormField(
+                                          controller: orderNoteController,
+                                          focusNode: orderNoteFocus,
+                                          style: fonts.xsb.copyWith(
+                                            color: color.white,
+                                          ),
+                                          cursorColor: color.p500,
+                                          textAlign: TextAlign.right,
+                                          textDirection:  TextDirection.rtl,
+                                          minLines: 1,
+                                          maxLines: 4,
+                                          decoration: InputDecoration(
+                                            isCollapsed: true,
+                                            hintText: "اكتب ملاحظة الطلب",
+                                            hintStyle: fonts.xsb.copyWith(
+                                              color: color.g400,
+                                            ),
+                                            border: InputBorder.none,
+                                          ),
+                                        ),
+                                      )
+                                      // ================= النص =================
+                                      : Text(
+                                          orderNoteController
+                                                  .text.isNotEmpty
+                                              ? orderNoteController.text
+                                              : "ملاحظة الطلب",
+                                          textAlign: TextAlign.right,
+                                          textDirection: TextDirection.rtl,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: fonts.sm.copyWith(
+                                            color: color.white,
+                                          ),
+                                        ),
+                                ),
+                                SizedBox(width: 6),
+                                // ================= الايقونة =================
+                                Container(
+                                  padding: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: color.p500,
+                                    borderRadius:
+                                        BorderRadius.circular(48),
+                                  ),
+                                  child: Icon(
+                                    Icons.note_alt_outlined,
+                                    color: color.white,
+                                    size: 24,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    
                   ],
                 ),
               ),
@@ -408,6 +871,7 @@ class _CheckoutState extends State<Checkout> {
                           onChanged: (value) {
                             setState(() {
                               selectedPayment = value!;
+                              CartData.selectedPayment =value;
                             });
                           },
                         ),
@@ -418,6 +882,7 @@ class _CheckoutState extends State<Checkout> {
                           onChanged: (value) {
                             setState(() {
                               selectedPayment = value!;
+                              CartData.selectedPayment =value;
                             });
                           },
                         ),      
@@ -428,6 +893,7 @@ class _CheckoutState extends State<Checkout> {
                           onChanged: (value) {
                             setState(() {
                               selectedPayment = value!;
+                              CartData.selectedPayment =value;
                             });
                           },
                         ),
@@ -500,6 +966,9 @@ class _CheckoutState extends State<Checkout> {
                                 style: fonts.xsb.copyWith(
                                   color: color.white,
                                 ),
+                                onChanged: (value){
+                                  CartData.networkName = value;
+                                },
                                 cursorColor: color.p500,
                                 textAlign: TextAlign.right,
                                 textDirection: TextDirection.rtl,
@@ -562,6 +1031,9 @@ class _CheckoutState extends State<Checkout> {
                                   }
                                   return null;
                                 },
+                                onChanged: (value){
+                                  CartData.transferNumber = value;
+                                },
                                 style: fonts.xsb.copyWith(
                                   color: color.white,
                                 ),
@@ -596,17 +1068,6 @@ class _CheckoutState extends State<Checkout> {
                         ],
                       ),
                     ), 
-
-                    Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.all(4),
-                      child: p_button(
-                        title: "إرسال", 
-                        onPressed: (){},
-                        fontType: fonts.sb,
-                        height: 25,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -620,14 +1081,15 @@ class _CheckoutState extends State<Checkout> {
                   children: [
                     // المنتجات المطلوبه
                     boxTitles(
-                        // المنتجات المطلوبه
-                        show: showneededProducts,
-                        title: "المنتجات المطلوبة",
-                        onTap: () {
-                          setState(() {
-                            showneededProducts = !showneededProducts;
-                          });
-                        }),
+                      // المنتجات المطلوبه
+                      show: showneededProducts,
+                      title: "المنتجات المطلوبة",
+                      onTap: () {
+                        setState(() {
+                          showneededProducts = !showneededProducts;
+                        });
+                      }
+                    ),
 
                     if (showneededProducts)
                       Container(
@@ -646,6 +1108,15 @@ class _CheckoutState extends State<Checkout> {
                                 total.toString(),
                               );
                             }).toList(),
+
+                            // اضافه منتج مخصص
+                            if(CartData.customProduct.isNotEmpty)
+                            orderedProducts(
+                              CartData.customProduct,
+                              "-",
+                              "-",
+                              "-",
+                            ),
                           ],
                         ),
                       ),
@@ -663,6 +1134,17 @@ class _CheckoutState extends State<Checkout> {
                           boxBody(
                               "سعر التوصيل", "${deliveryPrice.toStringAsFixed(0)} \$",
                               st: fonts.ss, isprice: true),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          if(couponApplied)
+                          boxBody(
+                            "الخصم",
+                            "- ${discountAmount.toStringAsFixed(0)} \$",
+                            st: fonts.xss,
+                            isprice: true,
+                            discount: color.p500
+                          ),
                         ],
                       ),
                     ),
@@ -692,12 +1174,36 @@ class _CheckoutState extends State<Checkout> {
                   ],
                 ),
               ),
-
-
-
-
             ],
           ),
+        ),
+      ),
+
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 4),
+        color: color.dark2,
+        child: Row(
+          children: [
+            Expanded(
+              child: p_button(
+                title: "تنفيذ الطلب", 
+                onPressed: (){},
+                fontType: fonts.mb,
+              ),
+            ),
+            SizedBox(width: 6,),
+            Expanded(
+              child: p_button(
+                title: "تعديل السله", 
+                onPressed: (){
+                  Navigator.pushNamed(context, "editcart");
+                }, 
+                background: color.dark1,
+                fontType: fonts.ms,
+              ),
+            ),
+          ],
         ),
       ),
 

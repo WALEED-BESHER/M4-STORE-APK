@@ -2,6 +2,24 @@ class CartData {
 
   static List<Map<String, dynamic>> cartItems = [];
 
+  // منتج مخصص
+  static String customProduct = "";
+
+  // القسيمة
+  static String couponCode = "";
+  static bool couponApplied = false;
+  static double discountAmount = 0;
+
+  // ملاحظة الطلب 
+  static String orderNote = "";
+
+  // الدفع
+  static String selectedPayment = "عند الاستلام";
+
+  // بيانات الحوالة 
+  static String networkName = "";
+  static String transferNumber = "";
+
   // إضافة أو تحديث منتج
   static void setProduct(Map<String, dynamic> product, int quantity) {
 
@@ -49,4 +67,5 @@ class CartData {
     );
 
   }
+
 }

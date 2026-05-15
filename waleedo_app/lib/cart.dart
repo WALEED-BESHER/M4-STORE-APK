@@ -304,6 +304,8 @@ class _CartState extends State<Cart> {
                                               setState(() {
                                                 showAddNewProduct = false;
                                                 customProductSaved = true;
+                                                // حفظ المنتج المخصص
+                                                CartData.customProduct = customProductController.text.trim();
                                               });
                                             },
                                             child: Text(

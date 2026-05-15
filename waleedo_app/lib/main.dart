@@ -8,6 +8,7 @@ import 'package:waleedo_app/cart.dart';
 import 'package:waleedo_app/otp.dart';
 import 'package:waleedo_app/search.dart';
 import 'checkout.dart';
+import 'edit_cart.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         "notifications":(context)=>Notifications(),
         "search":(context)=>SearchPage(),
         "checkout":(context)=>Checkout(),
+        "editcart":(context)=>editCart(),
       },
      
     );
