@@ -8,7 +8,6 @@ class CartData {
   // القسيمة
   static String couponCode = "";
   static bool couponApplied = false;
-  static double discountAmount = 0;
 
   // ملاحظة الطلب 
   static String orderNote = "";
@@ -59,13 +58,22 @@ class CartData {
     }
   }
 
-  // حذف
+  // حذف منتج من السله
   static void removeFromCart(int id) {
-
     cartItems.removeWhere(
       (item) => item["id"] == id,
     );
+  }
+  
+  static void removeAllCart(){
+    cartItems.clear();
+    customProduct = "";
+    couponCode = "";
+    couponApplied = false;
+    orderNote = "";
+    selectedPayment = "عند الاستلام";
+    networkName = "";
+    transferNumber = "";
 
   }
-
 }

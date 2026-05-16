@@ -42,11 +42,11 @@ class _CartState extends State<Cart> {
   // ================== المنتج المخصص ==================
   bool showCustomProductInput = false;
 
-  TextEditingController customProductController = TextEditingController();
+  TextEditingController customProductController = TextEditingController(text: CartData.customProduct);
 
   // اضهار اضافه منتج مخصص
   bool showAddNewProduct = false;
-  bool customProductSaved = false;
+  bool customProductSaved = CartData.customProduct.isNotEmpty;
   FocusNode customProductFocus = FocusNode();
 
   int quantity = 1;
@@ -302,6 +302,7 @@ class _CartState extends State<Cart> {
                                           child: InkWell(
                                             onTap: () {
                                               setState(() {
+                                                // اخفا ال input
                                                 showAddNewProduct = false;
                                                 customProductSaved = true;
                                                 // حفظ المنتج المخصص

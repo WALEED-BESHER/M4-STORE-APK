@@ -341,7 +341,7 @@ class _CheckoutState extends State<Checkout> {
                     title: "نعم", 
                     onPressed: (){
                       setState(() {
-                        CartData.cartItems.clear();
+                        CartData.removeAllCart();
                       });
                       p_snackbar.show(
                         context: context,
@@ -382,7 +382,7 @@ class _CheckoutState extends State<Checkout> {
   // رساله الخطاء
   String couponError = "";
   // قيمة الخصم
-  double discountAmount = CartData.discountAmount;
+  double discountAmount = 0;
 
   List<Map<String, dynamic>> coupons = [
     // خصم نسبة
@@ -439,9 +439,38 @@ class _CheckoutState extends State<Checkout> {
       discountAmount = discount;
       couponError = "";
       CartData.couponApplied = true;
-      CartData.discountAmount = discount;
       CartData.couponCode = enteredCode;
     });
+  }
+  // حساب نسبه الخصم اذا دخل المستخدم من جديد
+  double calculateDiscount(double totalPrice) {
+    // اذا لا يوجد قسيمة
+    if (!couponApplied) {
+      return 0;
+    }
+    // جلب القسيمة
+    final coupon = coupons.firstWhere(
+      (item) => item["code"] == couponController.text.trim(),
+      orElse: () => {},
+    );
+    // اذا غير موجودة
+    if (coupon.isEmpty) {
+      return 0;
+    }
+    double discount = 0;
+    // خصم نسبة
+    if (coupon["type"] == "percent") {
+      discount =totalPrice * (coupon["value"] / 100);
+    }
+    // خصم مبلغ ثابت
+    else if (coupon["type"] == "fixed") {
+      discount = coupon["value"].toDouble();
+    }
+    // منع الخصم اذا اكبر من السعر
+    if (discount > totalPrice) {
+      discount = totalPrice;
+    }
+    return discount;
   }
 
 
@@ -480,6 +509,7 @@ class _CheckoutState extends State<Checkout> {
     // سعر التوصيل
     double deliveryPrice = 5;
     // اجمالس سعر المنتجات مع التوصيل 
+    discountAmount = calculateDiscount(totalPrice);
     double grandTotal = totalPrice + deliveryPrice - discountAmount;
 
     return Scaffold(
@@ -559,7 +589,37 @@ class _CheckoutState extends State<Checkout> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 // قبل ظهور input
-                                if(!showCouponInput)
+                                // اذا الخصم متفعل
+                                if(couponApplied)
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        "لقد حصلت على تخفيض : ${discountAmount.toStringAsFixed(0)} \$",
+                                        textAlign: TextAlign.right,
+                                        style: fonts.xsm.copyWith(
+                                          color: color.success,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 6),
+                                    Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: color.p500,
+                                        borderRadius: BorderRadius.circular(48),
+                                      ),
+                                      child: Icon(
+                                        Icons.card_giftcard,
+                                        color: color.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                // اذا الخصم غير متفعل
+                                if(!couponApplied && !showCouponInput)
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -569,7 +629,9 @@ class _CheckoutState extends State<Checkout> {
                                         color: color.white,
                                       ),
                                     ),
+
                                     SizedBox(width: 6),
+
                                     Container(
                                       padding: EdgeInsets.all(8),
                                       decoration: BoxDecoration(
@@ -650,31 +712,7 @@ class _CheckoutState extends State<Checkout> {
                                           ],
                                         ),
                                       ),
-
-                                    // لقد حصلت على تخفيض
-                                    couponApplied 
-                                      ?Text(
-                                        "لقد حصلت  على تخفيض : ${discountAmount} \$ ",
-                                        style: fonts.xsm.copyWith(
-                                          color: color.success,
-                                        ),
-                                        textDirection: TextDirection.rtl,
-                                      )
-                                      :SizedBox(),
-                                    SizedBox(width: 6),
-
-                                    // الايقونه
-                                    Container(
-                                      padding: EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: color.p500,
-                                        borderRadius: BorderRadius.circular(48),
-                                      ),
-                                      child: Icon(
-                                        Icons.card_giftcard,
-                                        color: color.white,
-                                      ),
-                                    ),
+                                                  
                                   ],
                                 ),
                               ],
@@ -1197,7 +1235,7 @@ class _CheckoutState extends State<Checkout> {
               child: p_button(
                 title: "تعديل السله", 
                 onPressed: (){
-                  Navigator.pushNamed(context, "editcart");
+                  Navigator.pushReplacementNamed(context, "editcart");
                 }, 
                 background: color.dark1,
                 fontType: fonts.ms,
