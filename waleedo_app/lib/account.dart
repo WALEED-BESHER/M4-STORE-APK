@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'Design System/Buttons/primary_button.dart';
 import 'constants/colors.dart';
 import 'constants/fonts.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'cart_data.dart';
+import 'Design System/BottamNavigationBar/buttomnavigationbar.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 class Account extends StatefulWidget {
   const Account({super.key});
@@ -9,7 +12,7 @@ class Account extends StatefulWidget {
   @override
   State<Account> createState() => _AccountState();
 }
-
+//
 Widget accountItems(
   String title,
   IconData icon,
@@ -155,18 +158,113 @@ Widget accountItems(
             ],
           ),
         ),
-
-
-
-
       ],
     ),
   );
 }
 
+
+void showLogoutSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (context) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: color.dark2,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(30),
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // الخط الصغير فوق
+              Container(
+                width: 50,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              const SizedBox(height: 8),
+              // عنوان Logout
+              Text(
+                "Logout",
+                style: fonts.h4.copyWith(color: color.error),
+              ),
+              const SizedBox(height: 8),
+              // الخط الفاصل
+              Divider(
+                height: 2,
+                color: Colors.white10,
+              ),
+              const SizedBox(height: 12),
+              // النص
+              Text(
+                "هل انت متأكد انك تريد تسجيل خروج",
+                textAlign: TextAlign.center,
+                style: fonts.lm.copyWith(color: color.white),
+              ),
+              const SizedBox(height: 20),
+              // الأزرار
+              Row(
+                children: [
+                  // زر الغاء
+                  Expanded(
+                    child:  p_button(
+                      title: "الغاء", 
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                      height: 55,
+                      background: color.dark1,
+                      fontType: fonts.ms,
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  // زر نعم
+                  Expanded(
+                    child:  p_button(
+                      title: "نعم", 
+                      onPressed: (){
+                        
+                      },
+                      height: 55,
+                      background: color.error,
+                      fontType: fonts.ms,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
+
 class _AccountState extends State<Account> {
   bool showSecuirity = false;
   bool showSupport = false;
+
+
+  int get cartSize {
+    int cartCount = 0;
+
+    for (var item in CartData.cartItems) {
+      cartCount += item["quantity"] as int;
+    }
+
+    return cartCount;
+  }
   
 
   @override
@@ -312,7 +410,9 @@ class _AccountState extends State<Account> {
               accountItems(
                 "تعديل الملف الشخصي",
                 Icons.person_outline,
-                (){},
+                (){
+                  Navigator.pushNamed(context, "profile");
+                },
               ),
               // المفضلة
               accountItems(
@@ -369,17 +469,17 @@ class _AccountState extends State<Account> {
                 title1: "خدمه العملاء",
                 icon1: Icons.support_agent_outlined,
                 link1: () async {
-                  final Uri whatsappUri = Uri.parse(
-                    "https://wa.me/967770411921",
-                  );
-                  if (await canLaunchUrl(whatsappUri)) {
-                    await launchUrl(
-                      whatsappUri,
-                      mode: LaunchMode.externalApplication,
-                    );
-                  } else {
-                    print("واتساب غير متوفر");
-                  }
+                  // final Uri whatsappUri = Uri.parse(
+                  //   "https://wa.me/967770411921",
+                  // );
+                  // if (await canLaunchUrl(whatsappUri)) {
+                  //   await launchUrl(
+                  //     whatsappUri,
+                  //     mode: LaunchMode.externalApplication,
+                  //   );
+                  // } else {
+                  //   print("واتساب غير متوفر");
+                  // }
                 },
                 show2: true,
                 title2: "مواقع التواصل",
@@ -389,11 +489,11 @@ class _AccountState extends State<Account> {
                 title3: "770411921",
                 icon3: Icons.phone_outlined ,
                 link3: () async{
-                  final Uri phoneUri = Uri(
-                    scheme: 'tel',
-                    path: '770411921',
-                  );
-                  await launchUrl(phoneUri);
+                  // final Uri phoneUri = Uri(
+                  //   scheme: 'tel',
+                  //   path: '770411921',
+                  // );
+                  // await launchUrl(phoneUri);
                 },
               ),
               // الاسئله الشاىعه
@@ -408,11 +508,18 @@ class _AccountState extends State<Account> {
                 Icons.info_outline,
                 (){},
               ),
+              accountItems(
+                "ادمن",
+                Icons.admin_panel_settings_outlined,
+                (){},
+              ),
               // تسجيل خروج
               accountItems(
                 "تسجيل خروج",
                 Icons.logout_outlined,
-                (){},
+                (){
+                  showLogoutSheet(context);
+                },
                 logout: true
               ),
             ],
@@ -420,7 +527,7 @@ class _AccountState extends State<Account> {
         ),
       ),
 
-
+      bottomNavigationBar: CustomBottomNavbar(currentIndex: 0, cartSize: cartSize.toDouble(),),
     );
   }
 }

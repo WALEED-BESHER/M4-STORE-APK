@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:waleedo_app/account.dart';
-import 'package:waleedo_app/home.dart';
-import 'package:waleedo_app/login.dart';
-import 'package:waleedo_app/notification.dart';
-import 'package:waleedo_app/orders.dart';
-import 'package:waleedo_app/cart.dart';
-import 'package:waleedo_app/otp.dart';
-import 'package:waleedo_app/search.dart';
+import 'account.dart';
+import 'login.dart';
+import 'notification.dart';
+import 'orders.dart';
+import 'cart.dart';
+import 'otp.dart';
+import 'search.dart';
 import 'checkout.dart';
 import 'edit_cart.dart';
+import 'Home/home.dart';
+import 'profile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         "search":(context)=>SearchPage(),
         "checkout":(context)=>Checkout(),
         "editcart":(context)=>editCart(),
+        "profile":(context)=>Profile(),
       },
      
     );

@@ -3,11 +3,11 @@ import 'package:waleedo_app/account.dart';
 import 'package:waleedo_app/cart.dart';
 import 'package:waleedo_app/constants/colors.dart';
 import 'package:waleedo_app/constants/fonts.dart';
-import 'package:waleedo_app/home.dart';
 import 'package:waleedo_app/order_details.dart';
 import 'Design System/AppBar/primary_appbar.dart';
 import 'package:flutter/services.dart';
 import 'cart_data.dart';
+import 'Design System/BottamNavigationBar/buttomnavigationbar.dart';
 
 class Orders extends StatefulWidget {
   const Orders({super.key});
@@ -540,146 +540,8 @@ class _OrdersState extends State<Orders> {
 
       //bottom navigation bar
       //=============== الازرار السفليه تبداء هنا ======
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: color.dark2,
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(48),
-              bottomRight: Radius.circular(48)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.4),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BottomNavigationBar(
-            currentIndex: footerCurrentIndex,
-            backgroundColor: color.dark2,
-            selectedItemColor: color.p400,
-            unselectedItemColor: color.g400,
-            type: BottomNavigationBarType.fixed,
-            showSelectedLabels: true,
-            showUnselectedLabels: true,
-            onTap: (index) {
-              if (index == 0) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Account()),
-                );
-              }
-              if (index == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Cart()),
-                );
-              }
-
-              if (index == 2) {
-                return;
-              }
-
-              if (index == 3) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Home()),
-                );
-              }
-            },
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person_outline),
-                activeIcon: Icon(Icons.person),
-                label: "حسابي",
-              ),
-              BottomNavigationBarItem(
-                icon: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const Icon(Icons.shopping_cart_outlined),
-                    if (cartSize > 0)
-                      Positioned(
-                        right: -6,
-                        top: -6,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: color.p500,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: color.dark2,
-                              width: 1.5,
-                            ),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 18,
-                            minHeight: 18,
-                          ),
-                          child: Center(
-                            child: Text(
-                              "${cartSize.toStringAsFixed(0)}",
-                              style: fonts.xsb.copyWith(
-                                color: color.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                activeIcon: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const Icon(Icons.shopping_cart),
-                    if (cartSize > 0)
-                      Positioned(
-                        right: -6,
-                        top: -6,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: color.p500,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: color.dark2,
-                              width: 1.5,
-                            ),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 18,
-                            minHeight: 18,
-                          ),
-                          child: Center(
-                            child: Text(
-                              "${cartSize.toStringAsFixed(0)}",
-                              style: fonts.xsb.copyWith(
-                                color: color.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                label: "السلة",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.receipt_long_outlined),
-                activeIcon: Icon(Icons.receipt_long),
-                label: "طلباتي",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
-                activeIcon: Icon(Icons.home),
-                label: "الرئيسية",
-              ),
-            ],
-          ),
-        ),
-      ),
+      bottomNavigationBar: CustomBottomNavbar(currentIndex: 2, cartSize: cartSize.toDouble(),),
+      
     );
   }
 }
