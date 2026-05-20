@@ -4,7 +4,6 @@ import 'login.dart';
 import 'notification.dart';
 import 'orders.dart';
 import 'cart.dart';
-import 'otp.dart';
 import 'search.dart';
 import 'checkout.dart';
 import 'edit_cart.dart';
@@ -29,12 +28,11 @@ class MyApp extends StatelessWidget {
 
 
       routes: {
-        "login":(context)=>Login(),
-        "/":(context)=>Home(),
+        "/":(context)=>Login(),
+        "home":(context)=>Home(),
         "cart":(context)=>Cart(),
         "orders":(context)=>Orders(),
         "account":(context)=>Account(),
-        "otp":(context)=>OtpPage(),
         "notifications":(context)=>Notifications(),
         "search":(context)=>SearchPage(),
         "checkout":(context)=>Checkout(),

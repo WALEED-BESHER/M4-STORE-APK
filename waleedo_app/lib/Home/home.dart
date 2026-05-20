@@ -32,10 +32,12 @@ class _HomeState extends State<Home> {
   
   //الحصول على اسم المستخدم براس الصفحه
   String username = "";
+  String user_id = "";
   Future<void> getUserName() async {
     SharedPreferences s = await SharedPreferences.getInstance();
     setState(() {
       username = s.getString("first_name") ?? "";
+      user_id = s.getString("user_id")!;
     });
   }
 

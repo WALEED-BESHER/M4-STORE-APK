@@ -5,9 +5,18 @@ import 'Design System/Buttons/primary_button.dart';
 import 'constants/colors.dart';
 import 'constants/fonts.dart';
 import 'Design System/AppBar/primary_appbar.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'constants/api.dart';
+import 'Design System/SnackBar/primary_snackbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpPage extends StatefulWidget {
-  const OtpPage({super.key});
+  final String email;
+  const OtpPage({
+    super.key,
+    required this.email,
+  });
 
   @override
   State<OtpPage> createState() => _OtpPageState();
@@ -24,43 +33,23 @@ class _OtpPageState extends State<OtpPage> {
   final f3 = FocusNode();
   final f4 = FocusNode();
 
+  
+
   Timer? timer;
   int seconds = 55; // غيرها إلى 179 = 2:59 أو 659 = 10:59
-  int resendCount = 0;
+  
 
   @override
   void initState() {
     super.initState();
-    startTimer();
+    sendOtp();
   }
 
-  void resendCode() {
+  void resendCode() async {
     // المهمة التي ستقولها لي لاحقاً ضعها هنا
 
-    setState(() {
-      resendCount++;
-
-      if (resendCount == 1) {
-        seconds = 179; // 2:59
-      }
-      else if (resendCount == 2) {
-        seconds = 649; // 10:59
-      }
-      else if (resendCount == 3) {
-        seconds = 3540; // 00:59:59
-      }
-      else if (resendCount == 4) {
-        seconds = 17700; // 04:59:59
-      }
-      else if (resendCount == 4) {
-        seconds = 42480; // 11:59:59
-      }
-      else {
-        seconds = 84960; // 1day
-      }
-    });
-
-    startTimer();
+    await sendOtp();
+    
   }
 
   void startTimer() {
@@ -137,15 +126,77 @@ class _OtpPageState extends State<OtpPage> {
     );
   }
 
-  void verifyOtp() {
-    String otp = c1.text + c2.text + c3.text + c4.text;
+  Future<void> verifyOtp() async {
+    String otp =
+        c1.text +
+        c2.text +
+        c3.text +
+        c4.text;
+    if (otp.length != 4) {
+      return;
+    }
+    var url = Uri.parse(Api.verifyOtp);
+    var response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: jsonEncode({
+        "email": widget.email,
+        "code": otp
+      }),
+    );
+    var data = jsonDecode(response.body);
+    if (data["status"] == "success") {
+      p_snackbar.show(
+        context: context,
+        title: 'تم تسجيل الدخول بنجاح',
+        timer: Duration(seconds: 3),
+      );
 
-    if (otp.length == 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Code: $otp")),
+      Navigator.pushReplacementNamed(
+        context,
+        "home",
+      );
+    } else {
+      p_snackbar.show(
+        context: context,
+        title: data["message"],
+        timer: Duration(seconds: 3),
+        background: color.error,
+        icon: Icons.cancel,
       );
     }
   }
+
+  Future<void> sendOtp() async {
+
+    var url = Uri.parse(Api.sendOtp);
+
+    var response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: jsonEncode({
+        "email": widget.email
+      }),
+    );
+
+    var data = jsonDecode(response.body);
+
+    setState(() {
+
+      seconds = data["seconds"].toInt();
+
+    });// betobisher@gmail.com Alwaleed770411921$
+
+    startTimer();
+  }
+
+    
 
   @override
   void dispose() {
@@ -188,10 +239,11 @@ class _OtpPageState extends State<OtpPage> {
           children: [
             const SizedBox(height: 50),
             Text(
-              "تم إرسال الكود إلى waleedobisher7@gmail.com",
+              "تم إرسال الكود إلى ${widget.email}",
               style: fonts.ms.copyWith(color: color.white),
               textDirection: TextDirection.rtl,
             ),
+          
             const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -221,7 +273,7 @@ class _OtpPageState extends State<OtpPage> {
             ),
             const SizedBox(height: 30),
 
-            Container(
+            Container(// betobisher@gmail.com Alwaleed770411921$
               height: 40,
               child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -261,6 +313,19 @@ class _OtpPageState extends State<OtpPage> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height * 0.1,
+        padding: EdgeInsets.all(8),
+        color: color.dark2,
+        child: Center(
+              child: Text(
+                "ملاحظه: يرجى التحقق من قسم الرسائل غير المرغوب بها (Spam) إذا لم يصلك رمز التحقق.",
+                style: fonts.xsm.copyWith(color: color.white),
+                textDirection: TextDirection.rtl,
+              ),
+            ),
       ),
     );
   }

@@ -5,6 +5,11 @@ import 'Design System/Inputs/primary_input.dart';
 import 'Design System/AppBar/primary_appbar.dart';
 import 'Design System/Buttons/primary_button.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'constants/api.dart';
+import 'Design System/SnackBar/primary_snackbar.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -16,11 +21,93 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
 
   GlobalKey<FormState> formdata = GlobalKey<FormState>();
-  TextEditingController First_Name = TextEditingController(text: "الوليد");
-  TextEditingController Last_Name = TextEditingController(text: "بشر");
-  TextEditingController Email = TextEditingController(text: "betobishr7@gmail.com");
-  TextEditingController Phone_num = TextEditingController(text: "+967770411921");
+  TextEditingController First_Name = TextEditingController();
+  TextEditingController Last_Name = TextEditingController();
+  TextEditingController Email = TextEditingController();
+  TextEditingController Phone_num = TextEditingController();
   TextEditingController Phone_num2 = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getProfile();
+  }
+
+  Future<void> getProfile() async {
+    SharedPreferences s = await SharedPreferences.getInstance();
+    String? token = s.getString("token");
+    var response = await http.get(
+      Uri.parse(Api.profile),
+      headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token"
+      },
+    );
+    var data = jsonDecode(response.body);
+    if (data["status"] == "success") {
+      var user = data["user"];
+      setState(() {
+        First_Name.text =
+            user["first_name"] ?? "";
+
+        Last_Name.text =
+            user["last_name"] ?? "";
+
+        Email.text =
+            user["email"] ?? "";
+
+        Phone_num.text =
+            user["phone_number"] ?? "";
+
+        Phone_num2.text =
+            user["phone_number2"] ?? "";
+
+      });
+    }
+  }
+
+  Future<void> updateProfile() async {
+    SharedPreferences s =await SharedPreferences.getInstance();
+    String? token = s.getString("token");
+    var response = await http.post(
+      Uri.parse(Api.updateProfile),
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      },
+      body: jsonEncode({
+        "first_name":
+            First_Name.text,
+        "last_name":
+            Last_Name.text,
+        "email":
+            Email.text,
+        "phone_number":
+            Phone_num.text,
+        "phone_number2":
+            Phone_num2.text,
+      }),
+    );
+    var data = jsonDecode(response.body);
+    if (data["status"] == "success") {
+      p_snackbar.show(
+        context: context,
+        title: data["message"],
+        timer: Duration(seconds: 3),
+      );
+      Navigator.pop(context);
+    } else {
+      p_snackbar.show(
+        context: context,
+        title: "فشل التعديل",
+        background: color.error,
+        icon: Icons.cancel,
+        timer: Duration(seconds: 3),
+      );
+    }
+  }
 
 
 
@@ -293,9 +380,9 @@ class _ProfileState extends State<Profile> {
 
                       p_button(
                         title: "تعديل",
-                        onPressed: (){
+                        onPressed: () async{
                           if (formdata.currentState!.validate()){
-
+                            await updateProfile();
                           }
                         },
                         height: 40,

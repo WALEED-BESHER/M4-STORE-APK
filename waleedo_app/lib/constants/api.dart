@@ -8,4 +8,8 @@ class Api {
   // Endpoints
   static const String login = "$baseURL/login";
   static const String signup = "$baseURL/signup";
+  static const String sendOtp = "$baseURL/sendOtp";
+  static const String verifyOtp = "$baseURL/verifyOtp";
+  static const String profile = "$baseURL/profile";
+  static const String updateProfile = "$baseURL/update-profile";
 }

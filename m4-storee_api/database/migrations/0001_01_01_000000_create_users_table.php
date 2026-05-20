@@ -17,7 +17,11 @@ return new class extends Migration
             $table->string('last_name',50);
             $table->string('email',100)->unique();
             $table->string('phone_number',20)->unique();
+            $table->string('phone_number2',20)->nullable();
             $table->string('password',255);
+            $table->boolean('admin')->default(0);
+            $table->boolean('verification')->default(0);
+            $table->boolean('activation')->default(1);
             $table->timestamp('created_at')->useCurrent();
         });
 

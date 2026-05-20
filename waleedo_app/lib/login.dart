@@ -11,6 +11,7 @@ import 'Design System/Inputs/primary_input.dart';
 import 'Design System/Buttons/primary_button.dart';
 import 'Design System/SnackBar/primary_snackbar.dart';
 import 'constants/api.dart';
+import 'otp.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -182,28 +183,114 @@ class _LoginState extends State<Login> {
             .timeout(const Duration(seconds: 15));
 
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          var data = jsonDecode(response.body);
-          String token = data["token"];
-          String f_name = data["users"]["first_name"];
 
-          SharedPreferences s = await SharedPreferences.getInstance();
-          await s.setString("token", token);
-          await s.setString("first_name", f_name);
+          var data = jsonDecode(response.body);
 
           if (data["status"] == "success") {
-            p_snackbar.show(
-              context: context,
-              title: 'تم تسجيل الدخول بنجاح',
-              timer: Duration(seconds: 3),
-            );
+
+            String token = data["token"];
+            String f_name = data["users"]["first_name"];
+            String user_id = data["users"]["id"].toString();
+
+            int verification = data["verification"];
+            int activation = data["activation"];
+
+            SharedPreferences s = await SharedPreferences.getInstance();
+
+            await s.setString("token", token);
+            await s.setString("first_name", f_name);
+            await s.setString("user_id", user_id);
+
+            // ===============================
+            // فحص verification
+            // ===============================
+
+            if (verification == 0) {
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OtpPage(
+                    email: email,
+                  ),
+                ),
+              );
+
+              // Navigator.of(context).pushNamed("otp");
+
+              p_snackbar.show(
+                context: context,
+                title: "عليك اولا اكمال التحقق من حسابك",
+                timer: Duration(seconds: 5),
+                background: color.error,
+                showIcon: false
+              );
+            }
+
+            // ===============================
+            // فحص activation
+            // ===============================
+
+            else {
+
+              if (activation == 0) {
+
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      backgroundColor: color.dark1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      title: Text(
+                        "تم حظر الحساب",
+                        style: fonts.sb.copyWith(color: color.white),
+                        textAlign: TextAlign.center,
+                      ),
+                      content: Text(
+                        "حسابك مبند، يرجى التواصل مع الإدارة",
+                        style: fonts.ss.copyWith(color: color.g200),
+                        textAlign: TextAlign.center,
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "حسناً",
+                            style: fonts.mr.copyWith(color: color.p500),
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                );
+
+              } else {
+                p_snackbar.show(
+                  context: context,
+                  title: 'تم تسجيل الدخول بنجاح',
+                  timer: Duration(seconds: 3),
+                );
+
+                Navigator.of(context).pushReplacementNamed("home");
+
+              }
+
+            }
+
+            // تفريغ الحقول
             void clear() {
               login_Email.clear();
               login_Password.clear();
             }
 
-            Navigator.of(context).pushReplacementNamed("home");
             clear();
+
           } else {
+
             p_snackbar.show(
               context: context,
               title: 'البريد الإلكتروني أو كلمة المرور خاطئة',
@@ -211,8 +298,12 @@ class _LoginState extends State<Login> {
               background: color.error,
               icon: Icons.cancel,
             );
+
           }
-        } else {
+
+        }
+          
+        else {
           throw Exception("Server Error");
         }
       } catch (e) {

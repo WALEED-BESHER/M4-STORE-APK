@@ -14,3 +14,11 @@ Route::middleware('auth:sanctum')->get('profile', function (Request $r) {
     return $r->user();
 });
 Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
+Route::post("/sendOtp",[AuthController::class,"sendOtp"]);
+
+Route::post("/verifyOtp",[AuthController::class,"verifyOtp"]);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::post('/update-profile', [AuthController::class, 'updateProfile']);
+});
