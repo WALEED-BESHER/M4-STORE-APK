@@ -64,7 +64,8 @@ class color{
   static const LinearGradient gYellow = LinearGradient(begin: Alignment.topLeft,end: Alignment.bottomRight,colors: [ Color(0xFFFFC107), Color(0xFFFFE082),],);
   static const LinearGradient gMix = LinearGradient(begin: Alignment.topLeft,end: Alignment.bottomRight,colors: [ Color(0xFF181A20),Color(0xFFE53935),],);
   static const LinearGradient gDark = LinearGradient(begin: Alignment.topLeft,  end: Alignment.bottomRight,  colors: [ Color(0xFF181A20), Color(0xFF35383F), ],);
-  static const LinearGradient gBlack = LinearGradient(begin: Alignment.centerRight,end: Alignment.centerLeft,colors: [ Color(0xFF000000), Color(0xFF000000), ],);
+  static const LinearGradient gBlack = LinearGradient(
+  begin: Alignment.bottomCenter,end: Alignment.topCenter,colors: [Color(0xFF000000),Color(0x00000000),],stops: [0.0,1.0,],);
   static const LinearGradient gSoftRed = LinearGradient( begin: Alignment.topLeft,end: Alignment.bottomRight,  colors: [  Color(0xFFFFCDD2),Color(0xFFE53935),],);
 
 

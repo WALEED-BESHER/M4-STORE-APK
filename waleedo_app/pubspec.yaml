@@ -43,6 +43,7 @@ dependencies:
   dotted_border: ^2.1.0
   dropdown_button2: ^2.3.9
   url_launcher: ^6.3.1
+  flutter_spinkit: ^5.1.0
 
 dev_dependencies:
   flutter_test:

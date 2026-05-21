@@ -9,6 +9,8 @@ import 'checkout.dart';
 import 'edit_cart.dart';
 import 'Home/home.dart';
 import 'profile.dart';
+import 'splash.dart';
+import 'Welcome.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
 
 
       routes: {
-        "/":(context)=>Login(),
+        "login":(context)=>Login(),
         "home":(context)=>Home(),
         "cart":(context)=>Cart(),
         "orders":(context)=>Orders(),
@@ -38,6 +40,8 @@ class MyApp extends StatelessWidget {
         "checkout":(context)=>Checkout(),
         "editcart":(context)=>editCart(),
         "profile":(context)=>Profile(),
+        "/":(context)=>Splash(),
+        "welcome":(context)=>Welcome(),
       },
      
     );

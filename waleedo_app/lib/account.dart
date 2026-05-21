@@ -4,6 +4,10 @@ import 'constants/colors.dart';
 import 'constants/fonts.dart';
 import 'cart_data.dart';
 import 'Design System/BottamNavigationBar/buttomnavigationbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'constants/api.dart';
+import 'package:http/http.dart' as http;
+import 'Design System/SnackBar/primary_snackbar.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 class Account extends StatefulWidget {
@@ -164,90 +168,6 @@ Widget accountItems(
 }
 
 
-void showLogoutSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    builder: (context) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: color.dark2,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(30),
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // الخط الصغير فوق
-              Container(
-                width: 50,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.white24,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              const SizedBox(height: 8),
-              // عنوان Logout
-              Text(
-                "Logout",
-                style: fonts.h4.copyWith(color: color.error),
-              ),
-              const SizedBox(height: 8),
-              // الخط الفاصل
-              Divider(
-                height: 2,
-                color: Colors.white10,
-              ),
-              const SizedBox(height: 12),
-              // النص
-              Text(
-                "هل انت متأكد انك تريد تسجيل خروج",
-                textAlign: TextAlign.center,
-                style: fonts.lm.copyWith(color: color.white),
-              ),
-              const SizedBox(height: 20),
-              // الأزرار
-              Row(
-                children: [
-                  // زر الغاء
-                  Expanded(
-                    child:  p_button(
-                      title: "الغاء", 
-                      onPressed: (){
-                        Navigator.pop(context);
-                      },
-                      height: 55,
-                      background: color.dark1,
-                      fontType: fonts.ms,
-                    ),
-                  ),
-                  const SizedBox(width: 15),
-                  // زر نعم
-                  Expanded(
-                    child:  p_button(
-                      title: "نعم", 
-                      onPressed: (){
-                        
-                      },
-                      height: 55,
-                      background: color.error,
-                      fontType: fonts.ms,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
 
 
 
@@ -265,7 +185,128 @@ class _AccountState extends State<Account> {
 
     return cartCount;
   }
+
+
+
   
+  void showLogoutSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: color.dark2,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(30),
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // الخط الصغير فوق
+                Container(
+                  width: 50,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // عنوان Logout
+                Text(
+                  "Logout",
+                  style: fonts.h4.copyWith(color: color.error),
+                ),
+                const SizedBox(height: 8),
+                // الخط الفاصل
+                Divider(
+                  height: 2,
+                  color: Colors.white10,
+                ),
+                const SizedBox(height: 12),
+                // النص
+                Text(
+                  "هل انت متأكد انك تريد تسجيل خروج",
+                  textAlign: TextAlign.center,
+                  style: fonts.lm.copyWith(color: color.white),
+                ),
+                const SizedBox(height: 20),
+                // الأزرار
+                Row(
+                  children: [
+                    // زر الغاء
+                    Expanded(
+                      child:  p_button(
+                        title: "الغاء", 
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                        height: 55,
+                        background: color.dark1,
+                        fontType: fonts.ms,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    // زر نعم
+                    Expanded(
+                      child:  p_button(
+                        title: "نعم", 
+                        onPressed: logout,
+                        height: 55,
+                        background: color.error,
+                        fontType: fonts.ms,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+
+  Future<void> logout() async {
+    try {
+      SharedPreferences s = await SharedPreferences.getInstance();
+      String? token = s.getString("token");
+      var url = Uri.parse(Api.logout);
+      var response = await http.post(
+        url,
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        await s.remove("token");
+        await s.remove("first_name");
+        await s.remove("user_id");
+        
+        p_snackbar.show(
+          context: context,
+          title: "تم تسجيل خروجك بنجاح",
+          timer: Duration(seconds: 3),
+        );
+        // الانتقال الى login
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          "login",
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+    
 
   @override
   Widget build(BuildContext context) {
