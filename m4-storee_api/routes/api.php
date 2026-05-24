@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\ProductController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -22,3 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
 });
+
+Route::get('/products',
+    [ProductController::class,'index']
+);

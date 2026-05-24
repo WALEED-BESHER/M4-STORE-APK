@@ -349,7 +349,7 @@ class _CheckoutState extends State<Checkout> {
                         timer: Duration(seconds: 3),             
                       );
                       Navigator.pop(context);
-                      Navigator.pushReplacementNamed(context, "/");
+                      Navigator.pushReplacementNamed(context, "home");
                     },
                     fontType: fonts.sb,
                   ),

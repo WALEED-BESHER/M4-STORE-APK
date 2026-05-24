@@ -114,7 +114,7 @@ class _BestOffersSectionState extends State<BestOffersSection> {
     // المنتجات التي عليها عروض
     final bestOffers = widget.products
         .where((product) =>
-            product["bestOffer"] == true)
+            product["bestOffer"] == 1)
         .toList();
 
     if (!showBestOffers) {

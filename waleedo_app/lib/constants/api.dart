@@ -13,4 +13,6 @@ class Api {
   static const String verifyOtp = "$baseURL/verifyOtp";
   static const String profile = "$baseURL/profile";
   static const String updateProfile = "$baseURL/update-profile";
+  static const String product = "$baseURL/products";
+
 }

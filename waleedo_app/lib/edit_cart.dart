@@ -59,7 +59,7 @@ class _editCartState extends State<editCart> {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(50),
-                            child: Image.asset(
+                            child: Image.network(
                               item["images"][0],
                               fit: BoxFit.cover,
                             ),

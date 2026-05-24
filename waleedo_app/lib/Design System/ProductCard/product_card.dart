@@ -92,7 +92,7 @@ class _ProductCardState extends State<ProductCard> {
                   // ===== الصورة =====
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
+                    child: Image.network(
                       widget.image,
                       width: double.infinity,
                       height: 135,

@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'constants/colors.dart';
 import 'constants/fonts.dart';
 import 'Design System/AppBar/primary_appbar.dart';
-import 'Design System/Inputs/primary_input.dart';
+import 'Design System/BottamNavigationBar/buttomnavigationbar.dart';
 import 'cart_data.dart';
 
 class Cart extends StatefulWidget {
@@ -14,6 +14,15 @@ class Cart extends StatefulWidget {
   State<Cart> createState() => _CartState();
 }
 
+ int get cartSize {
+    int cartCount = 0;
+
+    for (var item in CartData.cartItems) {
+      cartCount += item["quantity"] as int;
+    }
+
+    return cartCount;
+  }
 class _CartState extends State<Cart> {
   // شكل الصندوق الخارجي
   Widget theBoxShape(Widget finish) {
@@ -66,6 +75,9 @@ class _CartState extends State<Cart> {
     for (var item in CartData.cartItems) {
       cartCount += item["quantity"] as int;
     }
+    
+
+    
 
     return Stack(
       children: [
@@ -462,7 +474,7 @@ class _CartState extends State<Cart> {
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(50),
-                                      child: Image.asset(
+                                      child: Image.network(
                                         item["images"][0],
                                         fit: BoxFit.cover,
                                       ),
@@ -613,143 +625,7 @@ class _CartState extends State<Cart> {
           ),
 
           //=============== الازرار السفليه تبداء هنا ======
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              color: color.dark2,
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(48),
-                  bottomRight: Radius.circular(48)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.4),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: BottomNavigationBar(
-                currentIndex: footerCurrentIndex,
-                backgroundColor: color.dark2,
-                selectedItemColor: color.p400,
-                unselectedItemColor: color.g400,
-                type: BottomNavigationBarType.fixed,
-                showSelectedLabels: true,
-                showUnselectedLabels: true,
-                onTap: (index) {
-                  if (index == 0) {
-                    Navigator.pushNamed(context, "account");
-                  }
-                  if (index == 1) {
-                    return;
-                  }
-                  if (index == 2) {
-                    Navigator.pushNamed(context, "orders");
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Orders()),
-                    // );
-                  }
-                  if (index == 3) {
-                    Navigator.pushNamed(context, "/");
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Home()),
-                    // );
-                  }
-                },
-                items: [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person_outline),
-                    activeIcon: Icon(Icons.person),
-                    label: "حسابي",
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        const Icon(Icons.shopping_cart_outlined),
-                        if (cartCount > 0)
-                          Positioned(
-                            right: -6,
-                            top: -6,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: color.p500,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: color.dark2,
-                                  width: 1.5,
-                                ),
-                              ),
-                              constraints: const BoxConstraints(
-                                minWidth: 18,
-                                minHeight: 18,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "$cartCount",
-                                  style: fonts.xsb.copyWith(
-                                    color: color.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    activeIcon: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        const Icon(Icons.shopping_cart),
-                        if (cartCount > 0)
-                          Positioned(
-                            right: -6,
-                            top: -6,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: color.p500,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: color.dark2,
-                                  width: 1.5,
-                                ),
-                              ),
-                              constraints: const BoxConstraints(
-                                minWidth: 18,
-                                minHeight: 18,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "$cartCount",
-                                  style: fonts.xsb.copyWith(
-                                    color: color.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    label: "السلة",
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.receipt_long_outlined),
-                    activeIcon: Icon(Icons.receipt_long),
-                    label: "طلباتي",
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home_outlined),
-                    activeIcon: Icon(Icons.home),
-                    label: "الرئيسية",
-                  ),
-                ],
-              ),
-            ),
-          ),
+          bottomNavigationBar: CustomBottomNavbar(currentIndex: 1, cartSize: cartSize.toDouble(),),
         ),
 
         // البانر الخص بي الاجمالي والنقل الى صفحه الفواتير
