@@ -6,6 +6,8 @@ import '../constants/colors.dart';
 import '../constants/fonts.dart';
 import '../Design System/AppBar/primary_appbar.dart';
 import '../Design System/Buttons/primary_button.dart';
+import '../product_service.dart';
+import '../Design System/SnackBar/primary_snackbar.dart';
 
 class addProducts extends StatefulWidget {
   const addProducts({super.key});
@@ -37,6 +39,11 @@ class _addProductsState extends State<addProducts> {
 
   bool usage = true;
   bool bestOffer = false;
+
+  bool length = true;
+
+  
+
 
   final List<String> categories = [
     "بنادق",
@@ -308,6 +315,60 @@ class _addProductsState extends State<addProducts> {
               productType2Controller,
             ),
 
+            const SizedBox(height: 12),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Radio<bool>(
+                      value: false,
+                      groupValue: length,
+                      activeColor: color.p500,
+                      onChanged: (value) {
+                        setState(() {
+                          length = value!;
+                        });
+                      },
+                      fillColor: WidgetStateProperty.resolveWith((states) {
+                        if (states.contains(WidgetState.selected)) {
+                          return color.p500;
+                        }
+                        return color.p500;
+                      }),
+                    ),
+                    Text("قصير",style: fonts.ms.copyWith(color: color.g300)),
+
+                    Radio<bool>(
+                      value: true,
+                      groupValue: length,
+                      activeColor: color.p500,
+                      onChanged: (value) {
+                        setState(() {
+                          length = value!;
+                        });
+                      },
+                      fillColor: WidgetStateProperty.resolveWith((states) {
+                        if (states.contains(WidgetState.selected)) {
+                          return color.p500;
+                        }
+                        return color.p500;
+                      }),
+                    ),
+                    Text("طويل",style: fonts.ms.copyWith(color: color.g300),),
+                  ],
+                ),
+
+                Text(
+                  "الطول",
+                  style: fonts.mb.copyWith(color: color.white)
+                ),
+              ],
+            ),
+
+
+
             
             const SizedBox(height: 12),
             Productsinputs(
@@ -456,7 +517,54 @@ class _addProductsState extends State<addProducts> {
             
             const SizedBox(height: 20),
 
-            p_button(title: "إضافه المنتج", onPressed: (){},height: 50,),
+            p_button(
+              title: "إضافه المنتج",
+              height: 50, 
+              onPressed: () async {
+                String lengthvalue = length ? "طويل" : " قصير";
+                bool success = await ProductService.addProduct(
+                  title: titleController.text,
+                  newPrice: newPriceController.text,
+                  oldPrice: oldPriceController.text,
+                  description: descriptionController.text,
+                  caliber: caliberController.text,
+                  capacity: capacityController.text,
+                  category: selectedCategory ?? "",
+                  productType: productTypeController.text,
+                  productType2: productType2Controller.text,
+                  length: lengthvalue ,
+                  model: modelController.text,
+                  weight: weightController.text,
+                  manufacturingCountry:
+                  manufacturingCountryController.text,
+                  manufacturingCompany:
+                  manufacturingCompanyController.text,
+                  rating: ratingController.text,
+                  usage: usage,
+                  bestOffer: bestOffer,
+                  images: images,
+                );
+                if(success){
+                  p_snackbar.show(
+                    context: context,
+                    title: "تمت الإضافة بنجاح",
+                    timer: Duration(seconds: 4),
+                  );
+                  await Future.delayed(const Duration(seconds: 2));
+                  Navigator.pop(context);                  
+                }else{
+
+                  p_snackbar.show(
+                    context: context,
+                    title: "فشل الإضافة",
+                    timer: Duration(seconds: 4),
+                    background: color.error,
+                    icon: Icons.cancel,
+                  );
+                  
+                }
+              },
+            ),
             
             const SizedBox(height: 30),
           ],
