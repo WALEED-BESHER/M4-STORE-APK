@@ -552,7 +552,9 @@ class _AccountState extends State<Account> {
               accountItems(
                 "ادمن",
                 Icons.admin_panel_settings_outlined,
-                (){},
+                (){
+                  Navigator.pushNamed(context, "admin");
+                },
               ),
               // تسجيل خروج
               accountItems(

@@ -11,6 +11,8 @@ import 'Home/home.dart';
 import 'profile.dart';
 import 'splash.dart';
 import 'Welcome.dart';
+import 'Admin/admin.dart';
+import 'Admin/add_products.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,6 +44,8 @@ class MyApp extends StatelessWidget {
         "profile":(context)=>Profile(),
         "/":(context)=>Splash(),
         "welcome":(context)=>Welcome(),
+        "admin":(context)=>Admin(),
+        "addproducts":(context)=>addProducts(),
       },
      
     );
