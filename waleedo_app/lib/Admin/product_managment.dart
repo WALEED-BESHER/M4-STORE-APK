@@ -3,8 +3,8 @@ import '../constants/colors.dart';
 import '../constants/fonts.dart';
 import '../Design System/AppBar/primary_appbar.dart';
 
-class Admin extends StatelessWidget {
-  const Admin({super.key});
+class ProductManagment extends StatelessWidget {
+  const ProductManagment({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class Admin extends StatelessWidget {
       backgroundColor: color.dark1,
 
       appBar: p_appbar(
-        title: "Admin",
+        title: "اداره المنتجات",
         centerTheTitles: true,
       ),
 
@@ -72,9 +72,13 @@ class Admin extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              
+              sections("اضافه منتجات جديده", Icons.add_box, (){
+                Navigator.pushNamed(context, "addproducts");
+              }),
 
-              sections("إداره المنتجات ", Icons.inventory_2, (){
-                Navigator.pushNamed(context, "productmanagment");
+              sections("عرض المنتجات", Icons.list_alt, (){
+                Navigator.pushNamed(context, "viewproducts");
               }),
 
 

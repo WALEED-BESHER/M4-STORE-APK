@@ -5,7 +5,7 @@ class Api {
   // الرابط الأساسي
   static const String baseURL = "http://$ip:$port/api";
 
-  // Endpoints
+  // Endpoints http://192.168.1.5:80/api/products
   static const String login = "$baseURL/login";
   static const String signup = "$baseURL/signup";
   static const String logout = "$baseURL/logout";

@@ -16,6 +16,18 @@ class Categories extends StatefulWidget {
 }
 
 class _CategoriesState extends State<Categories> {
+  ProductCardType getProductCardType(String? type){
+    switch(type){
+      case "hideDiscount":
+        return ProductCardType.hideDiscount;
+      case "hideBoth":
+        return ProductCardType.hideBoth;
+      case "hideOldPrice":
+        return ProductCardType.hideOldPrice;
+      default:
+        return ProductCardType.full;
+    }
+  } 
   // التاكد ان في السله منتجات
   bool get inCart => CartData.cartItems.isNotEmpty;
 
@@ -132,7 +144,9 @@ class _CategoriesState extends State<Categories> {
                       title: product["title"],
                       newPrice:   product["newPrice"],
                       oldPrice: product["oldPrice"],
-                      type:ProductCardType.full,
+                      type:getProductCardType(
+                        product["type"],
+                      ),
                     ),
                   );
                 },

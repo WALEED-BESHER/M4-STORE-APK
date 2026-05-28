@@ -22,6 +22,7 @@ class ProductController extends Controller
         // إنشاء المنتج
         $product = Product::create([
             'title' => $request->title,
+            'type' => $request->type,
             'new_price' => $request->new_price,
             'old_price' => $request->old_price,
             'description' => $request->description,

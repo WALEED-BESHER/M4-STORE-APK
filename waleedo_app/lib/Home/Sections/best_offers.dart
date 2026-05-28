@@ -106,7 +106,20 @@ class _BestOffersSectionState extends State<BestOffersSection> {
         ),
       ),
     );
-  }  
+  } 
+
+  ProductCardType getProductCardType(String? type){
+    switch(type){
+      case "hideDiscount":
+        return ProductCardType.hideDiscount;
+      case "hideBoth":
+        return ProductCardType.hideBoth;
+      case "hideOldPrice":
+        return ProductCardType.hideOldPrice;
+      default:
+        return ProductCardType.full;
+    }
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -229,9 +242,9 @@ class _BestOffersSectionState extends State<BestOffersSection> {
                     title: product["title"],
                     newPrice: product["newPrice"],
                     oldPrice:product["oldPrice"],
-                    type:
-                        product["type"] ??
-                        ProductCardType.full,
+                    type: getProductCardType(
+                      product["type"],
+                    ),
                   ),
                 );
               },

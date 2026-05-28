@@ -15,6 +15,19 @@ class BestSellingSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    ProductCardType getProductCardType(String? type){
+      switch(type){
+        case "hideDiscount":
+          return ProductCardType.hideDiscount;
+        case "hideBoth":
+          return ProductCardType.hideBoth;
+        case "hideOldPrice":
+          return ProductCardType.hideOldPrice;
+        default:
+          return ProductCardType.full;
+      }
+    } 
     
     // ترتيب المنتجات حسب الأكثر مبيعًا
     List<Map<String, dynamic>> bestSelling = List.from(products);
@@ -81,7 +94,9 @@ class BestSellingSection extends StatelessWidget {
                   title:  product["title"],
                   newPrice:  product["newPrice"],
                   oldPrice:  product["oldPrice"],
-                  type: ProductCardType.full,
+                  type: getProductCardType(
+                      product["type"],
+                    ),
                 );
               }).toList(),
             ),

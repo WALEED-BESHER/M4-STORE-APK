@@ -7,6 +7,7 @@ class ProductService {
 
   static Future<bool> addProduct({
     required String title,
+    required String type,
     required String newPrice,
     required String oldPrice,
     required String description,
@@ -35,6 +36,7 @@ class ProductService {
 
     // البيانات
     request.fields['title'] = title;
+    request.fields['type'] = type;
     request.fields['new_price'] = newPrice;
     request.fields['old_price'] = oldPrice;
     request.fields['description'] = description;

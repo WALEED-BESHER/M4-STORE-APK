@@ -15,6 +15,20 @@ class Productdetails extends StatefulWidget {
 }
 
 class _ProductdetailsState extends State<Productdetails> {
+
+  ProductCardType getProductCardType(String? type){
+      switch(type){
+        case "hideDiscount":
+          return ProductCardType.hideDiscount;
+        case "hideBoth":
+          return ProductCardType.hideBoth;
+        case "hideOldPrice":
+          return ProductCardType.hideOldPrice;
+        default:
+          return ProductCardType.full;
+      }
+    } 
+
   // المنتج الحالي الذي سيتم عرضه في الصفحة
   // يتم جلبه من API حسب الـ id القادم من الصفحة السابقة
   Map<String , dynamic>? product;
@@ -145,15 +159,15 @@ class _ProductdetailsState extends State<Productdetails> {
     final currentProduct = product!;
     
     // معرفه نوع ال type اذا مافي قيمه يعطيه قيمه افتراضي
-    final Type = currentProduct["type"] ?? ProductCardType.full;
+    final Type = currentProduct["type"];
     // متغير لاظهار واخفاء الخصم
     bool showDiscount = 
-    Type == ProductCardType.full || 
-    Type == ProductCardType.hideOldPrice;
+    Type == "full" || 
+    Type == "hideOldPrice";
     // متغير لاظهار واخفاء السعر السابق
     bool showOldPrice = 
-    Type == ProductCardType.full || 
-    Type == ProductCardType.hideDiscount;
+    Type == "full" || 
+    Type == "hideDiscount";
 
     // نسبه الخصم
     int? discount;
@@ -218,6 +232,8 @@ class _ProductdetailsState extends State<Productdetails> {
 
     // 🔥 ترتيب حسب القوة
     relatedProducts.sort((a, b) => b["score"].compareTo(a["score"]));
+
+    
 
     
     
@@ -462,7 +478,9 @@ class _ProductdetailsState extends State<Productdetails> {
                                 title: product["title"]!,
                                 newPrice: product["newPrice"],
                                 oldPrice: product["oldPrice"],
-                                type: product["type"] ?? ProductCardType.full, 
+                                type:getProductCardType(
+                                  product["type"],
+                                ), 
                               ),
                             );
                           }

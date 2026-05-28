@@ -21,6 +21,8 @@ class _addProductsState extends State<addProducts> {
 
   List<XFile> images = [];
 
+  bool addProductLoading =false;
+
   final titleController = TextEditingController();
   final oldPriceController = TextEditingController();
   final newPriceController = TextEditingController();
@@ -36,14 +38,12 @@ class _addProductsState extends State<addProducts> {
   final ratingController = TextEditingController();
 
   String? selectedCategory;
+  String selectedType = "full";
 
   bool usage = true;
   bool bestOffer = false;
 
   bool length = true;
-
-  
-
 
   final List<String> categories = [
     "بنادق",
@@ -62,17 +62,7 @@ class _addProductsState extends State<addProducts> {
       });
     }
   }
-
-  InputDecoration inputDecoration(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-    );
-  }
-
+  
   Widget Productsinputs(
     String hint, 
     int maxLines,
@@ -134,7 +124,7 @@ class _addProductsState extends State<addProducts> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
 
-            /// Images
+            // الصور
             Text(
               "صور المنتج",
               style: fonts.mb.copyWith(color: color.white),
@@ -182,7 +172,7 @@ class _addProductsState extends State<addProducts> {
 
             const SizedBox(height: 12),
 
-            // Title  
+            // العنوان  
             Productsinputs(
               "عنوان المنتج",
               4,
@@ -190,8 +180,103 @@ class _addProductsState extends State<addProducts> {
             ),
 
             const SizedBox(height: 12),
+            // نوع القالب
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text("اخفاء كامل",style: fonts.ss.copyWith(color: color.g300)),
+                        Radio<String>(
+                          value: "hideBoth",
+                          groupValue: selectedType,
+                          activeColor: color.p500,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedType = value!;
+                            });
+                          },
+                          fillColor: WidgetStateProperty.resolveWith((states) {
+                            if (states.contains(WidgetState.selected)) {
+                              return color.p500;
+                            }
+                            return color.p500;
+                          }),
+                        ),
+                        
+                        Text("اظهار كامل",style: fonts.ss.copyWith(color: color.g300),),
+                        Radio<String>(
+                          value: "full",
+                          groupValue: selectedType,
+                          activeColor: color.p500,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedType = value!;
+                            });
+                          },
+                          fillColor: WidgetStateProperty.resolveWith((states) {
+                            if (states.contains(WidgetState.selected)) {
+                              return color.p500;
+                            }
+                            return color.p500;
+                          }),
+                        ), 
+                      ],
+                    ),
 
-            // Prices
+                    Row(
+                      children: [
+                        Text("اخفاء السعر القديم",style: fonts.xsb.copyWith(color: color.g300)),
+                        Radio<String>(
+                          value: "hideOldPrice",
+                          groupValue: selectedType,
+                          activeColor: color.p500,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedType = value!;
+                            });
+                          },
+                          fillColor: WidgetStateProperty.resolveWith((states) {
+                            if (states.contains(WidgetState.selected)) {
+                              return color.p500;
+                            }
+                            return color.p500;
+                          }),
+                        ),
+
+                        Text("اخفاء نسبه الخصم",style: fonts.xsb.copyWith(color: color.g300),),
+                        Radio<String>(
+                          value: "hideDiscount",
+                          groupValue: selectedType,
+                          activeColor: color.p500,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedType = value!;
+                            });
+                          },
+                          fillColor: WidgetStateProperty.resolveWith((states) {
+                            if (states.contains(WidgetState.selected)) {
+                              return color.p500;
+                            }
+                            return color.p500;
+                          }),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Text(
+                  "النوع",
+                  style: fonts.mb.copyWith(color: color.white)
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // السعر
             Row(
               children: [
                 Expanded(
@@ -216,7 +301,7 @@ class _addProductsState extends State<addProducts> {
 
             const SizedBox(height: 12),
 
-            // Description
+            // الوصف
             Productsinputs(
               "الوصف", 
               6, 
@@ -224,7 +309,7 @@ class _addProductsState extends State<addProducts> {
             ),
 
             const SizedBox(height: 12),
-
+            // العيار
             Productsinputs(
               "العيار", 
               1, 
@@ -232,7 +317,7 @@ class _addProductsState extends State<addProducts> {
             ),
 
             const SizedBox(height: 12),
-
+            // سعه السلاح
             Productsinputs(
               "سعه السلاح", 
               1, 
@@ -241,7 +326,7 @@ class _addProductsState extends State<addProducts> {
 
             const SizedBox(height: 12),
 
-            // Category
+            // الفئات
             Directionality(
               textDirection: TextDirection.rtl,
               child: Container(
@@ -301,7 +386,7 @@ class _addProductsState extends State<addProducts> {
             ),
             
             const SizedBox(height: 12),
-
+            // نوع السلاح
             Productsinputs(
               "نوع السلاح", 
               1, 
@@ -309,6 +394,7 @@ class _addProductsState extends State<addProducts> {
             ),
 
             const SizedBox(height: 12),
+            // نوع السلاح2
             Productsinputs(
               "نوع السلاح 2 (اختياري)", 
               1, 
@@ -316,12 +402,13 @@ class _addProductsState extends State<addProducts> {
             ),
 
             const SizedBox(height: 12),
-
+            // الطول
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
+                    Text("قصير",style: fonts.ms.copyWith(color: color.g300)),
                     Radio<bool>(
                       value: false,
                       groupValue: length,
@@ -338,8 +425,8 @@ class _addProductsState extends State<addProducts> {
                         return color.p500;
                       }),
                     ),
-                    Text("قصير",style: fonts.ms.copyWith(color: color.g300)),
-
+                    
+                    Text("طويل",style: fonts.ms.copyWith(color: color.g300),),
                     Radio<bool>(
                       value: true,
                       groupValue: length,
@@ -356,7 +443,7 @@ class _addProductsState extends State<addProducts> {
                         return color.p500;
                       }),
                     ),
-                    Text("طويل",style: fonts.ms.copyWith(color: color.g300),),
+                    
                   ],
                 ),
 
@@ -366,11 +453,9 @@ class _addProductsState extends State<addProducts> {
                 ),
               ],
             ),
-
-
-
-            
+      
             const SizedBox(height: 12),
+            // المودل
             Productsinputs(
               "المودل", 
               1, 
@@ -378,6 +463,7 @@ class _addProductsState extends State<addProducts> {
             ),
             
             const SizedBox(height: 12),
+            //الوزن
             Productsinputs(
               "الوزن", 
               1, 
@@ -386,6 +472,7 @@ class _addProductsState extends State<addProducts> {
             ),
             
             const SizedBox(height: 12),
+            // الدولة المصنعه
             Productsinputs(
               "الدولة المصنعه", 
               2, 
@@ -394,6 +481,7 @@ class _addProductsState extends State<addProducts> {
             ),
             
             const SizedBox(height: 12),
+            // الشركة المصنعه
             Productsinputs(
               "الشركة المصنعه", 
               2, 
@@ -403,12 +491,13 @@ class _addProductsState extends State<addProducts> {
             
             const SizedBox(height: 12),
 
-            // Usage
+            // الاستخدام 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
+                    Text("جديد",style: fonts.ms.copyWith(color: color.g300)),
                     Radio<bool>(
                       value: false,
                       groupValue: usage,
@@ -425,8 +514,8 @@ class _addProductsState extends State<addProducts> {
                         return color.p500;
                       }),
                     ),
-                    Text("False",style: fonts.ms.copyWith(color: color.g300)),
-
+                    
+                    Text("مستخدم",style: fonts.ms.copyWith(color: color.g300),),
                     Radio<bool>(
                       value: true,
                       groupValue: usage,
@@ -443,7 +532,7 @@ class _addProductsState extends State<addProducts> {
                         return color.p500;
                       }),
                     ),
-                    Text("True",style: fonts.ms.copyWith(color: color.g300),),
+                    
                   ],
                 ),
 
@@ -455,6 +544,7 @@ class _addProductsState extends State<addProducts> {
             ),
 
             const SizedBox(height: 12),
+            //التقيم
             Productsinputs(
               "التقيم", 
               1, 
@@ -464,12 +554,13 @@ class _addProductsState extends State<addProducts> {
         
             const SizedBox(height: 12),
 
-            // Best Offer
+            // افضل العروض
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
+                    Text("ايقاف",style: fonts.ms.copyWith(color: color.g300)),
                     Radio<bool>(
                       value: false,
                       groupValue: bestOffer,
@@ -486,8 +577,8 @@ class _addProductsState extends State<addProducts> {
                         return color.p500;
                       }),
                     ),
-                    Text("False",style: fonts.ms.copyWith(color: color.g300)),
-
+                    
+                    Text("تفعيل",style: fonts.ms.copyWith(color: color.g300),),
                     Radio<bool>(
                       value: true,
                       groupValue: bestOffer,
@@ -504,7 +595,7 @@ class _addProductsState extends State<addProducts> {
                         return color.p500;
                       }),
                     ),
-                    Text("True",style: fonts.ms.copyWith(color: color.g300),),
+                    
                   ],
                 ),
 
@@ -516,14 +607,20 @@ class _addProductsState extends State<addProducts> {
             ),
             
             const SizedBox(height: 20),
-
+            // زر الارسال
             p_button(
               title: "إضافه المنتج",
               height: 50, 
+              isLoading: addProductLoading,
               onPressed: () async {
+                setState(() {
+                  addProductLoading = true;
+                });
+
                 String lengthvalue = length ? "طويل" : " قصير";
                 bool success = await ProductService.addProduct(
                   title: titleController.text,
+                  type: selectedType,
                   newPrice: newPriceController.text,
                   oldPrice: oldPriceController.text,
                   description: descriptionController.text,
@@ -563,6 +660,9 @@ class _addProductsState extends State<addProducts> {
                   );
                   
                 }
+                setState(() {
+                  addProductLoading =false;
+                });
               },
             ),
             
