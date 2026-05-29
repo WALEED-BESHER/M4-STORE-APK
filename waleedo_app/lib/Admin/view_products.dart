@@ -55,9 +55,14 @@ class _ViewProductsState extends State<ViewProducts> {
             style: fonts.lb.copyWith(color: color.white),
           ),
         ),
-        content: Text(
-          'هل أنت متأكد من حذف هذا المنتج؟',
-          style: fonts.ss.copyWith(color: color.white),
+        content: SizedBox(
+          height: 18,
+          child: Center(
+            child: Text(
+              'هل أنت متأكد من حذف هذا المنتج؟',
+              style: fonts.ss.copyWith(color: color.white),
+            ),
+          ),
         ),
         actions: [
           TextButton(
@@ -93,24 +98,27 @@ class _ViewProductsState extends State<ViewProducts> {
 
   // بناء جدول المنتجات
   Widget _buildProductsTable() {
-    return SingleChildScrollView(
-      // تمرير أفقي
-      scrollDirection: Axis.horizontal,
+    return Directionality(
+      textDirection: TextDirection.rtl,
       child: SingleChildScrollView(
-        // تمرير عمودي
-        scrollDirection: Axis.vertical,
-        child: DataTable(
-          // خصائص الجدول
-          columnSpacing: 20,
-          headingRowHeight: 60,
-          dataRowHeight: 80,
-          horizontalMargin: 15,
-          
-          // رأس الجدول
-          columns: _buildColumns(),
-          
-          // صفوف البيانات
-          rows: _buildRows(),
+        // تمرير أفقي
+        scrollDirection: Axis.horizontal,
+        child: SingleChildScrollView(
+          // تمرير عمودي
+          scrollDirection: Axis.vertical,
+          child: DataTable(
+            // خصائص الجدول
+            columnSpacing: 20,
+            headingRowHeight: 60,
+            dataRowHeight: 80,
+            horizontalMargin: 15,
+            
+            // رأس الجدول
+            columns: _buildColumns(),
+            
+            // صفوف البيانات
+            rows: _buildRows(),
+          ),
         ),
       ),
     );
@@ -120,25 +128,37 @@ class _ViewProductsState extends State<ViewProducts> {
   List<DataColumn> _buildColumns() {
     // قائمة عناوين الأعمدة
     final headers = [
-      'Id', 'Title', 'newPrice', 'oldPrice', 'Description',
-      'caliber', 'capacity', 'category', 'ProductType', 'ProductType2',
-      'length', 'model', 'weight', 'manufacturing_countrey',
-      'manufacturing_company', 'usage', 'date', 'rating',
-      'bestOffer', 'Type', 'العمليات'
+      'ID', 'العنوان', 'السعر الجديد', 'السعر القديم', 'الوصف',
+      'العيار', 'السعه', 'الفئه', 'نوع السلاح', 'نوع السلاح2',
+      'الطول', 'المودل ', 'الوزن', 'الدولة المصنعة',
+      'الشركة المصنعة', 'الاستخدام', 'انباعت' ,'وقت الاضافه', 'التقيم',
+      'افضل العروض', 'النوع', 'العمليات'
     ];
 
     return headers.map((header) {
+      double? maxWidth;
+      if(header == 'العنوان' || header == 'الدولة المصنعة' ){
+        maxWidth = 150;
+      }else if(header == 'الوصف'){
+        maxWidth = 250;
+      }else if(header == 'النوع' || header == 'العمليات' ){
+        maxWidth = 100;
+      }
+
       return DataColumn(
-        label: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Text(
-            header,
-            style: fonts.lb.copyWith(color: color.white),
-            textAlign: TextAlign.center,
+        label: ConstrainedBox(
+          constraints: maxWidth != null 
+          ? BoxConstraints(maxWidth: maxWidth) : BoxConstraints(),
+          child:  Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            alignment: Alignment.center,
+            child: Text(
+              header,
+              style: fonts.mb.copyWith(color: color.white),
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
-        numeric: header == 'Id' || header == 'newPrice' || 
-                header == 'oldPrice' || header == 'rating',
       );
     }).toList();
   }
@@ -153,9 +173,6 @@ class _ViewProductsState extends State<ViewProducts> {
         // تلوين الصفوف بالتناوب
         color: MaterialStateProperty.resolveWith<Color?>(
           (Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
-              return Colors.teal.withOpacity(0.2);
-            }
             return index.isEven 
                 ? color.white.withOpacity(0.2) 
                 : color.b_activered;
@@ -171,7 +188,7 @@ class _ViewProductsState extends State<ViewProducts> {
               ),
             ),
           ),
-
+        
           DataCell(
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 150),
@@ -294,12 +311,22 @@ class _ViewProductsState extends State<ViewProducts> {
               ),
             ),
           ),
-
+          
           DataCell(
-            Center(
-              child: Text(
-                product['manufacturing_countrey'] ?? '-',
-                style: fonts.ss.copyWith(color: color.g400),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 150),
+              child: Container(
+                alignment: Alignment.center,
+                child: Directionality(
+                  textDirection: TextDirection.rtl, 
+                  child: Text(
+                    product['manufacturing_countrey'] ?? '-',
+                    style: fonts.ss.copyWith(color: color.g400),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                ),
               ),
             ),
           ),
@@ -309,6 +336,9 @@ class _ViewProductsState extends State<ViewProducts> {
               child: Text(
                 product['manufacturing_company'] ?? '-',
                 style: fonts.ss.copyWith(color: color.g400),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
             ),
           ),
@@ -325,12 +355,31 @@ class _ViewProductsState extends State<ViewProducts> {
           DataCell(
             Center(
               child: Text(
-                product['date'] ?? '-',
+                product['sold'].toString() ,
                 style: fonts.ss.copyWith(color: color.g400),
               ),
             ),
           ),
 
+          DataCell(
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 150),
+              child: Container(
+                alignment: Alignment.center,
+                child: Directionality(
+                  textDirection: TextDirection.rtl, 
+                  child: Text(
+                    product['date'].toString().replaceAll('T', ' ').split('.').first,
+                    style: fonts.ss.copyWith(color: color.g400),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          
           DataCell(
             Center(
               child: Text(

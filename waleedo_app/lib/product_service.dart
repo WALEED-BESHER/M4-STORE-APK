@@ -76,7 +76,7 @@ class ProductService {
       Uri.parse(
         Api.product
       ),
-    );
+    ); //php artisan serve --host 192.168.1.5 --port 80
     if(response.statusCode == 200){
 
       final data = jsonDecode(response.body);
