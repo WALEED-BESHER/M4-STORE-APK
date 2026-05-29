@@ -3,6 +3,7 @@ import '../constants/colors.dart';
 import '../constants/fonts.dart';
 import '../Design System/AppBar/primary_appbar.dart';
 import '../product_service.dart';
+import '../Design System/SnackBar/primary_snackbar.dart';
 
 class ViewProducts extends StatefulWidget {
   const ViewProducts({super.key});
@@ -35,9 +36,15 @@ class _ViewProductsState extends State<ViewProducts> {
     } catch (e) {
       setState(() => isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ في تحميل المنتجات: $e')),
+
+        p_snackbar.show(
+          context: context,
+          title: 'خطأ في تحميل المنتجات: $e',
+          timer: Duration(seconds: 3),
+          background: color.error,
+          icon: Icons.cancel,
         );
+
       }
     }
   }
@@ -73,10 +80,32 @@ class _ViewProductsState extends State<ViewProducts> {
             ),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // هنا ستضيف استدعاء API الحذف
-              _loadProducts(); // إعادة تحميل القائمة
+            onPressed: () async {
+              
+              final success =
+                  await ProductService.deleteProduct(
+                productId,
+              );
+              if (success) {
+                p_snackbar.show(
+                  context: context,
+                  title: 'تم حذف المنتج بنجاح',
+                  timer: Duration(seconds: 3),
+                );
+
+                
+                Navigator.pop(context);
+                _loadProducts();
+              } else {
+                p_snackbar.show(
+                  context: context,
+                  title: 'فشل حذف المنتج',
+                  timer: Duration(seconds: 3),
+                  background: color.error,
+                  icon: Icons.cancel,
+                );
+                
+              }
             },
             child: Text(
               'حذف',
@@ -107,6 +136,14 @@ class _ViewProductsState extends State<ViewProducts> {
           // تمرير عمودي
           scrollDirection: Axis.vertical,
           child: DataTable(
+            headingRowColor: MaterialStateProperty.all(color.f_secondary),
+            dividerThickness: 0,
+            border: TableBorder(
+              horizontalInside: BorderSide(
+                color: color.g400,
+                width: 2
+              )
+            ),
             // خصائص الجدول
             columnSpacing: 20,
             headingRowHeight: 60,
@@ -137,7 +174,7 @@ class _ViewProductsState extends State<ViewProducts> {
 
     return headers.map((header) {
       double? maxWidth;
-      if(header == 'العنوان' || header == 'الدولة المصنعة' ){
+      if(header == 'العنوان'){
         maxWidth = 150;
       }else if(header == 'الوصف'){
         maxWidth = 250;
@@ -174,7 +211,7 @@ class _ViewProductsState extends State<ViewProducts> {
         color: MaterialStateProperty.resolveWith<Color?>(
           (Set<MaterialState> states) {
             return index.isEven 
-                ? color.white.withOpacity(0.2) 
+                ? Colors.transparent
                 : color.b_activered;
           },
         ),
@@ -184,7 +221,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['id']?.toString() ?? '',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -196,7 +233,7 @@ class _ViewProductsState extends State<ViewProducts> {
                 textDirection: TextDirection.rtl, 
                 child: Text(
                   product['title'] ?? '',
-                  style: fonts.ss.copyWith(color: color.g400),
+                  style: fonts.ss.copyWith(color: color.g200),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
@@ -208,7 +245,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['newPrice']?.toString() ?? '0',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -230,7 +267,7 @@ class _ViewProductsState extends State<ViewProducts> {
                   textDirection: TextDirection.rtl, 
                   child: Text(
                     product['Description'] ?? '',
-                    style: fonts.ss.copyWith(color: color.g400),
+                    style: fonts.ss.copyWith(color: color.g200),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 3,
                   ),
@@ -243,7 +280,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['caliber'] ?? '',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -253,7 +290,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['capacity'] ?? '',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -262,7 +299,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['category'] ?? '',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -271,7 +308,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['ProductType'] ?? '',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -280,7 +317,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['ProductType2'] ?? '-',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -289,7 +326,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['length'] ?? '-',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -298,7 +335,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['model'] ?? '-',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -307,35 +344,28 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['weight'] ?? '-',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
+              ),
+            ),
+          ),  
+        
+          DataCell(
+            Center(
+              child: Text(
+                product['manufacturing_countrey'] ?? '-',
+                style: fonts.ss.copyWith(color: color.g200),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
             ),
           ),
           
           DataCell(
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 150),
-              child: Container(
-                alignment: Alignment.center,
-                child: Directionality(
-                  textDirection: TextDirection.rtl, 
-                  child: Text(
-                    product['manufacturing_countrey'] ?? '-',
-                    style: fonts.ss.copyWith(color: color.g400),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          DataCell(
             Center(
               child: Text(
                 product['manufacturing_company'] ?? '-',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
@@ -347,7 +377,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['usage'] == 1 || product['usage'] == true ? 'مستعمل' : 'جديد',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -356,7 +386,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['sold'].toString() ,
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -370,7 +400,7 @@ class _ViewProductsState extends State<ViewProducts> {
                   textDirection: TextDirection.rtl, 
                   child: Text(
                     product['date'].toString().replaceAll('T', ' ').split('.').first,
-                    style: fonts.ss.copyWith(color: color.g400),
+                    style: fonts.ss.copyWith(color: color.g200),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
@@ -384,7 +414,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['rating']?.toString() ?? '0',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -393,7 +423,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['bestOffer'] == 1 || product['bestOffer'] == true ? 'نعم' : 'لا',
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),
@@ -402,7 +432,7 @@ class _ViewProductsState extends State<ViewProducts> {
             Center(
               child: Text(
                 product['type'] == "full" ? " الكل ظاهر" : product['type'] == "hideBoth" ? "الكل مخفي" : product['type'] == "hideOldPrice" ? "السعر القديم مخفي" : product['type'] == "hideDiscount" ? "نسبه الخصم مخفيه" : "الكل ظاهر" ,
-                style: fonts.ss.copyWith(color: color.g400),
+                style: fonts.ss.copyWith(color: color.g200),
               ),
             ),
           ),

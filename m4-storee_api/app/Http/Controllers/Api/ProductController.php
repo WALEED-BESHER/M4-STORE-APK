@@ -7,9 +7,11 @@ use App\Models\Product;
 use App\Http\Resources\ProductResource;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    // اضافه منتجات من صفحه addproduct
     public function store(Request $request)
     {
         $request->validate([
@@ -65,10 +67,37 @@ class ProductController extends Controller
             'message' => 'Product Created Successfully'
         ]);
     }
+    // جلب المنتجات الى resource
     public function index()
     {
         $products = Product::with('images')->get();
 
         return ProductResource::collection($products);
     }
+
+    
+    public function destroy($id)
+    {
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json([
+                'message' => 'Product Not Found'
+            ], 404);
+        }
+        // حذف ملفات الصور من storage
+        foreach ($product->images as $image) {
+            $imagePath = public_path(
+                'storage/' . $image->image
+            );
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+        $product->delete();
+        return response()->json([
+            'message' => 'Product Deleted Successfully'
+        ]);
+    }
+
+
 }

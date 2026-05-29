@@ -14,6 +14,8 @@ class Api {
   static const String profile = "$baseURL/profile";
   static const String updateProfile = "$baseURL/update-profile";
   static const String product = "$baseURL/products";
+  static String deleteProduct(int id) => "$baseURL/products/$id";
+  
   static const String productStore = "$baseURL/products/store";
 
 }

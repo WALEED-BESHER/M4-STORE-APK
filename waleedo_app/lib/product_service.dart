@@ -85,4 +85,16 @@ class ProductService {
     }
     return [];
   }
+
+  //
+  static Future<bool> deleteProduct(int productId,) async {
+    final response = await http.delete(
+      Uri.parse(
+        Api.deleteProduct(productId),
+      ),
+    );
+    return response.statusCode == 200;
+  }
+
+
 }

@@ -28,6 +28,11 @@ Route::get('/products',
     [ProductController::class,'index']
 );
 
+Route::delete(
+    '/products/{id}',
+    [ProductController::class, 'destroy']
+);
+
 Route::post('/products/store',
     [ProductController::class,'store']
 );
