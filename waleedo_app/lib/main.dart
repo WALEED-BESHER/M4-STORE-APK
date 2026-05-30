@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
         "welcome":(context)=>Welcome(),
         "admin":(context)=>Admin(),
         "productmanagment":(context)=>ProductManagment(),
-        "addproducts":(context)=>addProducts(),
+        "addproducts":(context)=>AddProducts(),
         "viewproducts":(context)=>ViewProducts(),
       },
      

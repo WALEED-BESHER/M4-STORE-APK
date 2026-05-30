@@ -96,5 +96,77 @@ class ProductService {
     return response.statusCode == 200;
   }
 
+  static Future<bool> updateProduct({
+    required int productId,
+    required String title,
+    required String type,
+    required String newPrice,
+    required String oldPrice,
+    required String description,
+    required String caliber,
+    required String capacity,
+    required String category,
+    required String productType,
+    required String productType2,
+    required String length,
+    required String model,
+    required String weight,
+    required String manufacturingCountry,
+    required String manufacturingCompany,
+    required String rating,
+    required bool usage,
+    required bool bestOffer,
+    required List<String> existingImages,
+    required List<XFile> newImages,
+  }) async {
+
+    var request = http.MultipartRequest(
+      "POST",
+      Uri.parse(
+        Api.updateProduct(productId),
+      ),
+    );
+
+    request.fields["title"] = title;
+    request.fields["type"] = type;
+    request.fields["new_price"] = newPrice;
+    request.fields["old_price"] = oldPrice;
+    request.fields["description"] = description;
+    request.fields["caliber"] = caliber;
+    request.fields["capacity"] = capacity;
+    request.fields["category"] = category;
+    request.fields["product_type"] = productType;
+    request.fields["product_type2"] = productType2;
+    request.fields["length"] = length;
+    request.fields["model"] = model;
+    request.fields["weight"] = weight;
+    request.fields["manufacturing_countrey"] =
+        manufacturingCountry;
+    request.fields["manufacturing_company"] =
+        manufacturingCompany;
+    request.fields["rating"] = rating;
+    request.fields["usage"] = usage ? "1" : "0";
+    request.fields["best_offer"] =
+        bestOffer ? "1" : "0";
+
+    request.fields["existing_images"] =
+        jsonEncode(existingImages);
+
+    for (var image in newImages) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          "new_images[]",
+          image.path,
+        ),
+      );
+    }
+
+    var response = await request.send();
+
+    return response.statusCode == 200;
+  }
+
+
+
 
 }

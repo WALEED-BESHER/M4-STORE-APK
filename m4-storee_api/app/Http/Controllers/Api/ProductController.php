@@ -99,5 +99,88 @@ class ProductController extends Controller
         ]);
     }
 
+    public function update(Request $request, $id)
+    {
+        $product = Product::with('images')->find($id);
+        if (!$product) {
+            return response()->json(['message' => 'Product Not Found'], 404);
+        }
+        // تحديث بيانات المنتج
+        $product->update([
+            'title' => $request->title,
+            'type' => $request->type,
+            'new_price' => $request->new_price,
+            'old_price' => $request->old_price,
+            'description' => $request->description,
+            'caliber' => $request->caliber,
+            'capacity' => $request->capacity,
+            'category' => $request->category,
+            'product_type' => $request->product_type,
+            'product_type2' => $request->product_type2,
+            'length' => $request->length,
+            'model' => $request->model,
+            'weight' => $request->weight,
+            'manufacturing_countrey' =>
+                $request->manufacturing_countrey,
+            'manufacturing_company' =>
+                $request->manufacturing_company,
+            'usage' => $request->usage,
+            'rating' => $request->rating,
+            'best_offer' => $request->best_offer,
+        ]);
+        $existingImages = json_decode(
+            $request->existing_images,
+            true
+        ) ?? [];
+        foreach ( $product->images as $image) {
+            $currentImageUrl =
+                asset(
+                    'storage/' .
+                    $image->image
+                );
+            if (!in_array( $currentImageUrl,$existingImages)) {
+                Storage::disk('public')
+                    ->delete(
+                        $image->image
+                    );
+                $image->delete();
+            }
+        }
+        if (
+            $request->hasFile(
+                'new_images'
+            )
+        ) {
+            foreach (
+                $request->file(
+                    'new_images'
+                )
+                as $image
+            ) {
+                $imageName =
+                    time() .
+                    '_' .
+                    $image->getClientOriginalName();
+                $image->storeAs(
+                    'products',
+                    $imageName,
+                    'public'
+                );
+                ProductImage::create([
+                    'product_id' =>
+                        $product->id,
+                    'image' =>
+                        'products/' .
+                        $imageName,
+                ]);
+            }
+        }
+        return response()->json([
+
+            'message' =>
+                'Product Updated Successfully'
+        ]);
+    }
+
 
 }

@@ -9,17 +9,76 @@ import '../Design System/Buttons/primary_button.dart';
 import '../product_service.dart';
 import '../Design System/SnackBar/primary_snackbar.dart';
 
-class AddProducts extends StatefulWidget {
-  const AddProducts({super.key});
+class EditProducts extends StatefulWidget {
+  final Map<String,dynamic> product;
+  const EditProducts({
+    super.key,
+    required this.product,
+  });
 
   @override
-  State<AddProducts> createState() => _AddProductsState();
+  State<EditProducts> createState() => _EditProductsState();
 }
 
-class _AddProductsState extends State<AddProducts> {
+class _EditProductsState extends State<EditProducts> {
+
+  @override
+  void initState() {
+    super.initState();
+    titleController.text = widget.product["title"] ?? "";
+
+    oldPriceController.text = widget.product["oldPrice"].toString();
+
+    newPriceController.text = widget.product["newPrice"].toString();
+
+    descriptionController.text = widget.product["Description"] ?? "";
+
+    caliberController.text = widget.product["caliber"] ?? "";
+
+    capacityController.text = widget.product["capacity"] ?? "";
+
+    selectedCategory = widget.product["category"];
+
+    productTypeController.text = widget.product["ProductType"] ?? "";
+
+    productType2Controller.text = widget.product["ProductType2"] ?? "";
+
+    length = widget.product["length"] == "طويل" ? true :false;
+
+    modelController.text = widget.product["model"] ?? "";
+
+    weightController.text = widget.product["weight"] ?? "";
+
+    manufacturingCountryController.text = widget.product["manufacturing_countrey"] ?? "";
+
+    manufacturingCompanyController.text = widget.product["manufacturing_company"] ?? "";
+
+    ratingController.text = widget.product["rating"].toString();
+
+    usage =
+        widget.product["usage"] == 1 ||
+        widget.product["usage"] == true;
+
+    bestOffer =
+        widget.product["bestOffer"] == 1 ||
+        widget.product["bestOffer"] == true;
+
+    selectedType =
+        widget.product["type"] ?? "full";
+
+    serverImages =
+        List<String>.from(
+          widget.product["images"]
+        );
+  }
+
+
+  List<String> serverImages =[];
+  List<XFile> newImages = [];
+
   final ImagePicker _picker = ImagePicker();
 
-  List<XFile> images = [];
+  // List<XFile> images = [];
 
   bool addProductLoading =false;
 
@@ -55,22 +114,21 @@ class _AddProductsState extends State<AddProducts> {
 
   Future<void> pickImages() async {
     final pickedImages = await _picker.pickMultiImage();
-
     if (pickedImages.isNotEmpty) {
       setState(() {
-
         for (var image in pickedImages) {
-
-          bool exists = images.any(
-            (img) => img.path == image.path,
+          bool exists =
+              newImages.any(
+            (img) =>
+                img.path == image.path,
           );
-
           if (!exists) {
-            images.add(image);
+            newImages.add(image);
           }
         }
-        images.sort(
-          (a, b) => a.name.compareTo(b.name),
+        newImages.sort(
+          (a, b) =>
+              a.name.compareTo(b.name),
         );
       });
     }
@@ -126,7 +184,7 @@ class _AddProductsState extends State<AddProducts> {
       backgroundColor: color.dark1,
 
       appBar: p_appbar(
-        title: "اضافه منتجات جديده" ,
+        title: "تعديل المنتجات" ,
         centerTheTitles: true,
       ),
 
@@ -149,13 +207,13 @@ class _AddProductsState extends State<AddProducts> {
               onTap: pickImages,
               child: Container(
                 width: double.infinity,
-                height: images.isEmpty ? MediaQuery.of(context).size.height * 0.2 : MediaQuery.of(context).size.height * 0.3,
+                height: serverImages.isEmpty ? MediaQuery.of(context).size.height * 0.2 : MediaQuery.of(context).size.height * 0.3,
                 decoration: BoxDecoration(
                   border: Border.all(color: color.g500),
                   borderRadius: BorderRadius.circular(12),
                   color: color.dark2
                 ),
-                child: images.isEmpty
+                child: serverImages.isEmpty && newImages.isEmpty
                     ? const Center(
                         child: Icon(
                           Icons.add_a_photo,
@@ -165,40 +223,63 @@ class _AddProductsState extends State<AddProducts> {
                       )
                     : ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: images.length,
+                        itemCount: serverImages.length + newImages.length,
+
                         itemBuilder: (context, index) {
+                          bool isServerImage = index < serverImages.length;
                           return Padding(
                             padding: const EdgeInsets.all(8),
                             child: Stack(
                               children: [
-
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.file(
-                                    File(images[index].path),
-                                    width: 150,
-                                    // height: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
+                                  borderRadius:
+                                      BorderRadius.circular(10),
+                                  child: isServerImage
+                                      ? Image.network(
+                                          serverImages[index],
+                                          width: 150,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.file(
+                                          File(
+                                            newImages[
+                                              index -
+                                              serverImages.length
+                                            ].path,
+                                          ),
+                                          width: 150,
+                                          fit: BoxFit.cover,
+                                        ),
                                 ),
-
                                 Positioned(
                                   top: 5,
                                   right: 5,
                                   child: GestureDetector(
-                                    onTap: (){
+                                    onTap: () {
                                       setState(() {
-                                        images.removeAt(index);
+                                        if (isServerImage) {
+                                          serverImages.removeAt(
+                                            index,
+                                          );
+                                        } else {
+                                          newImages.removeAt(
+                                            index -
+                                            serverImages.length,
+                                          );
+                                        }
                                       });
                                     },
+
                                     child: Container(
                                       width: 28,
                                       height: 28,
-                                      decoration: const BoxDecoration(
+                                      decoration:
+                                          const BoxDecoration(
                                         color: color.error,
-                                        shape: BoxShape.circle
+                                        shape:
+                                            BoxShape.circle,
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.remove,
                                         color: color.white,
                                         size: 18,
@@ -206,10 +287,14 @@ class _AddProductsState extends State<AddProducts> {
                                     ),
                                   ),
                                 ),
+
                               ],
                             ),
                           );
                         },
+                        
+
+
                       ),
               ),
             ),
@@ -653,7 +738,7 @@ class _AddProductsState extends State<AddProducts> {
             const SizedBox(height: 20),
             // زر الارسال
             p_button(
-              title: "إضافه المنتج",
+              title: "تعديل المنتج",
               height: 50, 
               isLoading: addProductLoading,
               onPressed: () async {
@@ -662,7 +747,8 @@ class _AddProductsState extends State<AddProducts> {
                 });
 
                 String lengthvalue = length ? "طويل" : "قصير";
-                bool success = await ProductService.addProduct(
+                bool success = await ProductService.updateProduct(
+                  productId: widget.product["id"],
                   title: titleController.text,
                   type: selectedType,
                   newPrice: newPriceController.text,
@@ -683,12 +769,13 @@ class _AddProductsState extends State<AddProducts> {
                   rating: ratingController.text,
                   usage: usage,
                   bestOffer: bestOffer,
-                  images: images,
+                  existingImages: serverImages,
+                  newImages: newImages,
                 );
                 if(success){
                   p_snackbar.show(
                     context: context,
-                    title: "تمت الإضافة بنجاح",
+                    title: "تم تعديل المنتج بنجاح",
                     timer: Duration(seconds: 4),
                   );
                   await Future.delayed(const Duration(seconds: 2));
@@ -697,7 +784,7 @@ class _AddProductsState extends State<AddProducts> {
 
                   p_snackbar.show(
                     context: context,
-                    title: "فشل الإضافة",
+                    title: "فشل التعديل",
                     timer: Duration(seconds: 4),
                     background: color.error,
                     icon: Icons.cancel,

@@ -4,6 +4,7 @@ import '../constants/fonts.dart';
 import '../Design System/AppBar/primary_appbar.dart';
 import '../product_service.dart';
 import '../Design System/SnackBar/primary_snackbar.dart';
+import 'edit_products.dart';
 
 class ViewProducts extends StatefulWidget {
   const ViewProducts({super.key});
@@ -118,12 +119,12 @@ class _ViewProductsState extends State<ViewProducts> {
   }
 
   // دالة تعديل المنتج
-  void _editProduct(Map<String, dynamic> product) {
-    // هنا ستنتقل لصفحة التعديل
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('تعديل المنتج: ${product['title']}')),
-    );
-  }
+  // void _editProduct(Map<String, dynamic> product) {
+  //   // هنا ستنتقل لصفحة التعديل
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(content: Text('تعديل المنتج: ${product['title']}')),
+  //   );
+  // }
 
   // بناء جدول المنتجات
   Widget _buildProductsTable() {
@@ -446,7 +447,17 @@ class _ViewProductsState extends State<ViewProducts> {
                 // زر التعديل
                 IconButton(
                   icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _editProduct(product),
+                  onPressed: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                          EditProducts(
+                            product: product,
+                          ),
+                      ),
+                    ).then((_) { _loadProducts(); });
+                  },
                   tooltip: 'تعديل',
                   iconSize: 20,
                 ),

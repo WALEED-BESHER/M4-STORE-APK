@@ -23,16 +23,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
 });
-
+// جلب المنتجات
 Route::get('/products',
     [ProductController::class,'index']
 );
-
+// حذف المنتجات
 Route::delete(
     '/products/{id}',
     [ProductController::class, 'destroy']
 );
-
+// اضافه منتجات
 Route::post('/products/store',
     [ProductController::class,'store']
+);
+// تعديل المنتجات
+Route::post(
+    '/products/update/{id}',
+    [ProductController::class,'update']
 );
