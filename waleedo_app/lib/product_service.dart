@@ -86,7 +86,7 @@ class ProductService {
     return [];
   }
 
-  //
+  // حذف منتج من قاعده البيانات 
   static Future<bool> deleteProduct(int productId,) async {
     final response = await http.delete(
       Uri.parse(

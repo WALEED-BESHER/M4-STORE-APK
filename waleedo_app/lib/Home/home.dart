@@ -121,7 +121,7 @@ class _HomeState extends State<Home> {
   //     "weight": "3.2", // وزن السلاح
   //     "manufacturing_countrey": "روسيا", // بلاد الصنيع
   //     "manufacturing_company": "Kalashnikov Concern", // الشركه المصنعه
-  //     "usage": true,
+  //     "usage": false,
   //     "sold": 27,
   //     "date": DateTime(2026, 2, 25, 13, 00),
   //     "rating": 4.6,

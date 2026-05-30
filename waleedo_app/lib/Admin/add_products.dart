@@ -58,7 +58,20 @@ class _addProductsState extends State<addProducts> {
 
     if (pickedImages.isNotEmpty) {
       setState(() {
-        images = pickedImages;
+
+        for (var image in pickedImages) {
+
+          bool exists = images.any(
+            (img) => img.path == image.path,
+          );
+
+          if (!exists) {
+            images.add(image);
+          }
+        }
+        images.sort(
+          (a, b) => a.name.compareTo(b.name),
+        );
       });
     }
   }
@@ -136,7 +149,7 @@ class _addProductsState extends State<addProducts> {
               onTap: pickImages,
               child: Container(
                 width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.2,
+                height: images.isEmpty ? MediaQuery.of(context).size.height * 0.2 : MediaQuery.of(context).size.height * 0.3,
                 decoration: BoxDecoration(
                   border: Border.all(color: color.g500),
                   borderRadius: BorderRadius.circular(12),
@@ -156,13 +169,44 @@ class _addProductsState extends State<addProducts> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(8),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.file(
-                                File(images[index].path),
-                                width: 150,
-                                fit: BoxFit.cover,
-                              ),
+                            child: Stack(
+                              children: [
+
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.file(
+                                    File(images[index].path),
+                                    width: 150,
+                                    // height: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+
+                                Positioned(
+                                  top: 5,
+                                  right: 5,
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      setState(() {
+                                        images.removeAt(index);
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 28,
+                                      height: 28,
+                                      decoration: const BoxDecoration(
+                                        color: color.error,
+                                        shape: BoxShape.circle
+                                      ),
+                                      child: Icon(
+                                        Icons.remove,
+                                        color: color.white,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           );
                         },

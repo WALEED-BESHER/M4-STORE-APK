@@ -75,7 +75,7 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
-    
+    //  حذف منتج من المنتجات
     public function destroy($id)
     {
         $product = Product::find($id);

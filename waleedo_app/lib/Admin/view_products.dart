@@ -178,7 +178,7 @@ class _ViewProductsState extends State<ViewProducts> {
         maxWidth = 150;
       }else if(header == 'الوصف'){
         maxWidth = 250;
-      }else if(header == 'النوع' || header == 'العمليات' ){
+      }else if(header == 'العمليات' ){
         maxWidth = 100;
       }
 
@@ -484,7 +484,7 @@ class _ViewProductsState extends State<ViewProducts> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : products.isEmpty
-              ? const Center(child: Text('لا توجد منتجات'))
+              ?  Center(child: Text('لا توجد منتجات',style: fonts.h3.copyWith(color: color.white),))
               : _buildProductsTable(),
 
     );
