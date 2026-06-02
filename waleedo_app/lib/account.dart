@@ -289,7 +289,7 @@ class _AccountState extends State<Account> {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         await s.remove("token");
         await s.remove("first_name");
-        await s.remove("user_id");
+        
         
         p_snackbar.show(
           context: context,
@@ -302,8 +302,26 @@ class _AccountState extends State<Account> {
           (route) => false,
         );
       }
+      // else{
+      //   SharedPreferences s = await SharedPreferences.getInstance();
+      //   await s.remove("token");
+      //   await s.remove("first_name");
+      //   await s.remove("user_id");
+        
+      //   p_snackbar.show(
+      //     context: context,
+      //     title: "تم تسجيل خروجك بنجاح",
+      //     timer: Duration(seconds: 3),
+      //   );
+      //   // الانتقال الى login
+      //   Navigator.of(context).pushNamedAndRemoveUntil(
+      //     "login",
+      //     (route) => false,
+      //   );
+
+      // }
     } catch (e) {
-      print(e);
+      print("wrong");
     }
   }
     

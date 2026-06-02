@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
-import '../constants/fonts.dart';
-import '../Design System/AppBar/primary_appbar.dart';
-import '../product_service.dart';
-import '../Design System/SnackBar/primary_snackbar.dart';
+import '../../constants/colors.dart';
+import '../../constants/fonts.dart';
+import '../../Design System/AppBar/primary_appbar.dart';
+import '../../product_service.dart';
+import '../../Design System/SnackBar/primary_snackbar.dart';
 import 'edit_products.dart';
 
 class ViewProducts extends StatefulWidget {
@@ -117,15 +117,7 @@ class _ViewProductsState extends State<ViewProducts> {
       ),
     );
   }
-
-  // دالة تعديل المنتج
-  // void _editProduct(Map<String, dynamic> product) {
-  //   // هنا ستنتقل لصفحة التعديل
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(content: Text('تعديل المنتج: ${product['title']}')),
-  //   );
-  // }
-
+  
   // بناء جدول المنتجات
   Widget _buildProductsTable() {
     return Directionality(

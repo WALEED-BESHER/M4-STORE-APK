@@ -9,6 +9,7 @@ use App\Models\Otp;
 use App\Mail\SendOtpMail;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
@@ -57,7 +58,7 @@ class AuthController extends Controller
         // إنشاء التوكن
         $token = $user->createToken("mobile_app")->plainTextToken;
         return response()->json([
-            "status" => "success",
+            "status" => "success", 
             "token" => $token,
             "users" => $user,
 
@@ -201,7 +202,7 @@ class AuthController extends Controller
             "user" => $r->user()
         ]);
     }
-    //
+    // تعديل البروفايل
     public function updateProfile(Request $r)
     {
         $user = $r->user();
@@ -222,6 +223,39 @@ class AuthController extends Controller
             "status" => "success",
             "message" => "تم تحديث البيانات بنجاح",
             "user" => $user
+        ]);
+    } 
+
+    public function getUsers()
+    {
+        $users = User::orderBy('id','desc')->get();
+
+        return response()->json([
+            "status" => "success",
+            "users" => UserResource::collection($users)
+        ]);
+    }
+
+    public function toggleActivation($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                "status" => "error",
+                "message" => "المستخدم غير موجود"
+            ], 404);
+        }
+        $user->activation = !$user->activation;
+
+        $user->save();
+
+        return response()->json([
+            "status" => "success",
+            "message" => $user->activation
+                ? "تم تفعيل الحساب"
+                : "تم تعطيل الحساب",
+
+            "activation" => $user->activation
         ]);
     }
 

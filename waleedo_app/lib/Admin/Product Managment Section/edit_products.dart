@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../constants/colors.dart';
-import '../constants/fonts.dart';
-import '../Design System/AppBar/primary_appbar.dart';
-import '../Design System/Buttons/primary_button.dart';
-import '../product_service.dart';
-import '../Design System/SnackBar/primary_snackbar.dart';
+import '../../constants/colors.dart';
+import '../../constants/fonts.dart';
+import '../../Design System/AppBar/primary_appbar.dart';
+import '../../Design System/Buttons/primary_button.dart';
+import '../../product_service.dart';
+import '../../Design System/SnackBar/primary_snackbar.dart';
 
 class EditProducts extends StatefulWidget {
   final Map<String,dynamic> product;

@@ -13,8 +13,10 @@ import 'splash.dart';
 import 'Welcome.dart';
 import 'Admin/admin.dart';
 import 'Admin/product_managment.dart';
-import 'Admin/add_products.dart';
-import 'Admin/view_products.dart';
+import 'Admin/Product Managment Section/add_products.dart';
+import 'Admin/Product Managment Section/view_products.dart';
+import 'Admin/user_managment.dart';
+import 'complete_information.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,6 +52,8 @@ class MyApp extends StatelessWidget {
         "productmanagment":(context)=>ProductManagment(),
         "addproducts":(context)=>AddProducts(),
         "viewproducts":(context)=>ViewProducts(),
+        "usermanagment":(context)=>UserManagment(),
+        "completeinformation":(context)=>CompleteInfomation(),
       },
      
     );

@@ -190,20 +190,20 @@ class _LoginState extends State<Login> {
 
             String token = data["token"];
             String f_name = data["users"]["first_name"];
-            String user_id = data["users"]["id"].toString();
+            
 
             int verification = data["verification"];
-            int activation = data["activation"];
+            int activation = data["activation"]; 
 
             SharedPreferences s = await SharedPreferences.getInstance();
 
             await s.setString("token", token);
             await s.setString("first_name", f_name);
-            await s.setString("user_id", user_id);
+            
 
-            // ===============================
+            // =============================== 
             // فحص verification
-            // ===============================
+            // =============================== 
 
             if (verification == 0) {
 

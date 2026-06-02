@@ -1,8 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:waleedo_app/Design%20System/SnackBar/primary_snackbar.dart';
 import 'constants/colors.dart';
 import 'constants/fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'constants/api.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'Design System/Buttons/primary_button.dart';
 
 
 
@@ -26,19 +31,146 @@ class _SplashState extends State<Splash> {
     SharedPreferences s = await SharedPreferences.getInstance();
     String? token = s.getString("token");
     bool seenwelcome = s.getBool("seenwelcome") ?? false;
-    // اذا يوجد token
-    if (token != null && token.isNotEmpty) {
-      Navigator.pushReplacementNamed(context, "home");
-    }
-    // اذا لا يوجد token
-    else {
-      if(seenwelcome){
+    // اذا لم يوجد توكن
+    if (token == null || token.isEmpty) {
+      if (seenwelcome) { 
+        p_snackbar.show(
+          context: context, 
+          title: "لمزامنه بياناتك يرجى اعاده تسجيل الدخول",
+          background: color.error,
+          icon: Icons.cancel,
+        );
         Navigator.pushReplacementNamed(context, "login");
-      }else{
+      } else {
         Navigator.pushReplacementNamed(context, "welcome");
       }
+      return;
     }
-  }// betobisher@gmail.com Alwaleed770411921
+    try {
+      var response = await http.get(
+        Uri.parse(Api.profile),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ).timeout(const Duration(seconds: 15));
+      if (response.statusCode == 200 && response.statusCode < 300) {
+        var data = jsonDecode(response.body);
+        int activation = data["user"]["activation"];
+        if (activation == 1) {
+          Navigator.pushReplacementNamed(
+            context,
+            "home",
+          );
+        } else {
+          p_snackbar.show(
+            context: context, title: 
+            "تم اغلاق حسابك يرجى التواصل مع فريق الدعم لمزيد من التفاصيل",
+            background: color.error,
+            icon: Icons.cancel,
+            fontType: fonts.sb
+          );
+          // حذف التوكن إذا الحساب مبند
+          await s.remove("token");
+          await s.remove("first_name");
+          Navigator.pushReplacementNamed(
+            context,
+            "login",
+          );
+        }
+      } else if (response.statusCode == 401 || response.statusCode == 403) {
+        p_snackbar.show(
+          context: context, 
+          title: "انتهت صلاحيه الجلسه ارجاء اعادة تسجيل الدخول",
+          background: color.error,
+          icon: Icons.cancel,
+        );
+        // التوكن منتهي أو غير صالح
+        await s.remove("token");
+        await s.remove("first_name");
+        Navigator.pushReplacementNamed(
+          context,
+          "login",
+        );
+      } else if(
+        response.statusCode == 500 ||
+        response.statusCode == 502 ||
+        response.statusCode == 503 ||
+        response.statusCode == 504 
+      ) {
+        showServerErrorDialog();
+      } else{
+        p_snackbar.show(
+          context: context, 
+          title: "فشل تسجيل الدخول يرجى اعاده تسجيل الدخول",
+          background: color.error,
+          icon: Icons.cancel,
+        );
+
+        await s.remove("token");
+        await s.remove("first_name");
+        
+        Navigator.pushReplacementNamed(
+          context,
+          "login",
+        );
+      }
+    } catch (e) {
+      showServerErrorDialog();
+    }
+  } //betobisher10@gmail.com Alwaleed770411921$
+
+  void showServerErrorDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: color.dark2,
+          title: Center(
+            child: Text(
+              "خطأ في الاتصال",
+              style: fonts.lb.copyWith(color: color.white),
+            ),
+          ),
+          content: Text(
+            "تعذر الاتصال بالسيرفر، يرجى المحاولة مرة أخرى.",
+            style: fonts.ss.copyWith(color: color.white),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            p_button(
+              title: "إعادة الاتصال", 
+              onPressed: (){
+                Navigator.pop(context);
+                checkLogin();
+              }
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  // Future<void> checkLogin() async {
+  //   await Future.delayed(const Duration(seconds: 3));
+  //   SharedPreferences s = await SharedPreferences.getInstance();
+  //   String? token = s.getString("token");
+  //   bool seenwelcome = s.getBool("seenwelcome") ?? false;
+  //   // اذا يوجد token
+  //   if (token != null && token.isNotEmpty) {
+  //     Navigator.pushReplacementNamed(context, "home");
+  //   }
+  //   // اذا لا يوجد token
+  //   else {
+  //     if(seenwelcome){
+  //       Navigator.pushReplacementNamed(context, "login");
+  //     }else{
+  //       Navigator.pushReplacementNamed(context, "welcome");
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

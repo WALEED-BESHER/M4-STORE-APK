@@ -21,9 +21,11 @@ class User extends Authenticatable
         "last_name",
         "email",
         "phone_number",
+        "phone_number2",
+        "password",
+        "admin",
         "verification",
         "activation",
-        "password"
     ];
     public $timestamps = false;
 

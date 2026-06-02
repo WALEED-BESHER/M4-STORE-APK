@@ -76,6 +76,9 @@ class Admin extends StatelessWidget {
               sections("إداره المنتجات ", Icons.inventory_2, (){
                 Navigator.pushNamed(context, "productmanagment");
               }),
+              sections("إداره المستخدمين ", Icons.person_2_outlined, (){
+                Navigator.pushNamed(context, "usermanagment");
+              }),
 
 
             ],

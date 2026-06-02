@@ -41,3 +41,7 @@ Route::post(
     '/products/update/{id}',
     [ProductController::class,'update']
 );
+// جلب بيانات المستخدمين الى صفحه اداره المستخدمين
+Route::get('/admin/users',[AuthController::class,'getUsers']);
+// تفعيل + تعطيل الحسابات
+Route::post('/admin/users/{id}/toggle-activation',[AuthController::class,'toggleActivation']);
