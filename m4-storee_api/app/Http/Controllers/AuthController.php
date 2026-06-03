@@ -67,6 +67,16 @@ class AuthController extends Controller
         ]);
     }
 
+    public function logout(Request $r)
+    {
+        // حذف التوكن الحالي
+        $r->user()->tokens()->delete();
+        return response()->json([
+            "status" => "success",
+            "message" => "Logged out"
+        ]);
+    }
+
 
     public function sendOtp(Request $r)
     {
@@ -182,18 +192,6 @@ class AuthController extends Controller
         ]);
     }
 
-
-
-    public function logout(Request $r)
-    {
-        // حذف التوكن الحالي
-        $r->user()->tokens()->delete();
-        return response()->json([
-            "status" => "success",
-            "message" => "Logged out"
-        ]);
-    }
-
     // جلب بيانات البروفايل 
     public function profile(Request $r)
     {
@@ -226,6 +224,7 @@ class AuthController extends Controller
         ]);
     } 
 
+    // جلب بيانات الحسابات
     public function getUsers()
     {
         $users = User::orderBy('id','desc')->get();
@@ -235,7 +234,7 @@ class AuthController extends Controller
             "users" => UserResource::collection($users)
         ]);
     }
-
+    // تفعيل وتعديل الحساب
     public function toggleActivation($id)
     {
         $user = User::find($id);
@@ -246,9 +245,7 @@ class AuthController extends Controller
             ], 404);
         }
         $user->activation = !$user->activation;
-
         $user->save();
-
         return response()->json([
             "status" => "success",
             "message" => $user->activation
@@ -256,6 +253,43 @@ class AuthController extends Controller
                 : "تم تعطيل الحساب",
 
             "activation" => $user->activation
+        ]);
+    }
+    // رفع وسحب الادمن
+    public function toggleAdmin($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                "status" => "error",
+                "message" => "المستخدم غير موجود"
+            ], 404);
+        }
+        $user->admin = !$user->admin;
+        $user->save();
+        return response()->json([
+            "status" => "success",
+            "message" => $user->admin
+                ? " تم رفع المستخدم الى ادمن"
+                : "تم سحب صلاحية الادمن",
+            "admin" => $user->admin
+        ]);
+    }
+    // حذف المستخدم من dashboard
+    public function deleteUser($id)
+    {
+        $user = User::find($id);
+        if(!$user){
+            return response()->json([
+                "status" => "error",
+                "message" => "المستخدم غير موجود"
+            ],404);
+        }
+        $user->tokens()->delete();
+        $user->delete();
+        return response()->json([
+            "status" => "success",
+            "message" => "تم حذف المستخدم بنجاح"
         ]);
     }
 

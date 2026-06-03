@@ -165,7 +165,8 @@ class _LoginState extends State<Login> {
 
         String password = check_inputs.sanitizePassword(login_Password.text);
         password = check_inputs.sha256Hash(password);
-
+        print(password);
+// betobisher10@gmail.com Alwaleed770411921$
         //ارسال البيانات الى laravel
         var url = Uri.parse(Api.login);
         var response = await http
@@ -183,22 +184,19 @@ class _LoginState extends State<Login> {
             .timeout(const Duration(seconds: 15));
 
         if (response.statusCode >= 200 && response.statusCode < 300) {
-
           var data = jsonDecode(response.body);
-
           if (data["status"] == "success") {
-
             String token = data["token"];
             String f_name = data["users"]["first_name"];
-            
-
             int verification = data["verification"];
             int activation = data["activation"]; 
+            // int admin= data["admin"]; 
 
             SharedPreferences s = await SharedPreferences.getInstance();
 
             await s.setString("token", token);
             await s.setString("first_name", f_name);
+            // await s.setInt("admin", admin);
             
 
             // =============================== 

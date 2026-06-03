@@ -354,6 +354,11 @@ class _HomeState extends State<Home> {
     return cartCount;
   }
 
+  void refreshCart() {
+    setState(() {});
+  }
+
+
   
 
   @override
@@ -519,10 +524,10 @@ class _HomeState extends State<Home> {
                 ),
 
                 // ========= قسم افضل العروض ======
-                BestOffersSection(products: Products),
+                BestOffersSection(products: Products,onCartChanged: refreshCart,),
         
                 // ========= الاكثر مبيعا ======
-                BestSellingSection(products: Products,showBestSelling: showBestSelling,),
+                BestSellingSection(products: Products,showBestSelling: showBestSelling,onCartChanged: refreshCart,),
 
                 //=============== البانر حق الاعلانات يبداء هنا ======
                 Bannered(title:"M4_STORE اسم يستحق الثقه" , image: "MainLogo.png", action: (){},showBanner: showBanner,),

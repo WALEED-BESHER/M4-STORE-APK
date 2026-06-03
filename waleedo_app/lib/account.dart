@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants/api.dart';
 import 'package:http/http.dart' as http;
 import 'Design System/SnackBar/primary_snackbar.dart';
+import 'dart:convert';
 // import 'package:url_launcher/url_launcher.dart';
 
 class Account extends StatefulWidget {
@@ -324,6 +325,42 @@ class _AccountState extends State<Account> {
       print("wrong");
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    Checking();
+  }
+
+  //
+  int admin = 0;
+  String? f_name;
+  String? l_name;
+  String? Phone_num;
+  Future<void> Checking() async{
+    SharedPreferences s = await SharedPreferences.getInstance();
+    String? token = s.getString("token");
+    var response = await http.get(
+      Uri.parse(Api.profile),
+      headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token"
+      },
+    );
+    var data = jsonDecode(response.body);
+    if (data["status"] == "success"){
+      var user = data["user"];
+      setState(() {
+        admin = user["admin"];
+        f_name = user["first_name"];
+        l_name = user["last_name"];
+        Phone_num = user["phone_number"];
+       
+      });
+    }
+  }
+
+  
     
 
   @override
@@ -362,7 +399,7 @@ class _AccountState extends State<Account> {
                           SizedBox(height: 8,),
                           // اسم المستخدم
                           Text(
-                            "الوليد بشر",
+                            "${f_name} ${l_name}",
                             style: fonts.lb.copyWith(color: color.white),
                           ),
                           const SizedBox(height: 10),
@@ -370,7 +407,7 @@ class _AccountState extends State<Account> {
                           Container(
                             padding: const EdgeInsets.symmetric(
                               vertical: 16,
-                              horizontal: 38,
+                              horizontal: 34,
                             ),
                             decoration: BoxDecoration(
                               color: color.dark1,
@@ -409,7 +446,7 @@ class _AccountState extends State<Account> {
                                     ),
                                     SizedBox(height: 6),
                                     Text(
-                                      "770411921",
+                                      Phone_num ?? "",
                                       style: fonts.mb.copyWith(color: color.g400),
                                     ),
                                   ],
@@ -567,6 +604,7 @@ class _AccountState extends State<Account> {
                 Icons.info_outline,
                 (){},
               ),
+              if(admin == 1)
               accountItems(
                 "ادمن",
                 Icons.admin_panel_settings_outlined,

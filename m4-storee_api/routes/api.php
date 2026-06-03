@@ -28,10 +28,7 @@ Route::get('/products',
     [ProductController::class,'index']
 );
 // حذف المنتجات
-Route::delete(
-    '/products/{id}',
-    [ProductController::class, 'destroy']
-);
+Route::delete('/products/{id}',[ProductController::class, 'destroy']);
 // اضافه منتجات
 Route::post('/products/store',
     [ProductController::class,'store']
@@ -45,3 +42,8 @@ Route::post(
 Route::get('/admin/users',[AuthController::class,'getUsers']);
 // تفعيل + تعطيل الحسابات
 Route::post('/admin/users/{id}/toggle-activation',[AuthController::class,'toggleActivation']);
+// رفع وسحب الادمن
+Route::post('/admin/users/{id}/toggle-Admin',[AuthController::class,'toggleAdmin']);
+// حذف الحساب
+Route::delete('/admin/users/{id}',[AuthController::class, 'deleteUser']);
+

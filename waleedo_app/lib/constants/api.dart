@@ -11,16 +11,22 @@ class Api {
   static const String logout = "$baseURL/logout";
   static const String sendOtp = "$baseURL/sendOtp";
   static const String verifyOtp = "$baseURL/verifyOtp";
+
   static const String profile = "$baseURL/profile";
   static const String updateProfile = "$baseURL/update-profile";
+  
   static const String product = "$baseURL/products";
   static String deleteProduct(int id) => "$baseURL/products/$id";
-  
   static const String productStore = "$baseURL/products/store";
   static String updateProduct(int id) => "$baseURL/products/update/$id";
+
   static const String getusers = "$baseURL/admin/users";
   static String toggleActivation(int id) {
     return "$baseURL/admin/users/$id/toggle-activation";
   }
+  static String toggleAdmin(int id) {
+    return "$baseURL/admin/users/$id/toggle-Admin";
+  }
+  static String deleteUser(int userId) => "$baseURL/admin/users/$userId";
 
 }

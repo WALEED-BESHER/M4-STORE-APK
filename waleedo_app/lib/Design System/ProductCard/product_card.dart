@@ -17,8 +17,7 @@ class ProductCard extends StatefulWidget {
   final int newPrice;
   final int? oldPrice;
   final ProductCardType type;
-  
-  // final VoidCallback onTap;
+  final VoidCallback? onCartChanged;
 
   const ProductCard({
     super.key,
@@ -28,6 +27,7 @@ class ProductCard extends StatefulWidget {
     required this.newPrice,
     this.oldPrice,
     this.type = ProductCardType.full,
+    this.onCartChanged,
     
   });
 
@@ -218,6 +218,7 @@ class _ProductCardState extends State<ProductCard> {
                                               CartData.removeFromCart(widget.id);
                                             }
                                           });
+                                          widget.onCartChanged?.call();
                                         },
                                         icon: Icon(Icons.remove,
                                             color: color.g200, size: 18),
@@ -255,6 +256,7 @@ class _ProductCardState extends State<ProductCard> {
                                               "images": [widget.image],
                                             }, quantity);
                                           });
+                                          widget.onCartChanged?.call();
                                         },
                                         icon: Icon(Icons.add,
                                             color: color.g200, size: 18),
@@ -279,6 +281,7 @@ class _ProductCardState extends State<ProductCard> {
                                         "images": [widget.image],
                                       }, 1);
                                     });
+                                    widget.onCartChanged?.call();
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: color.p500,

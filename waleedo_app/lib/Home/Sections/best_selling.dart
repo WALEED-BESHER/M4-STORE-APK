@@ -7,10 +7,12 @@ import '../../Design System/ProductCard/product_card.dart';
 class BestSellingSection extends StatelessWidget {
   final List<Map<String, dynamic>> products;
   final bool showBestSelling;
+  final VoidCallback? onCartChanged;
   const BestSellingSection({
     super.key,
     required this.products,
     required this.showBestSelling,
+    this.onCartChanged
   });
 
   @override
@@ -95,8 +97,10 @@ class BestSellingSection extends StatelessWidget {
                   newPrice:  product["newPrice"],
                   oldPrice:  product["oldPrice"],
                   type: getProductCardType(
-                      product["type"],
-                    ),
+                    product["type"],
+                  ),
+                  onCartChanged: onCartChanged,
+                  
                 );
               }).toList(),
             ),

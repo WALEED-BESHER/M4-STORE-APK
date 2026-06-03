@@ -7,6 +7,9 @@ import 'Design System/ProductCard/product_card.dart';
 import 'Design System/AppBar/primary_appbar.dart';
 import 'Design System/Buttons/primary_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'cart_data.dart';
+import '../product_service.dart';
+import 'Home/Sections/cart_banner.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -28,124 +31,10 @@ class _SearchPageState extends State<SearchPage> {
   // =========================================================
 
   // القائمة الأساسية لجميع المنتجات (مصدر البيانات الرئيسي)
-  final List<Map<String, dynamic>> Products = [
-    {
-      "id": 1,
-      "images": [
-        "assets/images/Ak1.jpg",
-        "assets/images/Ak2.jpg",
-        "assets/images/Ak3.jpg",
-        "assets/images/Ak4.jpg",
-      ],
-      "title": " ايكي 103 كرت بصندوقه روسي ",
-      "newPrice": 3200,
-      "oldPrice": 3800,
-      "usage": false,
-      "sold": 18,
-      "date": DateTime(2026, 4, 20, 14, 20),
-      "rating": 4.5,
-      "bestOffer": true,
-    },
-    {
-      "id": 2,
-      "images": [
-        "assets/images/Ak_s_1.jpg",
-        "assets/images/Ak_s_2.jpg",
-        "assets/images/Ak_s_3.jpg",
-        "assets/images/Ak_s_4.jpg",
-      ],
-      "title": "ايكي 104 قصير مستخدم نضيف",
-      "newPrice": 3250,
-      "oldPrice": 3733,
-      "usage": true,
-      "sold": 27,
-      "date": DateTime(2026, 4, 20, 14, 30),
-      "rating": 4.6,
-      "bestOffer": true,
-    },
-    {
-      "id": 3,
-      "images": [
-        "assets/images/M41.jpg",
-      ],
-      "title": "ام فور امريكي درجه اولى",
-      "newPrice": 5000,
-      "oldPrice": 5700,
-      "usage": false,
-      "sold": 20,
-      "type": ProductCardType.hideBoth,
-      "date": DateTime(2025, 7, 8, 7, 00),
-      "rating": 4.9,
-      "bestOffer": false,
-    },
-    {
-      "id": 4,
-      "images": [
-        "assets/images/Sharma1.jpg",
-        "assets/images/Sharma2.jpg",
-        "assets/images/Sharma3.jpg",
-      ],
-      "title": "شرمه جديد مع التوابع استخدام اسبوع فقط",
-      "newPrice": 3466,
-      "oldPrice": 3950,
-      "usage": true,
-      "sold": 11,
-      "date": DateTime(2025, 10, 2, 7, 15),
-      "rating": 4.2,
-      "bestOffer": true,
-    },
-    {
-      "id": 5,
-      "images": ["assets/images/Mosher.jpg",],
-      "title": " مشير جديد زيرو",
-      "newPrice": 2546,
-      "oldPrice": 3200,
-      "usage": false,
-      "type": ProductCardType.hideBoth,
-      "sold": 19,
-      "date": DateTime(2026, 2, 8, 14, 20),
-      "rating": 3.0,
-      "bestOffer": false,
-    },
-    {
-      "id": 6,
-      "images": ["assets/images/Motamarn.jpg",],
-      "title": "موتمر ني كل جديد بلقرطاس",
-      "newPrice": 6200,
-      "oldPrice": 7000,
-      "usage": false,
-      "sold": 14,
-      "date": DateTime(2026, 4, 10, 14, 30),
-      "rating": 4.0,
-      "bestOffer": true,
-    },
-    {
-      "id": 7,
-      "images": ["assets/images/M41.jpg",],
-      "title": "ام فور امري كي درجه اولى",
-      "newPrice": 8000,
-      "oldPrice": 9500,
-      "usage": false,
-      "sold": 27,
-      "type": ProductCardType.hideBoth,
-      "date": DateTime(2025, 7, 18, 7, 00),
-      "rating": 5.0,
-      "bestOffer": false,
-    },
-    {
-      "id": 8,
-      "images": ["assets/images/Glock.jpg",],
-      "title": "كلوك نم ساوي درجه اولى",
-      "newPrice": 2400,
-      "oldPrice": 6300,
-      "usage": false,
-      "sold": 7,
-      "type": ProductCardType.hideBoth,
-      "date": DateTime(2025, 9, 2, 7, 15),
-      "rating": 4.1,
-      "bestOffer": false,
-    },
-  ];
+  List<Map<String, dynamic>> Products = [];
+  Future<void> loadProducts() async {
+    Products = await ProductService.getProducts();
+  }
 
   // =========================================================
   // 🟡 3. SEARCH Variables & Fuctions & Lists and Widgets (دوال ومتغيرات البحث )
@@ -291,9 +180,9 @@ class _SearchPageState extends State<SearchPage> {
     } else if (selectedFilter == "الأرخص") {
       temp.sort((a, b) => a["newPrice"].compareTo(b["newPrice"]));
     } else if (selectedFilter == "مستخدم") {
-      temp = temp.where((item) => item["usage"] == true).toList();
+      temp = temp.where((item) => item["usage"] == 1).toList();
     } else if (selectedFilter == "جديد") {
-      temp = temp.where((item) => item["usage"] == false).toList();
+      temp = temp.where((item) => item["usage"] == 0).toList();
     } else if (selectedFilter == "الأكثر شيوعاً") {
       temp.sort((a, b) => b["sold"].compareTo(a["sold"]));
     } else if (selectedFilter == "الأحدث") {
@@ -473,6 +362,20 @@ class _SearchPageState extends State<SearchPage> {
   // قائمة الفئات
   List<String> categories = ["مسدسات", "الآلي", "قنابل", "رصاص"];
 
+
+  ProductCardType getProductCardType(String? type){
+    switch(type){
+      case "hideDiscount":
+        return ProductCardType.hideDiscount;
+      case "hideBoth":
+        return ProductCardType.hideBoth;
+      case "hideOldPrice":
+        return ProductCardType.hideOldPrice;
+      default:
+        return ProductCardType.full;
+    }
+  } 
+
   // =========================================================
   // ⚙️ 6. LIFECYCLE
   // =========================================================
@@ -483,6 +386,18 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     loadRecentSearches();
+    loadProducts();
+  }
+
+  bool get inCart => CartData.cartItems.isNotEmpty;
+  double get totalPrice {
+    double total = 0;
+
+    for (var item in CartData.cartItems) {
+      total += item["newPrice"] * item["quantity"];
+    }
+
+    return total;
   }
 
   // تنظيف الموارد عند إغلاق الصفحة
@@ -496,372 +411,447 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor:
-          color.dark1, // التأكد من تعريف color.dark1 في ملف الألوان
-      appBar: AppBar(
-        backgroundColor: color.dark2,
-        elevation: 0,
+    return Stack(
+      children: [
 
-        // الجهة اليسرى: زر الفلترة
-        leading: Padding(
-          padding: const EdgeInsets.all(8),
-          child: IconButton(
-            onPressed: () {
-              if (suggestions.isNotEmpty || isSubmitted) {
-                openFilter();
-              }
-            }, // openFilter
-            icon: const Icon(Icons.tune),
-            style: IconButton.styleFrom(
-              backgroundColor: color.f_secondary,
-              foregroundColor: color.g400,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: color.f_primary, width: 2),
-              ),
-            ),
-          ),
-        ),
 
-        // المنتصف: حقل البحث
-        titleSpacing: 0,
-        title: SizedBox(
-          width: double.infinity,
-          height: 40,
-          child: Directionality(
-            textDirection: TextDirection.rtl,
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: searchFocusNode.hasFocus
-                      ? color.b_defultred
-                      : Colors.transparent),
-              child: TextFormField(
-                focusNode: searchFocusNode,
-                textAlign: TextAlign.right,
-                textDirection: TextDirection.rtl,
-                controller: searchController,
-                onTap: () {
-                  setState(() {});
-                },
-                onChanged: (value) {
-                  isSubmitted = false;
-                  isFilteredApply = false;
-                  searchProducts(value);
-                },
-                onFieldSubmitted: (value) {
-                  isSubmitted = true;
-                  selectedFilter = "";
-                  isFilteredApply = false;
-                  searchProducts(value);
-                  saveSearch(value);
-                  setState(() {});
-                },
-                cursorColor: color.g400,
-                style: fonts.sb.copyWith(color: color.g400),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
+        Scaffold(
+          backgroundColor:
+              color.dark1, // التأكد من تعريف color.dark1 في ملف الألوان
+          appBar: AppBar(
+            backgroundColor: color.dark2,
+            elevation: 0,
+
+            // الجهة اليسرى: زر الفلترة
+            leading: Padding(
+              padding: const EdgeInsets.all(8),
+              child: IconButton(
+                onPressed: () {
+                  if (suggestions.isNotEmpty || isSubmitted) {
+                    openFilter();
+                  }
+                }, // openFilter
+                icon: const Icon(Icons.tune),
+                style: IconButton.styleFrom(
+                  backgroundColor: color.f_secondary,
+                  foregroundColor: color.g400,
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: color.p600,
-                    ),
+                    side: BorderSide(color: color.f_primary, width: 2),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: color.g500,
-                    ),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: color.g500,
-                    ),
-                  ),
-                  isDense: true,
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  labelText: "البحث",
-                  alignLabelWithHint: true,
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
-                  labelStyle: fonts.sb.copyWith(
-                    color: color.g400,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    size: 24,
-                  ),
-                  prefixIconColor: WidgetStateColor.resolveWith((states) {
-                    if (states.contains(WidgetState.focused)) {
-                      return color.p600;
-                    }
-                    return color.g100;
-                  }),
-                  suffixIcon: searchController.text.isNotEmpty
-                      ? IconButton(
-                          onPressed: () {
-                            searchController.clear();
-                            suggestions.clear();
-                            selectedProducts.clear();
-                            isSubmitted = false;
-                            isFilteredApply = false;
-                            selectedFilter = "";
-                            setState(() {});
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            size: 24,
-                          ),
-                        )
-                      : null,
-                  suffixIconColor: searchController.text.isNotEmpty
-                      ? WidgetStateColor.resolveWith((states) {
-                          if (states.contains(WidgetState.focused)) {
-                            return color.p600;
-                          }
-                          return color.g100;
-                        })
-                      : null,
                 ),
               ),
             ),
-          ),
-        ),
 
-        // الجهة اليمنى: زر الرجوع
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_forward, size: 28),
-            color: color.g400,
-          ),
-        ],
-      ),
-
-      body: Container(
-        width: double.infinity,
-        // padding: EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-        child: Stack(
-          children: [
-            // 1. شعار المتجر في الخلفية مع Opacity 20%
-            (isSubmitted)
-                ? Container()
-                : Center(
-                    child: Opacity(
-                      opacity: 0.2,
-                      child: Image.asset(
-                        'assets/images/Logo.png',
-                        width: double.infinity,
-                        height: double.infinity,
+            // المنتصف: حقل البحث
+            titleSpacing: 0,
+            title: SizedBox(
+              width: double.infinity,
+              height: 40,
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: searchFocusNode.hasFocus
+                          ? color.b_defultred
+                          : Colors.transparent),
+                  child: TextFormField(
+                    focusNode: searchFocusNode,
+                    textAlign: TextAlign.right,
+                    textDirection: TextDirection.rtl,
+                    controller: searchController,
+                    onTap: () {
+                      setState(() {});
+                    },
+                    onChanged: (value) {
+                      isSubmitted = false;
+                      isFilteredApply = false;
+                      searchProducts(value);
+                    },
+                    onFieldSubmitted: (value) {
+                      isSubmitted = true;
+                      selectedFilter = "";
+                      isFilteredApply = false;
+                      searchProducts(value);
+                      saveSearch(value);
+                      setState(() {});
+                    },
+                    cursorColor: color.g400,
+                    style: fonts.sb.copyWith(color: color.g400),
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: color.p600,
+                        ),
                       ),
-                    ),
-                  ),
-
-            // 2. المحتوى الفعلي (البحوث والفئات)
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // 🔴 1. لو فيه نتائج مختارة (عرض المنتج)
-                  if (isSubmitted)
-                    Expanded(
-                      child: selectedProducts.isEmpty
-                          ? Center(
-                              // اذا بحث ولا يوجد قيمه مرجعه يظهر له هذا
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.80,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Image.asset("assets/images/Nodata.png"),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      isFilteredApply
-                                          ? "لا توجد نتائج مطابقة"
-                                          : "لم يتم العثور على نتائج",
-                                      style:
-                                          fonts.h5.copyWith(color: color.white),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    SizedBox(
-                                      height: 6,
-                                    ),
-                                    Text(
-                                      isFilteredApply
-                                          ? "حاول تعديل خيارات الفلترة للحصول على نتائج أفضل"
-                                          : "لا يوجد أي منتج يطابق بحثك حاليًا. حاول تعديل كلمات البحث أو استكشاف الأقسام",
-                                      style:
-                                          fonts.lm.copyWith(color: color.white),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: color.g500,
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: color.g500,
+                        ),
+                      ),
+                      isDense: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                      labelText: "البحث",
+                      alignLabelWithHint: true,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      labelStyle: fonts.sb.copyWith(
+                        color: color.g400,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        size: 24,
+                      ),
+                      prefixIconColor: WidgetStateColor.resolveWith((states) {
+                        if (states.contains(WidgetState.focused)) {
+                          return color.p600;
+                        }
+                        return color.g100;
+                      }),
+                      suffixIcon: searchController.text.isNotEmpty
+                          ? IconButton(
+                              onPressed: () {
+                                searchController.clear();
+                                suggestions.clear();
+                                selectedProducts.clear();
+                                isSubmitted = false;
+                                isFilteredApply = false;
+                                selectedFilter = "";
+                                setState(() {});
+                              },
+                              icon: Icon(
+                                Icons.close,
+                                size: 24,
                               ),
                             )
-                          : Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 4, vertical: 4),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 4, bottom: 2),
-                                    child: RichText(
-                                      textAlign: TextAlign.right,
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: 'نتائج البحث عن ',
-                                            style: fonts.sb
-                                                .copyWith(color: color.g200),
-                                          ),
-                                          TextSpan(
-                                            text: '" ${searchController.text} "',
-                                            style: fonts.sb.copyWith(
-                                              color: color.g200,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                          : null,
+                      suffixIconColor: searchController.text.isNotEmpty
+                          ? WidgetStateColor.resolveWith((states) {
+                              if (states.contains(WidgetState.focused)) {
+                                return color.p600;
+                              }
+                              return color.g100;
+                            })
+                          : null,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // الجهة اليمنى: زر الرجوع
+            actions: [
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_forward, size: 28),
+                color: color.g400,
+              ),
+            ],
+          ),
+
+          body: Container(
+            width: double.infinity,
+            // padding: EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+            child: Stack(
+              children: [
+                // 1. شعار المتجر في الخلفية مع Opacity 20%
+                (isSubmitted)
+                    ? Container()
+                    : Center(
+                        child: Opacity(
+                          opacity: 0.2,
+                          child: Image.asset(
+                            'assets/images/Logo.png',
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        ),
+                      ),
+
+                // 2. المحتوى الفعلي (البحوث والفئات)
+                Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // 🔴 1. لو فيه نتائج مختارة (عرض المنتج)
+                      if (isSubmitted)
+                        Expanded(
+                          child: selectedProducts.isEmpty
+                              ? Center(
+                                  // اذا بحث ولا يوجد قيمه مرجعه يظهر له هذا
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width * 0.80,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Image.asset("assets/images/Nodata.png"),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          isFilteredApply
+                                              ? "لا توجد نتائج مطابقة"
+                                              : "لم يتم العثور على نتائج",
+                                          style:
+                                              fonts.h5.copyWith(color: color.white),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(
+                                          height: 6,
+                                        ),
+                                        Text(
+                                          isFilteredApply
+                                              ? "حاول تعديل خيارات الفلترة للحصول على نتائج أفضل"
+                                              : "لا يوجد أي منتج يطابق بحثك حاليًا. حاول تعديل كلمات البحث أو استكشاف الأقسام",
+                                          style:
+                                              fonts.lm.copyWith(color: color.white),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(height: 4),
-
-                                  Expanded(
-                                    child: GridView.builder(
-                                      itemCount: selectedProducts.length,
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        crossAxisSpacing: 6,
-                                        mainAxisSpacing: 8,
-                                        childAspectRatio: 0.71,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        final product = selectedProducts[index];
-                                        return Directionality(
-                                          textDirection: TextDirection.ltr,
-                                          child: ProductCard(
-                                            id: product["id"],
-                                            image: product["images"][0],
-                                            title: product["title"],
-                                            newPrice: product["newPrice"],
-                                            oldPrice: product["oldPrice"],
-                                            type: product["type"] ??
-                                                ProductCardType.full,
+                                )
+                              : Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 4, vertical: 4),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 4, bottom: 2),
+                                        child: RichText(
+                                          textAlign: TextAlign.right,
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: 'نتائج البحث عن ',
+                                                style: fonts.sb
+                                                    .copyWith(color: color.g200),
+                                              ),
+                                              TextSpan(
+                                                text: '" ${searchController.text} "',
+                                                style: fonts.sb.copyWith(
+                                                  color: color.g200,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        );
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+
+                                      Expanded(
+                                        child: GridView.builder(
+                                          itemCount: selectedProducts.length,
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2,
+                                            crossAxisSpacing: 6,
+                                            mainAxisSpacing: 8,
+                                            childAspectRatio: 0.71,
+                                          ),
+                                          itemBuilder: (context, index) {
+                                            final product = selectedProducts[index];
+                                            return Directionality(
+                                              textDirection: TextDirection.ltr,
+                                              child: ProductCard(
+                                                id: product["id"],
+                                                image:product["images"][0],
+                                                title: product["title"],
+                                                newPrice: product["newPrice"],
+                                                oldPrice:product["oldPrice"],
+                                                type: getProductCardType(
+                                                  product["type"],
+                                                ),
+                                                onCartChanged: () {
+                                                  setState(() {
+                                                    
+                                                  });
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                        )
+
+                      // 🟡 2. لو يكتب → اقتراحات
+                      else if (searchController.text.isNotEmpty)
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: suggestions.length,
+                            itemBuilder: (context, index) {
+                              final item = suggestions[index];
+                              return Column(
+                                children: [
+                                  Container(
+                                    color: color.dark2,
+                                    padding: EdgeInsets.only(right: 12),
+                                    child: ListTile(
+                                      contentPadding:
+                                          EdgeInsets.symmetric(horizontal: 12),
+                                      trailing: Icon(
+                                        Icons.north_west,
+                                        color: color.g300,
+                                        size: 20,
+                                      ),
+                                      title: Text(
+                                        item["title"],
+                                        style:
+                                            fonts.sb.copyWith(color: color.white),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      onTap: () {
+                                        searchController.text = item["title"];
+                                        searchProducts(item["title"]);
+                                        isSubmitted = true;
+                                        saveSearch(item["title"]);
+                                        setState(() {});
                                       },
                                     ),
+                                  ),
+                                  Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    color: color.dark1,
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        )
+
+                      // 🟢 3. لو فاضي → البحث السابق + الفئات
+                      else
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (recentSearches.isNotEmpty) ...[
+                                    Text("عمليات البحث الاخيره",
+                                        style:
+                                            fonts.xlb.copyWith(color: color.g200)),
+                                    SizedBox(height: 10),
+                                    Wrap(
+                                      spacing: 6,
+                                      runSpacing: 8,
+                                      children: recentSearches
+                                          .map((term) => _buildChip(term, () {
+                                                searchController.text = term;
+                                                searchProducts(term);
+                                                isSubmitted = true;
+                                                saveSearch(term);
+                                              }))
+                                          .toList(),
+                                    ),
+                                    SizedBox(height: 30),
+                                  ],
+                                  Text("جميع الفئات",
+                                      style: fonts.xlb.copyWith(color: color.g200)),
+                                  SizedBox(height: 15),
+                                  Wrap(
+                                    spacing: 6,
+                                    runSpacing: 8,
+                                    children: categories
+                                        .map((cat) => _buildChip(cat, () {}))
+                                        .toList(),
                                   ),
                                 ],
                               ),
                             ),
-                    )
-
-                  // 🟡 2. لو يكتب → اقتراحات
-                  else if (searchController.text.isNotEmpty)
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: suggestions.length,
-                        itemBuilder: (context, index) {
-                          final item = suggestions[index];
-                          return Column(
-                            children: [
-                              Container(
-                                color: color.dark2,
-                                padding: EdgeInsets.only(right: 12),
-                                child: ListTile(
-                                  contentPadding:
-                                      EdgeInsets.symmetric(horizontal: 12),
-                                  trailing: Icon(
-                                    Icons.north_west,
-                                    color: color.g300,
-                                    size: 20,
-                                  ),
-                                  title: Text(
-                                    item["title"],
-                                    style:
-                                        fonts.sb.copyWith(color: color.white),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  onTap: () {
-                                    searchController.text = item["title"];
-                                    searchProducts(item["title"]);
-                                    isSubmitted = true;
-                                    saveSearch(item["title"]);
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                              Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: color.dark1,
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    )
-
-                  // 🟢 3. لو فاضي → البحث السابق + الفئات
-                  else
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              if (recentSearches.isNotEmpty) ...[
-                                Text("عمليات البحث الاخيره",
-                                    style:
-                                        fonts.xlb.copyWith(color: color.g200)),
-                                SizedBox(height: 10),
-                                Wrap(
-                                  spacing: 6,
-                                  runSpacing: 8,
-                                  children: recentSearches
-                                      .map((term) => _buildChip(term, () {
-                                            searchController.text = term;
-                                            searchProducts(term);
-                                            isSubmitted = true;
-                                            saveSearch(term);
-                                          }))
-                                      .toList(),
-                                ),
-                                SizedBox(height: 30),
-                              ],
-                              Text("جميع الفئات",
-                                  style: fonts.xlb.copyWith(color: color.g200)),
-                              SizedBox(height: 15),
-                              Wrap(
-                                spacing: 6,
-                                runSpacing: 8,
-                                children: categories
-                                    .map((cat) => _buildChip(cat, () {}))
-                                    .toList(),
-                              ),
-                            ],
                           ),
                         ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        if(inCart)
+        Positioned(
+          bottom: 20,
+          left: 10,
+          right: 10,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "cart",);
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: color.p500,
+                borderRadius:BorderRadius.circular(48),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: color.white,
+                        size: 24,
                       ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "${totalPrice.toStringAsFixed(0)} \$",
+                        style: fonts.lb.copyWith(
+                          color: color.white,
+                          decoration:TextDecoration.none,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    "عرض السلة",
+                    style: fonts.lb.copyWith(
+                      color: color.white,
+                      decoration:TextDecoration.none,
                     ),
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        )
+
+        
+
+
+      ],
     );
   }
 }

@@ -54,10 +54,8 @@ class _UserManagmentState extends State<UserManagment> {
   }
 
   // activeation
-
   Future<void> _toggleActivation(int userId,) async {
     final result = await UserService.toggleActivation(userId,);
-
     if(result["success"]){
       p_snackbar.show(
         context: context,
@@ -76,49 +74,7 @@ class _UserManagmentState extends State<UserManagment> {
       );
     }
   }
-
-  // Future<void> activateAccount(int userId) async {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       backgroundColor: color.dark2,
-  //       title: Center(
-  //         child: Text(
-  //           'تأكيد التفعيل',
-  //           style: fonts.lb.copyWith(color: color.white),
-  //         ),
-  //       ),
-  //       content: SizedBox(
-  //         height: 18,
-  //         child: Center(
-  //           child: Text(
-  //             'هل أنت متأكد من تعطيل هذا الحساب',
-  //             style: fonts.ss.copyWith(color: color.white),
-  //           ),
-  //         ),
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: Text(
-  //             'إلغاء',
-  //             style: fonts.sb.copyWith(color: color.g600),
-  //           ),
-  //         ),
-  //         TextButton(
-  //           onPressed: () async{
-  //             await(_toggleActivation(userId));
-  //           },
-  //           child: Text(
-  //             'حذف',
-  //             style: fonts.sb.copyWith(color: color.error),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
+ 
   Future<void> activateAccount(int userId,dynamic activation,) async {
     final bool isActive =activation == 1 || activation == true;
     showDialog(
@@ -158,10 +114,8 @@ class _UserManagmentState extends State<UserManagment> {
               ),
             ),
           ),
-
           TextButton(
             onPressed: () async {
-
               Navigator.pop(context);
               await _toggleActivation(
                 userId,
@@ -183,6 +137,167 @@ class _UserManagmentState extends State<UserManagment> {
     );
   }
 
+  // رفع وسحب الادمن
+  Future<void> _toggleAdmin(int userId,) async {
+    final result = await UserService.toggleAdmin(userId,);
+    if(result["success"]){
+      p_snackbar.show(
+        context: context,
+        title: result["message"],
+        timer: const Duration(seconds: 3),
+        background: color.success,
+      );
+      _loadUsers();
+    }else{
+      p_snackbar.show(
+        context: context,
+        title: result["message"],
+        timer: const Duration(seconds: 3),
+        background: color.error,
+        icon: Icons.cancel,
+      );
+    }
+  }
+ 
+  Future<void> Admin(int userId,dynamic admin,) async {
+    final bool isAdmin = admin == 1 || admin == true;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: color.dark2,
+        title: Center(
+          child: Text(
+            isAdmin
+                ? 'تأكيد سحب الاشراف'
+                : 'تأكيد رفع الاشراف',
+            style: fonts.lb.copyWith(
+              color: color.white,
+            ),
+          ),
+        ),
+        content: SizedBox(
+          height: 18,
+          child: Center(
+            child: Text(
+              isAdmin
+                  ? "هل أنت متأكد من سحب صلاحية الأدمن؟"
+                  : "هل أنت متأكد من رفع المستخدم إلى أدمن؟",
+              style: fonts.ss.copyWith(
+                color: color.white,
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'إلغاء',
+              style: fonts.sb.copyWith(
+                color: color.g600,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _toggleAdmin(
+                userId,
+              );
+            },
+            child: Text(
+              isAdmin
+                  ? 'سحب الادمن'
+                  : 'رفع ادمن',
+              style: fonts.sb.copyWith(
+                color: isAdmin
+                    ? color.error
+                    : color.success,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // حذف المستخدم من dashboard
+  Future<void> _deleteUser(int userId) async {
+    final result =
+        await UserService.deleteUser(
+      userId,
+    );
+    if(result["success"]){
+      p_snackbar.show(
+        context: context,
+        title: result["message"],
+        timer: const Duration(seconds: 3),
+        background: color.success,
+      );
+      _loadUsers();
+    }else{
+      p_snackbar.show(
+        context: context,
+        title: result["message"],
+        timer: const Duration(seconds: 3),
+        background: color.error,
+        icon: Icons.cancel,
+      );
+    }
+  }
+
+  Future<void> DeleteUser(int userId) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: color.dark2,
+        title: Center(
+          child: Text(
+            'تأكيد الحذف',
+            style: fonts.lb.copyWith(
+              color: color.white,
+            ),
+          ),
+        ),
+        content: SizedBox(
+          height: 18,
+          child: Center(
+            child: Text(
+              'هل أنت متأكد من حذف هذا المستخدم؟',
+              style: fonts.ss.copyWith(
+                color: color.white,
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'إلغاء',
+              style: fonts.sb.copyWith(
+                color: color.g600,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _deleteUser(
+                userId,
+              );
+            },
+            child: Text(
+              'حذف',
+              style: fonts.sb.copyWith(
+                color:color.error,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
 
   // بناء جدول المنتجات
@@ -318,6 +433,7 @@ class _UserManagmentState extends State<UserManagment> {
               child: Text(
                 users['phone_number'] ?? '-',
                 style: fonts.ms.copyWith(color: color.g200),
+                textDirection: TextDirection.ltr,
               ),
             ),
           ),
@@ -327,6 +443,7 @@ class _UserManagmentState extends State<UserManagment> {
               child: Text(
                 users['phone_number2'] ?? '-',
                 style: fonts.ms.copyWith(color: color.g200),
+                textDirection: TextDirection.ltr,
               ),
             ),
           ),
@@ -373,13 +490,13 @@ class _UserManagmentState extends State<UserManagment> {
                 // ادمن
                 p_button(
                   title: users['admin']  == 1 || users['admin']  == true ?  "سحب الادمن" : "رفع ادمن", 
-                  onPressed: (){},
-                  background: users['admin']  == 1 || users['admin']  == true ? color.warning : color.success,
+                  onPressed: () => Admin(users['id'],users['admin']),
+                  background: users['admin']  == 1 || users['admin']  == true ? color.error : color.success,
                 ),
                 // حذف 
                 p_button(
                   title: "حذف", 
-                  onPressed: (){},
+                  onPressed: () => DeleteUser(users['id']),
                   showRightIcon: true,
                   rightIcon: Icons.delete,
                 ),
