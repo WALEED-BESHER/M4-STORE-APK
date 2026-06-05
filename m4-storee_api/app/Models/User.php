@@ -29,4 +29,8 @@ class User extends Authenticatable
     ];
     public $timestamps = false;
 
+    public function favorites(){
+        return $this->hasMany(Favorites::class);
+    }
+
 }

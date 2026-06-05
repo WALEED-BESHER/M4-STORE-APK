@@ -355,7 +355,6 @@ class _AccountState extends State<Account> {
         f_name = user["first_name"];
         l_name = user["last_name"];
         Phone_num = user["phone_number"];
-       
       });
     }
   }
@@ -514,7 +513,9 @@ class _AccountState extends State<Account> {
               accountItems(
                 "المفضلة",
                 Icons.favorite_border,
-                (){},
+                (){
+                  Navigator.pushNamed(context, "favorites");
+                },
               ),
               // عناوين التوصيل
               accountItems(

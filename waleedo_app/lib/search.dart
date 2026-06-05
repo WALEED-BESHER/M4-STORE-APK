@@ -680,6 +680,7 @@ class _SearchPageState extends State<SearchPage> {
                                                     
                                                   });
                                                 },
+                                                isFavorite: product["isFavorites"],
                                               ),
                                             );
                                           },

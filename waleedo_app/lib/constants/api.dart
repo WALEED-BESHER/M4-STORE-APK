@@ -28,5 +28,6 @@ class Api {
     return "$baseURL/admin/users/$id/toggle-Admin";
   }
   static String deleteUser(int userId) => "$baseURL/admin/users/$userId";
-
+  
+  static const String toggleFavorites = "$baseURL/favorites/toggle";
 }

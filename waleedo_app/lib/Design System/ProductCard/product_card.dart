@@ -3,6 +3,10 @@ import '../../constants/colors.dart';
 import '../../constants/fonts.dart';
 import '../../productdetails.dart';
 import '../../cart_data.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../../constants/api.dart';
 enum ProductCardType {
   full,
   hideDiscount,
@@ -15,6 +19,7 @@ class ProductCard extends StatefulWidget {
   final String image;
   final String title;
   final int newPrice;
+  final bool isFavorite;
   final int? oldPrice;
   final ProductCardType type;
   final VoidCallback? onCartChanged;
@@ -25,10 +30,10 @@ class ProductCard extends StatefulWidget {
     required this.image,
     required this.title,
     required this.newPrice,
+    required this.isFavorite,
     this.oldPrice,
     this.type = ProductCardType.full,
     this.onCartChanged,
-    
   });
 
   @override
@@ -36,7 +41,12 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  bool isFavorite = false;
+  late bool isFavorite;
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = widget.isFavorite;
+  }
   
 
   @override
@@ -174,11 +184,34 @@ class _ProductCardState extends State<ProductCard> {
                     children: [
                       // ❤️ القلب 
                       GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isFavorite = !isFavorite;
-                          });
-                        },
+                        onTap: () async {
+                          try {
+                            SharedPreferences s = await SharedPreferences.getInstance();
+                            String? token = s.getString("token");
+                            final response = await http.post(
+                              Uri.parse(
+                                Api.toggleFavorites,
+                              ),
+                              headers: {
+                                "Accept": "application/json",
+                                "Authorization":"Bearer $token",
+                              },
+                              body: {
+                                "product_id":widget.id.toString(),
+                              },
+                            );
+                            if (response.statusCode == 200) {
+                              final data =jsonDecode(response.body);
+                              setState(() {
+                                isFavorite =
+                                    data["status"] == "added";
+                              });
+                            }
+                          } catch (e) {
+                            print(e);
+                          }
+                        }
+                        ,
                         child: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
                           color: isFavorite ? color.p500 : color.g200,

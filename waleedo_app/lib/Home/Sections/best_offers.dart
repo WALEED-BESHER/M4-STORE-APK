@@ -248,6 +248,7 @@ class _BestOffersSectionState extends State<BestOffersSection> {
                       product["type"],
                     ),
                     onCartChanged: widget.onCartChanged,
+                    isFavorite: product["isFavorites"],
                   ),
                 );
               },

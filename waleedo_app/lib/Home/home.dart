@@ -13,6 +13,7 @@ import 'Sections/banner.dart';
 import 'Sections/new_products.dart';
 import 'Sections/categories.dart';
 import 'Sections/cart_banner.dart';
+import 'Sections/slidder.dart';
 import '../product_service.dart';
 
 class Home extends StatefulWidget {
@@ -43,7 +44,6 @@ class _HomeState extends State<Home> {
   }
 
   //قاىمه الصور الذي في السلايدر
-  int slidercurrentindex = 0;
   final List<String> sliderImages = [
     "assets/images/MainLogo.png",
     "assets/images/45.jpg",
@@ -57,8 +57,7 @@ class _HomeState extends State<Home> {
 
   Future<void> loadProducts() async {
 
-    Products =
-        await ProductService.getProducts();
+    Products = await ProductService.getProducts();
 
     setState(() {
       isLoading = false;
@@ -359,8 +358,6 @@ class _HomeState extends State<Home> {
   }
 
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -468,56 +465,9 @@ class _HomeState extends State<Home> {
                   height: 5,
                 ),
 
-                CarouselSlider(
-                  //===============السلايدر يبدا هنا======
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    autoPlayInterval: const Duration(seconds: 1),
-                    autoPlayAnimationDuration:
-                        const Duration(milliseconds: 400),
-                    height: 170,
-                    enlargeCenterPage: true,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        slidercurrentindex = index;
-                      });
-                    },
-                  ),
-                  items: sliderImages.map((item) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 6),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: color.dark2,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          item,
-                          fit: BoxFit.fill,
-                          width: double.infinity,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                AnimatedSmoothIndicator(
-                  //=============== نقاط السلايدر يبداء هنا ======
-                  activeIndex: slidercurrentindex,
-                  count: sliderImages.length,
-                  effect: const WormEffect(
-                    dotHeight: 8,
-                    dotWidth: 8,
-                    spacing: 5,
-                    dotColor: color.p50,
-                    activeDotColor: color.p500,
-                    paintStyle: PaintingStyle.fill,
-                  ),
-                ),
+                
+                HomeSlider(sliderImages: sliderImages),
+                
 
                 const SizedBox(
                   height: 8,
@@ -534,14 +484,14 @@ class _HomeState extends State<Home> {
 
                 //=============== قسم المنتجات الجديده ======
 
-                NewProducts(products: Products, showNewProducts: showNewProducts,),
+                NewProducts(products: Products, showNewProducts: showNewProducts,onCartChanged:refreshCart ,),
 
                 const SizedBox(
                   height: 10,
                 ),
 
                 //=============== الفئات تبداء هنا ======
-                Categories(products: Products,),
+                Categories(products: Products,onCartChanged:refreshCart),
               ],
             ),
           ),

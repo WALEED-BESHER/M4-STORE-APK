@@ -6,9 +6,11 @@ import '../../cart_data.dart';
 
 class Categories extends StatefulWidget {
   final List<Map<String, dynamic>> products;
+  final VoidCallback? onCartChanged;
   const Categories({
     super.key,
     required this.products,
+    this.onCartChanged,
   });
 
   @override
@@ -147,6 +149,8 @@ class _CategoriesState extends State<Categories> {
                       type:getProductCardType(
                         product["type"],
                       ),
+                      onCartChanged: widget.onCartChanged,
+                      isFavorite: product["isFavorites"],
                     ),
                   );
                 },

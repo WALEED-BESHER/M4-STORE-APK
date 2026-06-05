@@ -34,12 +34,7 @@ class _SplashState extends State<Splash> {
     // اذا لم يوجد توكن
     if (token == null || token.isEmpty) {
       if (seenwelcome) { 
-        p_snackbar.show(
-          context: context, 
-          title: "لمزامنه بياناتك يرجى اعاده تسجيل الدخول",
-          background: color.error,
-          icon: Icons.cancel,
-        );
+        
         Navigator.pushReplacementNamed(context, "login");
       } else {
         Navigator.pushReplacementNamed(context, "welcome");
@@ -54,6 +49,7 @@ class _SplashState extends State<Splash> {
           "Authorization": "Bearer $token",
         },
       ).timeout(const Duration(seconds: 15));
+
       if (response.statusCode == 200 && response.statusCode < 300) {
         var data = jsonDecode(response.body);
         int activation = data["user"]["activation"];
@@ -78,7 +74,9 @@ class _SplashState extends State<Splash> {
             "login",
           );
         }
-      } else if (response.statusCode == 401 || response.statusCode == 403) {
+      } 
+      
+      else if (response.statusCode == 401 || response.statusCode == 403) {
         p_snackbar.show(
           context: context, 
           title: "انتهت صلاحيه الجلسه ارجاء اعادة تسجيل الدخول",
@@ -92,14 +90,18 @@ class _SplashState extends State<Splash> {
           context,
           "login",
         );
-      } else if(
+      }
+
+      else if(
         response.statusCode == 500 ||
         response.statusCode == 502 ||
         response.statusCode == 503 ||
-        response.statusCode == 504 
-      ) {
+        response.statusCode == 504 ) 
+      {
         showServerErrorDialog();
-      } else{
+      } 
+      
+      else{
         p_snackbar.show(
           context: context, 
           title: "فشل تسجيل الدخول يرجى اعاده تسجيل الدخول",
@@ -115,10 +117,12 @@ class _SplashState extends State<Splash> {
           "login",
         );
       }
-    } catch (e) {
+
+    } 
+    catch (e) {
       showServerErrorDialog();
     }
-  } //betobisher10@gmail.com Alwaleed770411921$
+  } 
 
   void showServerErrorDialog() {
     showDialog(

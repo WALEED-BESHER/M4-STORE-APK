@@ -206,6 +206,18 @@ class _BestsellingState extends State<Bestselling> {
       filteredList = temp;
     });
   }
+  ProductCardType getProductCardType(String? type){
+    switch(type){
+      case "hideDiscount":
+        return ProductCardType.hideDiscount;
+      case "hideBoth":
+        return ProductCardType.hideBoth;
+      case "hideOldPrice":
+        return ProductCardType.hideOldPrice;
+      default:
+        return ProductCardType.full;
+    }
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -263,11 +275,14 @@ class _BestsellingState extends State<Bestselling> {
                       textDirection: TextDirection.ltr,
                       child: ProductCard(
                         id: product["id"],
-                        image: product["images"][0],
+                        image:product["images"][0],
                         title: product["title"],
                         newPrice: product["newPrice"],
-                        oldPrice: product["oldPrice"],
-                        type: product["type"] ?? ProductCardType.full,
+                        oldPrice:product["oldPrice"],
+                        type: getProductCardType(
+                          product["type"],
+                        ),
+                        isFavorite: product["isFavorites"],
                       ),
                     );
                   },

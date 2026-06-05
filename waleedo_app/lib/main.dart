@@ -16,6 +16,7 @@ import 'Admin/product_managment.dart';
 import 'Admin/Product Managment Section/add_products.dart';
 import 'Admin/Product Managment Section/view_products.dart';
 import 'Admin/user_managment.dart';
+import 'favorites.dart';
 import 'complete_information.dart';
 
 void main() {
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
         "addproducts":(context)=>AddProducts(),
         "viewproducts":(context)=>ViewProducts(),
         "usermanagment":(context)=>UserManagment(),
+        "favorites":(context)=>Favorites(),
         "completeinformation":(context)=>CompleteInfomation(),
       },
      

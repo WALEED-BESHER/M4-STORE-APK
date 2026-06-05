@@ -5,6 +5,10 @@ import 'Design System/ProductCard/product_card.dart';
 import 'Design System/Buttons/primary_button.dart';
 import 'cart_data.dart';
 import 'product_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'constants/api.dart';
+import 'dart:convert';
 
 class Productdetails extends StatefulWidget {
   final int productId;
@@ -36,7 +40,8 @@ class _ProductdetailsState extends State<Productdetails> {
   // جميع المنتجات القادمة من API
   // تستخدم للبحث عن المنتج الحالي والمنتجات المشابهة
   List<Map<String, dynamic>> products = [];
-  @override
+  // ❤️ القلب 
+  bool isFavorite = false;
 
   @override
   void initState() {
@@ -44,6 +49,7 @@ class _ProductdetailsState extends State<Productdetails> {
     // أول دالة تعمل عند فتح الصفحة
     // تقوم بجلب بيانات المنتج وفحص إذا كان موجوداً في السلة
     loadProduct();
+    
 
     final existingProduct = CartData.getProduct(widget.productId);
     if (existingProduct != null) {
@@ -66,6 +72,7 @@ class _ProductdetailsState extends State<Productdetails> {
       );
       setState(() {
         product = foundProduct;
+        isFavorite = foundProduct["isFavorites"] ?? false;
       });
     } catch (_) {
       setState(() {
@@ -137,7 +144,7 @@ class _ProductdetailsState extends State<Productdetails> {
   }
 
   // ❤️ القلب 
-  bool isFavorite = false;
+  // bool isFavorite;
 
   // متغيرات زر اضافه الى السله
   late bool inCart;
@@ -145,6 +152,7 @@ class _ProductdetailsState extends State<Productdetails> {
   
 
   Widget build(BuildContext context) {
+    
     // أثناء انتظار البيانات من API
     // يتم عرض مؤشر تحميل
     if(product ==null){
@@ -481,6 +489,7 @@ class _ProductdetailsState extends State<Productdetails> {
                                 type:getProductCardType(
                                   product["type"],
                                 ), 
+                                isFavorite: product["isFavorites"],
                               ),
                             );
                           }
@@ -503,10 +512,32 @@ class _ProductdetailsState extends State<Productdetails> {
 
                 // ❤️ القلب 
                 GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isFavorite = !isFavorite;
-                    });
+                  onTap: () async {
+                    try {
+                      SharedPreferences s =await SharedPreferences.getInstance();
+                      String? token =  s.getString("token");
+                      final response = await http.post(
+                        Uri.parse(
+                          Api.toggleFavorites,
+                        ),
+                        headers: {
+                          "Accept": "application/json",
+                          "Authorization":"Bearer $token",
+                        },
+                        body: {
+                          "product_id":currentProduct["id"].toString(),
+                        },
+                      );
+                      if (response.statusCode == 200) {
+                        final data = jsonDecode(response.body);
+                        setState(() {
+                          isFavorite =data["status"] == "added";
+                          product!["isFavorites"] =isFavorite;
+                        });
+                      }
+                    } catch (e) {
+                      print(e);
+                    }
                   },
                   child: Icon(
                     isFavorite ? Icons.favorite : Icons.favorite_border,

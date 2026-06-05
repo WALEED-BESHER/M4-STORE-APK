@@ -100,6 +100,7 @@ class BestSellingSection extends StatelessWidget {
                     product["type"],
                   ),
                   onCartChanged: onCartChanged,
+                  isFavorite: product["isFavorites"],
                   
                 );
               }).toList(),

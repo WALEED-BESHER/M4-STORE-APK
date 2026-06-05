@@ -7,10 +7,12 @@ import '../../Design System/ProductCard/product_card.dart';
 class NewProducts extends StatelessWidget {
   final List<Map<String, dynamic>> products;
   final bool showNewProducts;
+  final VoidCallback? onCartChanged;
   const NewProducts({
     super.key,
     required this.products,
     required this.showNewProducts,
+    this.onCartChanged
   });
 
   @override
@@ -75,6 +77,9 @@ class NewProducts extends StatelessWidget {
                     type: getProductCardType(
                       product["type"],
                     ),
+                    onCartChanged: onCartChanged,
+
+                    isFavorite: product["isFavorites"],
                   ),
                 );
               }

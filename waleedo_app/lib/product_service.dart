@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'constants/api.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class ProductService {
 
   static Future<bool> addProduct({
@@ -71,11 +72,17 @@ class ProductService {
   }
 
   static Future<List<Map<String,dynamic>>> getProducts() async {
+    SharedPreferences s = await SharedPreferences.getInstance();
+    String? token = s.getString("token");
 
     final response = await http.get(
       Uri.parse(
         Api.product
       ),
+      headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
     ); //php artisan serve --host 192.168.1.5 --port 80
     if(response.statusCode == 200){
 

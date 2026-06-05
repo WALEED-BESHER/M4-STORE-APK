@@ -9,6 +9,15 @@ class ProductResource extends JsonResource
 {
     public function toArray($request)
     {
+        $isFavorite = false;
+
+        if ($request->user()) {
+
+            $isFavorite = $request->user()
+                ->favorites()
+                ->where('product_id', $this->id)
+                ->exists();
+        }
         return [
 
             "id" => $this->id,
@@ -21,6 +30,7 @@ class ProductResource extends JsonResource
             "title" => $this->title,
             "type" => $this->type,
             "newPrice" => $this->new_price,
+            "isFavorites" => $isFavorite,
             "oldPrice" => $this->old_price,
             "Description" => $this->description,
             "caliber" => $this->caliber,

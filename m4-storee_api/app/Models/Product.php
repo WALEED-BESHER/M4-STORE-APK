@@ -31,4 +31,8 @@ class Product extends Model
     {
         return $this->hasMany(ProductImage::class);
     }
+    
+    public function favorites(){
+        require $this->hasMany(Favorites::class);
+    }
 }

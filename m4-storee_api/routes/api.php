@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\FavoritesController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -24,9 +25,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
 });
 // جلب المنتجات
-Route::get('/products',
+Route::middleware('auth:sanctum')->get('/products',
     [ProductController::class,'index']
 );
+// Route::get('/products',
+//     [ProductController::class,'index']
+// );
 // حذف المنتجات
 Route::delete('/products/{id}',[ProductController::class, 'destroy']);
 // اضافه منتجات
@@ -46,4 +50,17 @@ Route::post('/admin/users/{id}/toggle-activation',[AuthController::class,'toggle
 Route::post('/admin/users/{id}/toggle-Admin',[AuthController::class,'toggleAdmin']);
 // حذف الحساب
 Route::delete('/admin/users/{id}',[AuthController::class, 'deleteUser']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    // اضافه وحذف المنتجات الى المفله
+    Route::post(
+        '/favorites/toggle',
+        [FavoritesController::class, 'toggle']
+    );
+    // جلب معلومات المفضله
+    Route::get(
+        '/favorites',
+        [FavoritesController::class, 'index']
+    );
+});
 
