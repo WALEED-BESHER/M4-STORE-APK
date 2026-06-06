@@ -34,7 +34,6 @@ class _SplashState extends State<Splash> {
     // اذا لم يوجد توكن
     if (token == null || token.isEmpty) {
       if (seenwelcome) { 
-        
         Navigator.pushReplacementNamed(context, "login");
       } else {
         Navigator.pushReplacementNamed(context, "welcome");
@@ -53,12 +52,28 @@ class _SplashState extends State<Splash> {
       if (response.statusCode == 200 && response.statusCode < 300) {
         var data = jsonDecode(response.body);
         int activation = data["user"]["activation"];
-        if (activation == 1) {
+        int verification = data["user"]["verification"];
+        if (activation == 1 && verification == 1 ) {
           Navigator.pushReplacementNamed(
             context,
             "home",
           );
-        } else {
+        } else if(verification == 0) {
+          p_snackbar.show(
+            context: context,
+            title: "عليك اولا تسجيل الدخول ثم اكمال التحقق من حسابك",
+            timer: Duration(seconds: 5),
+            background: color.error,
+            showIcon: false
+          );
+          await s.remove("token");
+          await s.remove("first_name");
+          Navigator.pushReplacementNamed(
+            context,
+            "login",
+          );
+        } 
+        else {
           p_snackbar.show(
             context: context, title: 
             "تم اغلاق حسابك يرجى التواصل مع فريق الدعم لمزيد من التفاصيل",

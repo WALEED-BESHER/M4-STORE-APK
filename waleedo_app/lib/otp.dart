@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Design System/Buttons/primary_button.dart';
@@ -42,6 +43,11 @@ class _OtpPageState extends State<OtpPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_){
+        f1.requestFocus();
+      }
+    );
     sendOtp();
   }
 
@@ -51,6 +57,29 @@ class _OtpPageState extends State<OtpPage> {
     await sendOtp();
     
   }
+
+  void pasteOtp(String value) {
+    value = value.replaceAll(RegExp(r'[^0-9]'), '');
+    if (value.length == 4) {
+      c1.text = value[0];
+      c2.text = value[1];
+      c3.text = value[2];
+      c4.text = value[3];
+      FocusScope.of(context).unfocus();
+      verifyOtp();
+    }
+    else if (value.length == 3) {
+      c1.text = value[0];
+      c2.text = value[1];
+      c3.text = value[2];
+      FocusScope.of(context).requestFocus(f4);
+    }
+    else if (value.length == 2) {
+      c1.text = value[0];
+      c2.text = value[1];
+      FocusScope.of(context).requestFocus(f3);
+    }
+  }   
 
   void startTimer() {
     timer?.cancel();
@@ -78,53 +107,97 @@ class _OtpPageState extends State<OtpPage> {
     return "$min:${sec.toString().padLeft(2, '0')}";
   }
 
+
+
   Widget otpBox({
     required TextEditingController controller,
     required FocusNode focusNode,
     FocusNode? next,
     FocusNode? prev,
+    bool allowPaste = false,
   }) {
     return SizedBox(
       width: 58,
       height: 58,
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        style: fonts.h6.copyWith(color: color.white),
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-        ],
-        decoration: InputDecoration(
-          counterText: "",
-          filled: true,
-          fillColor: focusNode.hasFocus ? color.b_hoverdred : color.dark2,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: color.dark3, width: 2),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(
-              color: color.p600,
-              width: 2,
+      child: Focus(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.backspace &&
+              controller.text.isEmpty &&
+              prev != null) {
+            prev.requestFocus();
+            if (prev == f1) {
+              c1.clear();
+            } else if (prev == f2) {
+              c2.clear();
+            } else if (prev == f3) {
+              c3.clear();
+            }
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: TextField(
+          controller: controller,
+          focusNode: focusNode,
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          maxLength: allowPaste ? 4 : 1,
+          style: fonts.h6.copyWith(color: color.white),
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
+          decoration: InputDecoration(
+            counterText: "",
+            filled: true,
+            fillColor:
+                focusNode.hasFocus ? color.b_hoverdred : color.dark2,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(
+                color: color.dark3,
+                width: 2,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(
+                color: color.p600,
+                width: 2,
+              ),
             ),
           ),
+          onChanged: (value) {
+            // لصق OTP كامل
+            if (value.length > 1) {
+              pasteOtp(value);
+              return;
+            } 
+            // كتابة رقم
+            if (value.isNotEmpty) {
+              if (next != null) {
+                next.requestFocus();
+              } else {
+                String otp =
+                    c1.text +
+                    c2.text +
+                    c3.text +
+                    c4.text;
+                if (otp.length == 4) {
+                  verifyOtp();
+                }
+              }
+            }
+            // حذف رقم من الحقل الحالي
+            if (value.isEmpty && prev != null) {
+              prev.requestFocus();
+            }
+          },
         ),
-        onChanged: (value) {
-          if (value.isNotEmpty && next != null) {
-            FocusScope.of(context).requestFocus(next);
-          }
-
-          if (value.isEmpty && prev != null) {
-            FocusScope.of(context).requestFocus(prev);
-          }
-        },
       ),
     );
-  }
+  } 
+
 
   Future<void> verifyOtp() async {
     String otp =
@@ -154,7 +227,6 @@ class _OtpPageState extends State<OtpPage> {
         title: 'تم تسجيل الدخول بنجاح',
         timer: Duration(seconds: 3),
       );
-
       Navigator.pushReplacementNamed(
         context,
         "home",
@@ -171,9 +243,7 @@ class _OtpPageState extends State<OtpPage> {
   }
 
   Future<void> sendOtp() async {
-
     var url = Uri.parse(Api.sendOtp);
-
     var response = await http.post(
       url,
       headers: {
@@ -184,15 +254,10 @@ class _OtpPageState extends State<OtpPage> {
         "email": widget.email
       }),
     );
-
     var data = jsonDecode(response.body);
-
     setState(() {
-
       seconds = data["seconds"].toInt();
-
-    });// betobisher@gmail.com Alwaleed770411921$
-
+    });
     startTimer();
   }
 
@@ -201,7 +266,6 @@ class _OtpPageState extends State<OtpPage> {
   @override
   void dispose() {
     timer?.cancel();
-
     c1.dispose();
     c2.dispose();
     c3.dispose();
@@ -211,7 +275,6 @@ class _OtpPageState extends State<OtpPage> {
     f2.dispose();
     f3.dispose();
     f4.dispose();
-
     super.dispose();
   }
 
@@ -226,92 +289,87 @@ class _OtpPageState extends State<OtpPage> {
         showAction: true,
         btn3icon: Icons.arrow_forward,
       ),
-      body: Container(
-        width: double.infinity,
-        // margin: const EdgeInsets.symmetric(horizontal: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-        // decoration: BoxDecoration(
-        //   color: const Color(0xff111522),
-        //   borderRadius: BorderRadius.circular(28),
-        // ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 50),
-            Text(
-              "تم إرسال الكود إلى ${widget.email}",
-              style: fonts.ms.copyWith(color: color.white),
-              textDirection: TextDirection.rtl,
-            ),
-          
-            const SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                otpBox(controller: c1, focusNode: f1, next: f2),
-                const SizedBox(width: 15),
-                otpBox(
-                  controller: c2,
-                  focusNode: f2,
-                  next: f3,
-                  prev: f1,
-                ),
-                const SizedBox(width: 15),
-                otpBox(
-                  controller: c3,
-                  focusNode: f3,
-                  next: f4,
-                  prev: f2,
-                ),
-                const SizedBox(width: 15),
-                otpBox(
-                  controller: c4,
-                  focusNode: f4,
-                  prev: f3,
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-
-            Container(// betobisher@gmail.com Alwaleed770411921$
-              height: 40,
-              child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                seconds > 0
-                    ? Text(
-                        formatTime(seconds),
-                        style: fonts.lb.copyWith(color: color.p500),
-                        textDirection: TextDirection.rtl,
-                      )
-                    : TextButton(
-                        onPressed: resendCode,
-                        child: Text(
-                          "إرسال مجدداً",
-                          style: fonts.lb.copyWith(
-                            color: color.p500,
-                            decoration: TextDecoration.underline,
-                            decorationColor: color.p500,
+      body: SingleChildScrollView(
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 50),
+              Text(
+                "تم إرسال الكود إلى ${widget.email}",
+                style: fonts.ms.copyWith(color: color.white),
+                textDirection: TextDirection.rtl,
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  otpBox(controller: c1, focusNode: f1, next: f2,allowPaste: true),
+                  const SizedBox(width: 15),
+                  otpBox(
+                    controller: c2,
+                    focusNode: f2,
+                    next: f3,
+                    prev: f1,
+                  ),
+                  const SizedBox(width: 15),
+                  otpBox(
+                    controller: c3,
+                    focusNode: f3,
+                    next: f4,
+                    prev: f2,
+                  ),
+                  const SizedBox(width: 15),
+                  otpBox(
+                    controller: c4,
+                    focusNode: f4,
+                    prev: f3,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30),
+              Container(
+                height: 40,
+                child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  seconds > 0
+                      ? Text(
+                          formatTime(seconds),
+                          style: fonts.lb.copyWith(color: color.p500),
+                          textDirection: TextDirection.rtl,
+                        )
+                      : TextButton(
+                          onPressed: resendCode,
+                          child: Text(
+                            "إرسال مجدداً",
+                            style: fonts.lb.copyWith(
+                              color: color.p500,
+                              decoration: TextDecoration.underline,
+                              decorationColor: color.p500,
+                            ),
                           ),
                         ),
-                      ),
-                SizedBox(
-                  width: 4,
-                ),
-                Text(
-                  "سيتم إرسال الكود بعد ",
-                  style: fonts.lm.copyWith(color: color.white),
-                ),
-              ],
-            ),
-            ),
-            const SizedBox(height: 20),
-            p_button(
-              title: "تحقق",
-              onPressed: verifyOtp,
-              height: 50,
-            ),
-          ],
+                  SizedBox(
+                    width: 4,
+                  ),
+                  Text(
+                    "سيتم إرسال الكود بعد ",
+                    style: fonts.lm.copyWith(color: color.white),
+                  ),
+                ],
+              ),
+              ),
+              const SizedBox(height: 20),
+              p_button(
+                title: "تحقق",
+                onPressed: verifyOtp,
+                height: 50,
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Container(
