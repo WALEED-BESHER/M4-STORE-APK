@@ -551,7 +551,7 @@ class _SearchPageState extends State<SearchPage> {
             // الجهة اليمنى: زر الرجوع
             actions: [
               IconButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.pop(context,true),
                 icon: const Icon(Icons.arrow_forward, size: 28),
                 color: color.g400,
               ),

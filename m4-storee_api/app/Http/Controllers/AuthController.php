@@ -44,18 +44,19 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([
                 "status" => "error", 
-                "message" => "User not found"
+                "message" => "لا يوجد حساب مرتبط بهذا البريد الإلكتروني"
             ]);
         }
         //التحقق من كلمه المرور
         if (!Hash::check($r->password, $user->password)) {
             return response()->json([
                 "status" => "error",
-                "message" => "Password Incorrect"
+                "message" => "البريد الإلكتروني أو كلمة المرور غير صحيح يرجى التاكد واعاده المحاولة"
             ]);
         }
-
-        // إنشاء التوكن
+        // حذف التوكنات السابقه
+        $user->tokens()->delete();
+        // إنشاء توكن جديد
         $token = $user->createToken("mobile_app")->plainTextToken;
         return response()->json([
             "status" => "success", 
@@ -290,6 +291,32 @@ class AuthController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "تم حذف المستخدم بنجاح"
+        ]);
+    }
+
+    // تغير كلمه السر من داخل الحساب
+    public function changePassword(Request $r)
+    {
+        $r->validate([
+            "oldpassword" => "required",
+            "newpassword" => "required|min:5",
+        ]);
+        $user = $r->user();
+        // فحص كلمة المرور القديمة
+        if (!Hash::check($r->oldpassword,$user->password)) {
+            return response()->json([
+                "status" => "error",
+                "message" => "كلمة المرور السابقة غير صحيحة"
+            ]);
+        }
+        // تحديث كلمة المرور
+        $user->password = Hash::make(
+            $r->newpassword
+        );
+        $user->save();
+        return response()->json([
+            "status" => "success",
+            "message" => "تم تغيير كلمة المرور بنجاح"
         ]);
     }
 

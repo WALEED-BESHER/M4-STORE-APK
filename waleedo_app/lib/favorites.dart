@@ -13,6 +13,7 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
+  bool isLoading = true;
 
   List<Map<String,dynamic>> Products = [];
   List<Map<String,dynamic>> filteredList = [];
@@ -23,7 +24,9 @@ class _FavoritesState extends State<Favorites> {
           product["isFavorites"] == true,
     ).toList();
 
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   } 
 
   @override
@@ -57,7 +60,10 @@ class _FavoritesState extends State<Favorites> {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
         child: Directionality(
           textDirection: TextDirection.rtl,
-          child: filteredList.isEmpty
+          child:  isLoading ? const Center(
+            child: CircularProgressIndicator(color: color.p500,),
+          )
+          :filteredList.isEmpty
               ? Center(
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.80,
@@ -78,7 +84,7 @@ class _FavoritesState extends State<Favorites> {
                           height: 6,
                         ),
                         Text(
-                          "لا يوجد منتجات تم  اضافتها",
+                          "لا يوجد منتجات تم اضافتها",
                           style: fonts.lm.copyWith(color: color.white),textAlign: TextAlign.center,
                         ),
                       ],
@@ -86,6 +92,7 @@ class _FavoritesState extends State<Favorites> {
                   ),
                 )
               : GridView.builder(
+                scrollDirection: Axis.vertical,
                   itemCount: filteredList.length, // ⭐ استخدمنا الجديدة
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -95,19 +102,23 @@ class _FavoritesState extends State<Favorites> {
                   ),
                   itemBuilder: (context, index) {
                     final product = filteredList[index];
-
                     return Directionality(
                       textDirection: TextDirection.ltr,
                       child: ProductCard(
                         id: product["id"],
-                    image:product["images"][0],
-                    title: product["title"],
-                    newPrice: product["newPrice"],
-                    oldPrice:product["oldPrice"],
-                    type: getProductCardType(
-                      product["type"],
-                    ),
-                    isFavorite: product["isFavorites"],
+                        image:product["images"][0],
+                        title: product["title"],
+                        newPrice: product["newPrice"],
+                        oldPrice:product["oldPrice"],
+                        type: getProductCardType(
+                          product["type"],
+                        ),
+                        isFavorite: product["isFavorites"],
+                        onCartChanged: () {
+                          setState(() {
+                          });
+                          loadProducts();
+                        },
                       ),
                     );
                   },

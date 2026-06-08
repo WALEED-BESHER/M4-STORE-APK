@@ -176,19 +176,13 @@ class _AccountState extends State<Account> {
   bool showSecuirity = false;
   bool showSupport = false;
 
-
   int get cartSize {
     int cartCount = 0;
-
     for (var item in CartData.cartItems) {
       cartCount += item["quantity"] as int;
     }
-
     return cartCount;
   }
-
-
-
   
   void showLogoutSheet(BuildContext context) {
     showModalBottomSheet(
@@ -273,8 +267,6 @@ class _AccountState extends State<Account> {
     );
   }
 
-
-
   Future<void> logout() async {
     try {
       SharedPreferences s = await SharedPreferences.getInstance();
@@ -290,8 +282,6 @@ class _AccountState extends State<Account> {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         await s.remove("token");
         await s.remove("first_name");
-        
-        
         p_snackbar.show(
           context: context,
           title: "تم تسجيل خروجك بنجاح",
@@ -322,7 +312,13 @@ class _AccountState extends State<Account> {
 
       // }
     } catch (e) {
-      print("wrong");
+      p_snackbar.show(
+        context: context,
+        title: "تعذر الاتصال بالخادم، تحقق من اتصال الإنترنت ثم أعد المحاولة",
+        timer:const Duration(seconds: 5),
+        background: color.error,
+        icon: Icons.cancel,
+      );
     }
   }
 
@@ -333,39 +329,55 @@ class _AccountState extends State<Account> {
   }
 
   //
+  bool isLoading = true;
   int admin = 0;
   String? f_name;
   String? l_name;
   String? Phone_num;
   Future<void> Checking() async{
-    SharedPreferences s = await SharedPreferences.getInstance();
-    String? token = s.getString("token");
-    var response = await http.get(
-      Uri.parse(Api.profile),
-      headers: {
-        "Accept": "application/json",
-        "Authorization": "Bearer $token"
-      },
-    );
-    var data = jsonDecode(response.body);
-    if (data["status"] == "success"){
-      var user = data["user"];
+    try{
+      SharedPreferences s = await SharedPreferences.getInstance();
+      String? token = s.getString("token");
+      var response = await http.get(
+        Uri.parse(Api.profile),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer $token"
+        },
+      );
+      var data = jsonDecode(response.body);
+      if (data["status"] == "success"){
+        var user = data["user"];
+        setState(() {
+          admin = user["admin"];
+          f_name = user["first_name"];
+          l_name = user["last_name"];
+          Phone_num = user["phone_number"];
+          isLoading = false;
+        });
+      }
+    }
+    catch(e){
       setState(() {
-        admin = user["admin"];
-        f_name = user["first_name"];
-        l_name = user["last_name"];
-        Phone_num = user["phone_number"];
+        isLoading = false;
       });
     }
   }
-
-  
     
-
   @override
   Widget build(BuildContext context) {
+
+    if(isLoading){
+      return Scaffold(
+        backgroundColor: color.dark1,
+        body: Center(
+          child: CircularProgressIndicator(color: color.p500,),
+        ),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: color.dark1 ,
+      backgroundColor: color.dark1,
 
       body: SingleChildScrollView(
         child: Container(
@@ -541,7 +553,9 @@ class _AccountState extends State<Account> {
                 },
                 title1: "تغسر كلمه المرور",
                 icon1: Icons.password_outlined,
-                link1: (){},
+                link1: (){
+                  Navigator.pushNamed(context, "changepassword");
+                },
                 show2: true,
                 title2: "الشروط والاحكام",
                 icon2: Icons.description_outlined,

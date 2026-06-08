@@ -72,7 +72,6 @@ class _ProductCardState extends State<ProductCard> {
 
     return GestureDetector(
       onTap: () {
-        // الانتقال لصفحة التفاصيل
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -80,7 +79,11 @@ class _ProductCardState extends State<ProductCard> {
               productId: widget.id,
             ),
           ),
-        );
+        ).then((result){
+          if(result == true){
+            widget.onCartChanged?.call();
+          }
+        });
         // print(widget.id);
       },
       child: Container(
@@ -206,12 +209,12 @@ class _ProductCardState extends State<ProductCard> {
                                 isFavorite =
                                     data["status"] == "added";
                               });
+                              widget.onCartChanged?.call();
                             }
                           } catch (e) {
                             print(e);
                           }
-                        }
-                        ,
+                        },
                         child: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
                           color: isFavorite ? color.p500 : color.g200,

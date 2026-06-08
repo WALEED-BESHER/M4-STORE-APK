@@ -265,7 +265,7 @@ class _ProductdetailsState extends State<Productdetails> {
             ),
             actions: [
               _appbaricon(Icons.arrow_forward, () {
-                Navigator.pop(context);
+                Navigator.pop(context , true);
               }) // علامة الرجوع
             ],
           ),

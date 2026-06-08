@@ -18,6 +18,7 @@ import 'Admin/Product Managment Section/view_products.dart';
 import 'Admin/user_managment.dart';
 import 'favorites.dart';
 import 'complete_information.dart';
+import 'change_password.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         "usermanagment":(context)=>UserManagment(),
         "favorites":(context)=>Favorites(),
         "completeinformation":(context)=>CompleteInfomation(),
+        "changepassword":(context)=>ChangePassword(),
       },
      
     );

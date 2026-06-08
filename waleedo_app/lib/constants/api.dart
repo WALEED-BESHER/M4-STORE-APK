@@ -30,4 +30,5 @@ class Api {
   static String deleteUser(int userId) => "$baseURL/admin/users/$userId";
   
   static const String toggleFavorites = "$baseURL/favorites/toggle";
+  static const String changepassword = "$baseURL/change-password";
 }

@@ -50,9 +50,9 @@ Route::post('/admin/users/{id}/toggle-activation',[AuthController::class,'toggle
 Route::post('/admin/users/{id}/toggle-Admin',[AuthController::class,'toggleAdmin']);
 // حذف الحساب
 Route::delete('/admin/users/{id}',[AuthController::class, 'deleteUser']);
-
+// اضافه وحذف المنتجات الى المفضله + جلب معلومات المفضله
 Route::middleware('auth:sanctum')->group(function () {
-    // اضافه وحذف المنتجات الى المفله
+    // اضافه وحذف المنتجات الى المفضله
     Route::post(
         '/favorites/toggle',
         [FavoritesController::class, 'toggle']
@@ -63,4 +63,9 @@ Route::middleware('auth:sanctum')->group(function () {
         [FavoritesController::class, 'index']
     );
 });
+// تغير كلمه السر
+Route::middleware('auth:sanctum')->post(
+    '/change-password',[AuthController::class,'changePassword']
+);
+
 

@@ -189,26 +189,17 @@ class _LoginState extends State<Login> {
 
         if (response.statusCode >= 200 && response.statusCode < 300) {
           var data = jsonDecode(response.body);
+          // اذا عمليه تسجيل الدخول صحيحه
           if (data["status"] == "success") {
             String token = data["token"];
             String f_name = data["users"]["first_name"];
             int verification = data["verification"];
             int activation = data["activation"]; 
-            // int admin= data["admin"]; 
-
             SharedPreferences s = await SharedPreferences.getInstance();
-
             await s.setString("token", token);
             await s.setString("first_name", f_name);
-            // await s.setInt("admin", admin);
-            
-
-            // =============================== 
             // فحص verification
-            // =============================== 
-
             if (verification == 0) {
-
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -217,26 +208,17 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               );
-
-              // Navigator.of(context).pushNamed("otp");
-
               p_snackbar.show(
                 context: context,
-                title: "عليك اولا اكمال التحقق من حسابك",
+                title: "يجب التحقق من البريد الإلكتروني قبل متابعة تسجيل الدخول",
                 timer: Duration(seconds: 5),
                 background: color.error,
                 showIcon: false
               );
             }
-
-            // ===============================
             // فحص activation
-            // ===============================
-
             else {
-
               if (activation == 0) {
-
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -269,40 +251,32 @@ class _LoginState extends State<Login> {
                     );
                   },
                 );
-
               } else {
                 p_snackbar.show(
                   context: context,
-                  title: 'تم تسجيل الدخول بنجاح',
+                  title: 'مرحباً بك، تم تسجيل الدخول بنجاح',
                   timer: Duration(seconds: 3),
                 );
-
                 Navigator.of(context).pushReplacementNamed("home");
-
               }
-
             }
-
             // تفريغ الحقول
             void clear() {
               login_Email.clear();
               login_Password.clear();
             }
-
             clear();
-
-          } else {
-
+          } 
+          // اذا حصل خطاء اثناء تسجيل الدخول
+          else {
             p_snackbar.show(
               context: context,
-              title: 'البريد الإلكتروني أو كلمة المرور خاطئة',
-              timer: Duration(seconds: 3),
+              title: data["message"] , // 'البريد الإلكتروني أو كلمة المرور خاطئة'
+              timer: Duration(seconds: 5),
               background: color.error,
               icon: Icons.cancel,
             );
-
           }
-
         }
           
         else {
@@ -311,8 +285,8 @@ class _LoginState extends State<Login> {
       } catch (e) {
         p_snackbar.show(
           context: context,
-          title: "حدث خطأ في الاتصال بالسيرفر",
-          timer: Duration(seconds: 3),
+          title: "تعذر الاتصال بالخادم، تحقق من اتصال الإنترنت ثم أعد المحاولة",
+          timer:const Duration(seconds: 5),
           background: color.error,
           icon: Icons.cancel,
         );

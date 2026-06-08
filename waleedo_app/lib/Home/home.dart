@@ -370,7 +370,11 @@ class _HomeState extends State<Home> {
           children: [
             IconButton(
               onPressed: () {
-                Navigator.of(context).pushNamed("search");
+                Navigator.of(context).pushNamed("search").then((result){
+                  if(result == true){
+                    refreshCart();
+                  }
+                });
               },
               icon: Icon(Icons.search),
               style: ButtonStyle(
