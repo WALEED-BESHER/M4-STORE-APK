@@ -11,6 +11,8 @@ class Api {
   static const String logout = "$baseURL/logout";
   static const String sendOtp = "$baseURL/sendOtp";
   static const String verifyOtp = "$baseURL/verifyOtp";
+  static const String checkemail = "$baseURL/checkemail";
+  static const String resetPassword = "$baseURL/forget-password";
 
   static const String profile = "$baseURL/profile";
   static const String updateProfile = "$baseURL/update-profile";

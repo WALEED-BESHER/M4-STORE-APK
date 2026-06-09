@@ -20,6 +20,9 @@ Route::post("/sendOtp",[AuthController::class,"sendOtp"]);
 
 Route::post("/verifyOtp",[AuthController::class,"verifyOtp"]);
 
+Route::post("/checkemail",[AuthController::class,"checkemail"]);
+Route::post("/forget-password",[AuthController::class,"forgetPassword"]);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);

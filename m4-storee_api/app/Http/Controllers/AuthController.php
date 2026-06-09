@@ -82,9 +82,12 @@ class AuthController extends Controller
     public function sendOtp(Request $r)
     {
         $r->validate([
-            "email" => "required|email"
+            "email" => "required|email",
+            "type" => "required|in:verification,forget-password"
         ]);
         $email = $r->email;
+        $type = $r->type;
+
         $times = [
             59,
             179,
@@ -94,16 +97,18 @@ class AuthController extends Controller
             42480,
             84960
         ];
-        $otp = Otp::where("email", $email)->first();
+
+        $otp = Otp::where("email", $email)->where("type",$type)->first();
         // إذا لا يوجد OTP
         if (!$otp) {
             $code = rand(1000, 9999);
             $otp = Otp::create([
                 "email" => $email,
+                "type" => $type,
                 "code" => $code,
                 "expires_at" => now()->addMinutes(5),
                 "resend_count" => 0,
-                "blocked_until" => now()
+                "blocked_until" => now(),
             ]);
         }
         // إذا الحظر لم ينتهِ
@@ -124,7 +129,7 @@ class AuthController extends Controller
         }
         // إرسال الإيميل
         Mail::to($email)->send(
-            new SendOtpMail($otp->code)
+            new SendOtpMail($otp->code,$type)
         );
 
         // اختيار الوقت
@@ -147,16 +152,38 @@ class AuthController extends Controller
         ]);
     }
 
+    public function checkemail(Request $r){
+        $r->validate([
+            "email" => "required|email",
+        ]);
+
+
+        $user = User::where("email",$r->email)->first();
+        if (!$user) {
+            return response()->json([
+                "status" => "error",
+                "message" => "لا يوجد حساب مرتبط بهذا البريد الإلكتروني"
+            ]);
+        }
+            
+        return response()->json([
+            "status" => "success",
+        ]);
+        
+    }
+
     
     public function verifyOtp(Request $r)
     {
         $r->validate([
             "email" => "required|email",
-            "code" => "required"
+            "code" => "required",
+            "type" => "required|in:verification,forget-password"
         ]);
 
         $otp = Otp::where("email", $r->email)
             ->where("code", $r->code)
+            ->where("type", $r->type)
             ->first();
 
         if (!$otp) {
@@ -180,16 +207,74 @@ class AuthController extends Controller
         // تعديل verification
         $user = User::where("email", $r->email)->first();
 
-        $user->verification = 1;
+        if($r->type === "verification"){
+            $user->verification = 1;
+            $user->save();
+            // حذف OTP
+            $otp->delete();
+            return response()->json([
+                "status" => "success",
+                "message" => "تم التحقق بنجاح"
+            ]);
 
+        }
+
+        if($r->type === "forget-password"){
+            $otp->save();
+            return response()->json([
+                "status" => "success",
+                "message" => "تم التحقق من الكود، الآن يمكنك تعيين كلمة المرور الجديدة"
+            ]);
+        }
+    }
+    // نسيان كلمه السر
+    public function forgetPassword(Request $r)
+    {
+        $r->validate([
+            "email" => "required|email",
+            "code" => "required",
+            "password" => "required|min:5",
+            "type" => "required|in:forget-password",
+        ]);
+
+        $otp = Otp::where("email", $r->email)
+            ->where("code", $r->code)
+            ->where("type", "forget-password")
+            ->first();
+            
+        if (!$otp) {
+            return response()->json([
+                "status" => "error",
+                "message" => "لم يتم التحقق من الكود أو الكود غير صحيح"
+            ]);
+        }
+
+        if (Carbon::now()->gt($otp->expires_at)) {
+            $otp->delete();
+
+            return response()->json([
+                "status" => "error",
+                "message" => "انتهت صلاحية الكود"
+            ]);
+        }
+
+        $user = User::where("email", $r->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => "error",
+                "message" => "المستخدم غير موجود"
+            ]);
+        }
+
+        $user->password = Hash::make($r->password);
         $user->save();
 
-        // حذف OTP
         $otp->delete();
 
         return response()->json([
             "status" => "success",
-            "message" => "تم التحقق بنجاح"
+            "message" => "تم تغيير كلمة المرور بنجاح"
         ]);
     }
 

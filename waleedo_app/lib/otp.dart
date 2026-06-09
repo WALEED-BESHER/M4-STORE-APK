@@ -11,12 +11,15 @@ import 'package:http/http.dart' as http;
 import 'constants/api.dart';
 import 'Design System/SnackBar/primary_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'reset_password.dart';
 
 class OtpPage extends StatefulWidget {
   final String email;
+  final String type;
   const OtpPage({
     super.key,
     required this.email,
+    required this.type,
   });
 
   @override
@@ -48,6 +51,9 @@ class _OtpPageState extends State<OtpPage> {
         f1.requestFocus();
       }
     );
+    // if(widget.type == "verification"){
+    //   sendOtp();
+    // }
     sendOtp();
   }
 
@@ -217,20 +223,32 @@ class _OtpPageState extends State<OtpPage> {
       },
       body: jsonEncode({
         "email": widget.email,
-        "code": otp
+        "code": otp,
+        "type": widget.type
       }),
     );
     var data = jsonDecode(response.body);
     if (data["status"] == "success") {
-      p_snackbar.show(
-        context: context,
-        title: 'تم تسجيل الدخول بنجاح',
-        timer: Duration(seconds: 3),
-      );
-      Navigator.pushReplacementNamed(
-        context,
-        "home",
-      );
+      if(widget.type == "verification"){
+        p_snackbar.show(
+          context: context,
+          title: 'تم تسجيل الدخول بنجاح',
+          timer: Duration(seconds: 3),
+        );
+        Navigator.pushReplacementNamed(context,"home");
+      }
+      else if(widget.type == "forget-password"){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResetPasswordPage(
+              email: widget.email,
+              code: otp,
+            ),
+          ),
+        );
+      }
+            
     } else {
       p_snackbar.show(
         context: context,
@@ -251,14 +269,26 @@ class _OtpPageState extends State<OtpPage> {
         "Accept": "application/json"
       },
       body: jsonEncode({
-        "email": widget.email
+        "email": widget.email,
+        "type": widget.type
       }),
     );
     var data = jsonDecode(response.body);
-    setState(() {
-      seconds = data["seconds"].toInt();
-    });
-    startTimer();
+    if(data["status"] == "success" || data["status"] == "blocked"){
+      setState(() {
+        seconds = data["seconds"].toInt();
+      });
+      startTimer();
+    }
+    else{
+      p_snackbar.show(
+        context: context, 
+        title: data["message"],
+        timer: const Duration(seconds: 3),
+        background: color.error,
+        icon: Icons.cancel
+      );
+    }
   }
 
     

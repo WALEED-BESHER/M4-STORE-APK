@@ -377,7 +377,7 @@ class _AccountState extends State<Account> {
     }
 
     return Scaffold(
-      backgroundColor: color.dark1,
+      backgroundColor: color.dark1, 
 
       body: SingleChildScrollView(
         child: Container(

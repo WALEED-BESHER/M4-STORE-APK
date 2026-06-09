@@ -205,6 +205,7 @@ class _LoginState extends State<Login> {
                 MaterialPageRoute(
                   builder: (context) => OtpPage(
                     email: email,
+                    type: "verification",
                   ),
                 ),
               );
@@ -297,13 +298,71 @@ class _LoginState extends State<Login> {
     }
   }
 
+  Future<void> ForgotPasswordOtp() async {
+    if (forgot_formdata.currentState!.validate()) {
+      String email = check_inputs.sanitizeEmail(forgot_Email.text);
+        email = check_inputs.removeSQLInjection(email);
+        email = check_inputs.removeXSS(email);
+      try {
+        var url = Uri.parse(Api.checkemail);
+        var response = await http.post(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: jsonEncode({
+            "email": email,
+          }),
+        );
+        var data = jsonDecode(response.body);
+
+        if (data["status"] == "success") {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpPage(
+                email: email,
+                type: "forget-password", 
+              ),
+            ),
+          );
+          
+          forgot_Email.clear();
+        } else {
+          p_snackbar.show(
+            context: context,
+            title: data["message"],
+            timer: const Duration(seconds: 3),
+            background: color.error,
+          );
+        }
+      } catch (e) {
+        p_snackbar.show(
+          context: context,
+          title: "حدث خطأ: $e",
+          timer: const Duration(seconds: 3),
+          background: color.error,
+        );
+      }
+    }
+  } 
+  
+  // forget email
   TextEditingController forgot_Email = TextEditingController();
   GlobalKey<FormState> forgot_formdata = GlobalKey<FormState>();
+  FocusNode forgot_FocusNode = FocusNode();
   void forgotPasswordDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_){
+            forgot_FocusNode.requestFocus();
+          }
+        );
         return Dialog(
           backgroundColor: color.dark1,
           shape: RoundedRectangleBorder(
@@ -344,6 +403,7 @@ class _LoginState extends State<Login> {
                   // الايميل
                   p_input(
                     controller: forgot_Email,
+                    focusNode: forgot_FocusNode,
                     label: "ادخل ايميلك",
                     prefixIcon: Icon(Icons.email_outlined),
                     inputFormatters: [
@@ -370,18 +430,8 @@ class _LoginState extends State<Login> {
                   p_button(
                     title: "إرسال",
                     height: 40,
-                    onPressed: () {
-                      if (forgot_formdata.currentState!.validate()) {
-                        Navigator.pop(context);
-
-                        p_snackbar.show(
-                          context: this.context,
-                          title: "تم إرسال رابط استعادة كلمة المرور",
-                          timer: Duration(seconds: 3),
-                        );
-
-                        forgot_Email.clear();
-                      }
+                    onPressed: (){
+                      ForgotPasswordOtp();
                     },
                   ),
                 ],
