@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:ffi';
+// import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Design System/Buttons/primary_button.dart';
@@ -10,7 +10,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'constants/api.dart';
 import 'Design System/SnackBar/primary_snackbar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'reset_password.dart';
 
 class OtpPage extends StatefulWidget {

@@ -94,17 +94,13 @@ class _LoginState extends State<Login> {
 
         // نجاح
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          var data = jsonDecode(response.body); //
-
           p_snackbar.show(
             context: context,
             title: "تم إنشاء الحساب بنجاح",
             timer: Duration(seconds: 3),
           );
-
           await Future.delayed(const Duration(seconds: 2));
           DefaultTabController.of(ctx).animateTo(1);
-
           //تفريغ الحقول
           void clear() {
             First_Name.clear();
@@ -114,7 +110,6 @@ class _LoginState extends State<Login> {
             Password.clear();
             Confirm_Password.clear();
           }
-
           clear();
         }
         // أخطاء التحقق من Laravel

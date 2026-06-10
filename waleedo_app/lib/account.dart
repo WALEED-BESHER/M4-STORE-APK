@@ -9,7 +9,7 @@ import 'constants/api.dart';
 import 'package:http/http.dart' as http;
 import 'Design System/SnackBar/primary_snackbar.dart';
 import 'dart:convert';
-// import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Account extends StatefulWidget {
   const Account({super.key});
@@ -327,6 +327,18 @@ class _AccountState extends State<Account> {
     super.initState();
     Checking();
   }
+  //
+  Future<void> openLink(String url) async {
+    final Uri uri = Uri.parse(url);
+
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception("Could not launch $url");
+    }
+  }
+
 
   //
   bool isLoading = true;
@@ -551,7 +563,7 @@ class _AccountState extends State<Account> {
                     showSecuirity = !showSecuirity;
                   });
                 },
-                title1: "تغسر كلمه المرور",
+                title1: "تغير كلمه المرور",
                 icon1: Icons.password_outlined,
                 link1: (){
                   Navigator.pushNamed(context, "changepassword");
@@ -559,7 +571,9 @@ class _AccountState extends State<Account> {
                 show2: true,
                 title2: "الشروط والاحكام",
                 icon2: Icons.description_outlined,
-                link2: (){} 
+                link2: (){
+                  Navigator.pushNamed(context, "termsconditions");
+                } 
               ),
               // الدعم والمساعده
               accountItems(
@@ -580,31 +594,24 @@ class _AccountState extends State<Account> {
                 title1: "خدمه العملاء",
                 icon1: Icons.support_agent_outlined,
                 link1: () async {
-                  // final Uri whatsappUri = Uri.parse(
-                  //   "https://wa.me/967770411921",
-                  // );
-                  // if (await canLaunchUrl(whatsappUri)) {
-                  //   await launchUrl(
-                  //     whatsappUri,
-                  //     mode: LaunchMode.externalApplication,
-                  //   );
-                  // } else {
-                  //   print("واتساب غير متوفر");
-                  // }
+                  await openLink("https://wa.me/967770411921");
                 },
                 show2: true,
                 title2: "مواقع التواصل",
                 icon2: Icons.public_outlined ,
-                link2: (){},
+                link2: (){
+                  Navigator.pushNamed(context, "socailmedia");
+                },
                 show3: true,
                 title3: "770411921",
                 icon3: Icons.phone_outlined ,
-                link3: () async{
-                  // final Uri phoneUri = Uri(
-                  //   scheme: 'tel',
-                  //   path: '770411921',
-                  // );
-                  // await launchUrl(phoneUri);
+                link3: () async {
+                  final Uri phoneUri = Uri(
+                    scheme: 'tel',
+                    path: '770411921',
+                  );
+
+                  await launchUrl(phoneUri);
                 },
               ),
               // الاسئله الشاىعه
@@ -617,7 +624,9 @@ class _AccountState extends State<Account> {
               accountItems(
                 "عن التطبيق",
                 Icons.info_outline,
-                (){},
+                (){
+                  Navigator.pushNamed(context, "completeinformation");
+                },
               ),
               if(admin == 1)
               accountItems(
