@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('admin')->default(0);
             $table->boolean('verification')->default(0);
             $table->boolean('activation')->default(1);
+            $table->boolean('complete_information')->default(0);
             $table->timestamp('created_at')->useCurrent();
         });
 

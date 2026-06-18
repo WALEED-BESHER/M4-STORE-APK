@@ -30,6 +30,7 @@ class p_input extends StatefulWidget {
   final TextInputAction? textInputAction;
   final VoidCallback? onEditingComplete;
   final Function(String)? onFieldSubmitted;
+  final bool readOnly;
 
   const p_input({
     super.key,
@@ -54,6 +55,7 @@ class p_input extends StatefulWidget {
     this.textInputAction,
     this.onEditingComplete,
     this.onFieldSubmitted,
+    this.readOnly = false,
   });
 
   @override
@@ -82,6 +84,7 @@ class _p_inputState extends State<p_input> {
           textInputAction: widget.textInputAction,
           onEditingComplete: widget.onEditingComplete,
           onFieldSubmitted: widget.onFieldSubmitted,
+          readOnly: widget.readOnly,
           textAlign: textRight ? TextAlign.right : TextAlign.left,
           textDirection: textRight ? TextDirection.rtl : TextDirection.ltr,
           obscureText: ishidden,

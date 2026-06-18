@@ -28,6 +28,7 @@ class AuthController extends Controller
             "email" => $r->email,
             "phone_number" => $r->phone_number,
             "password" => Hash::make($r->password),
+            "complete_information" => 0,
         ]);
         return response()->json(["status" => "success"]);
     }
@@ -65,6 +66,7 @@ class AuthController extends Controller
 
             "verification" => $user->verification,
             "activation" => $user->activation,
+            "complete_information" => $user->complete_information,
         ]);
     }
 
@@ -281,6 +283,7 @@ class AuthController extends Controller
     // جلب بيانات البروفايل 
     public function profile(Request $r)
     {
+        $user = $r->user()->load('latestLocation');
         return response()->json([
             "status" => "success",
             "user" => $r->user()
@@ -402,6 +405,39 @@ class AuthController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "تم تغيير كلمة المرور بنجاح"
+        ]);
+    }
+
+    //
+    public function completeInformation(Request $r)
+    {
+        $r->validate([
+            "first_name" => "required|min:2|max:25",
+            "last_name" => "nullable|max:25",
+            "phone_number2" => "nullable|max:20",
+            "address" => "required|min:3|max:255",
+            "latitude" => "required|numeric",
+            "longitude" => "required|numeric",
+        ]);
+
+        $user = $r->user();
+
+        $user->first_name = $r->first_name;
+        $user->last_name = $r->last_name;
+        $user->phone_number2 = $r->phone_number2;
+        $user->complete_information = 1;
+        $user->save();
+
+        $user->locations()->create([
+            "address" => $r->address,
+            "latitude" => $r->latitude,
+            "longitude" => $r->longitude,
+        ]);
+
+        return response()->json([
+            "status" => "success",
+            "message" => "تم حفظ المعلومات بنجاح",
+            "user" => $user
         ]);
     }
 

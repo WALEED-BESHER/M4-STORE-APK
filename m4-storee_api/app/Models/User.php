@@ -11,9 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    
     use HasApiTokens,HasFactory, Notifiable;
-
 
     protected $table = "users";
     protected $fillable = [
@@ -26,11 +25,22 @@ class User extends Authenticatable
         "admin",
         "verification",
         "activation",
+        "complete_information",
     ];
     public $timestamps = false;
 
     public function favorites(){
         return $this->hasMany(Favorites::class);
+    }
+
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
+    }
+
+    public function latestLocation()
+    {
+        return $this->hasOne(Location::class)->latestOfMany();
     }
 
 }

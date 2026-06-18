@@ -190,9 +190,11 @@ class _LoginState extends State<Login> {
             String f_name = data["users"]["first_name"];
             int verification = data["verification"];
             int activation = data["activation"]; 
+            int completeInformation = data["complete_information"] ?? 0;
             SharedPreferences s = await SharedPreferences.getInstance();
             await s.setString("token", token);
             await s.setString("first_name", f_name);
+            // print(token);
             // فحص verification
             if (verification == 0) {
               Navigator.push(
@@ -247,7 +249,16 @@ class _LoginState extends State<Login> {
                     );
                   },
                 );
-              } else {
+              } 
+              else if(completeInformation == 0){
+                p_snackbar.show(
+                  context: context,
+                  title: "يرجى إكمال البيانات أولاً",
+                  timer: const Duration(seconds: 3),
+                );
+                Navigator.of(context).pushReplacementNamed("completeinformation");
+              }
+              else {
                 p_snackbar.show(
                   context: context,
                   title: 'مرحباً بك، تم تسجيل الدخول بنجاح',

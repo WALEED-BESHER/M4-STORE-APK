@@ -1,9 +1,9 @@
 class Api {
-  static const String ip = "192.168.1.5";
+  static const String ip = "192.168.1.2";
   static const String port = "80";
 
   // الرابط الأساسي
-  static const String baseURL = "http://$ip:$port/api";
+  static const String baseURL = "http://$ip:$port/api"; //mbeshr336@gmail.com  $Tata772701$
 
   // Endpoints http://192.168.1.5:80/api/profile
   static const String login = "$baseURL/login";
@@ -33,4 +33,5 @@ class Api {
   
   static const String toggleFavorites = "$baseURL/favorites/toggle";
   static const String changepassword = "$baseURL/change-password";
+  static const String completeInformation = "$baseURL/complete-information";
 }

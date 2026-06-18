@@ -278,6 +278,7 @@ class _ProfileState extends State<Profile> {
                           return null;
                         },
                         controller: Email,
+                        readOnly: true,
                         inputFormatters: [
                           // السماح بالحروف والأرقام وبعض رموز الإيميل
                           FilteringTextInputFormatter.allow(

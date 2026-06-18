@@ -31,7 +31,7 @@ class _BestOffersSectionState extends State<BestOffersSection> {
 
   Timer? timer;
   // اظهار قسم افضل العروض
-  bool showBestOffers = true;
+  bool showBestOffers = true; //
 
   @override
   void initState() {

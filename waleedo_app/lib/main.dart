@@ -58,10 +58,10 @@ class MyApp extends StatelessWidget {
         "viewproducts":(context)=>ViewProducts(),
         "usermanagment":(context)=>UserManagment(),
         "favorites":(context)=>Favorites(),
-        "completeinformation":(context)=>CompleteInfomation(),
         "changepassword":(context)=>ChangePassword(),
         "termsconditions":(context)=>TermsConditions(),
         "socailmedia":(context)=>SocailMedia(),
+        "completeinformation":(context)=>CompleteInfomation(),
       },
      
     );
