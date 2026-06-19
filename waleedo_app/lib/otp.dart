@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'constants/api.dart';
 import 'Design System/SnackBar/primary_snackbar.dart';
 import 'reset_password.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpPage extends StatefulWidget {
   final String email;
@@ -204,6 +205,50 @@ class _OtpPageState extends State<OtpPage> {
   } 
 
 
+  Future<void> checkProfileAndNavigate() async {
+    SharedPreferences s = await SharedPreferences.getInstance();
+    String? token = s.getString("token");
+    var response = await http.get(
+      Uri.parse(Api.profile),
+      headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+    var data = jsonDecode(response.body);
+    if (data["status"] != "success") {
+      p_snackbar.show(
+        context: context,
+        title: "فشل تحميل بيانات المستخدم",
+        background: color.error,
+        icon: Icons.cancel,
+      );
+      return;
+    }
+    var user = data["user"];
+    int completeInformation =  user["complete_information"] ?? 0;
+    if (completeInformation == 1) {
+      p_snackbar.show(
+        context: context,
+        title: 'تم تسجيل الدخول بنجاح',
+        timer: const Duration(seconds: 3),
+      );
+      Navigator.pushReplacementNamed(
+        context,
+        "home",
+      );
+    } else {
+      p_snackbar.show(
+        context: context,
+        title: "يرجى إكمال البيانات أولاً",
+        timer: const Duration(seconds: 3),
+        showIcon: false
+      );
+      Navigator.of(context).pushReplacementNamed("completeinformation");
+    }
+  }
+
+
   Future<void> verifyOtp() async {
     String otp =
         c1.text +
@@ -229,12 +274,7 @@ class _OtpPageState extends State<OtpPage> {
     var data = jsonDecode(response.body);
     if (data["status"] == "success") {
       if(widget.type == "verification"){
-        p_snackbar.show(
-          context: context,
-          title: 'تم تسجيل الدخول بنجاح',
-          timer: Duration(seconds: 3),
-        );
-        Navigator.pushReplacementNamed(context,"home");
+        await checkProfileAndNavigate();
       }
       else if(widget.type == "forget-password"){
         Navigator.pushReplacement(

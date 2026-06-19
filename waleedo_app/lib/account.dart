@@ -545,7 +545,9 @@ class _AccountState extends State<Account> {
               accountItems(
                 "عناوين التوصيل",
                 Icons.location_on_outlined,
-                (){},
+                (){
+                  Navigator.pushNamed(context, "locationsmanagement");
+                },
               ),
               // الخصوصيه والامان
               accountItems(

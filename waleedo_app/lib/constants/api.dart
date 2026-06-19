@@ -34,4 +34,15 @@ class Api {
   static const String toggleFavorites = "$baseURL/favorites/toggle";
   static const String changepassword = "$baseURL/change-password";
   static const String completeInformation = "$baseURL/complete-information";
+
+  static const String getUserLocations = "$baseURL/getUserLocations";
+  static const String addNewLocation = "$baseURL/addNewLocation";
+  static String setActiveLocation(int id) {
+    return "$baseURL/setActiveLocation/$id/active";
+  }
+  static String deleteLocation(int id) => "$baseURL/deleteLocation/$id";
+  static String updateLocation(int id) => "$baseURL/updateLocation/$id";
+
+
+
 }

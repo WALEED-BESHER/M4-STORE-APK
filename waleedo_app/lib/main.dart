@@ -21,6 +21,8 @@ import 'complete_information.dart';
 import 'change_password.dart';
 import 'terms_conditions.dart';
 import 'socail_media.dart';
+import 'locations_management.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -62,6 +64,8 @@ class MyApp extends StatelessWidget {
         "termsconditions":(context)=>TermsConditions(),
         "socailmedia":(context)=>SocailMedia(),
         "completeinformation":(context)=>CompleteInfomation(),
+        "locationsmanagement":(context)=>LocationsManagement(),
+        
       },
      
     );

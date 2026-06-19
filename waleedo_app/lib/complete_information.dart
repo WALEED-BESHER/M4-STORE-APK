@@ -168,6 +168,7 @@ Widget build(BuildContext context) {
     appBar: p_appbar(
       title: "اكمل معلوماتك",
       centerTheTitles: true,
+      showAction: false,
     ),
     body: SafeArea(
       child: SingleChildScrollView(

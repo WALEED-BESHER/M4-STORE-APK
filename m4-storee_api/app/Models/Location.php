@@ -11,6 +11,11 @@ class Location extends Model
         "address",
         "latitude",
         "longitude",
+        "active"
+    ];
+
+    protected $casts = [
+        'active' => 'boolean'
     ];
 
     public function user()

@@ -10,6 +10,8 @@ use App\Mail\SendOtpMail;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\DB;
+use App\Models\Location;
 
 class AuthController extends Controller
 {
@@ -428,10 +430,14 @@ class AuthController extends Controller
         $user->complete_information = 1;
         $user->save();
 
+        $user->locations()->update([
+            'active'=> 0,
+        ]);
         $user->locations()->create([
             "address" => $r->address,
             "latitude" => $r->latitude,
             "longitude" => $r->longitude,
+            "active" => 1,
         ]);
 
         return response()->json([
@@ -440,6 +446,149 @@ class AuthController extends Controller
             "user" => $user
         ]);
     }
+
+    // جلب عناوين المستخدم الحالي 
+    public function getUserLocations(Request $r)
+    {
+        $locations = $r->user()
+            ->locations()
+            ->orderByDesc('id','asc')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'locations' => $locations,
+        ]);
+    }
+
+    // إضافة عنوان جديد
+    public function addNewLocation(Request $r)
+    {
+        $r->validate([
+            "address" => "required|string|max:255",
+            "latitude" => "required|numeric",
+            "longitude" => "required|numeric",
+        ]);
+
+        $user = $r->user();
+
+        $location = DB::transaction(function () use ($user, $r) {
+            // أي عنوان قديم يصبح غير نشط
+            $user->locations()->update([
+                'active' => 0,
+            ]);
+
+            // العنوان الجديد يصبح active
+            return $user->locations()->create([
+                "address" => $r->address,
+                "latitude" => $r->latitude,
+                "longitude" => $r->longitude,
+                "active" => 1,
+            ]);
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تمت إضافة العنوان بنجاح',
+            'location' => $location,
+        ]);
+    }
+
+    // جعل عنوان معين active والباقي false
+    public function setActiveLocation(Request $r, $id)
+    {
+        $user = $r->user();
+
+        $location = $user->locations()->where('id', $id)->first();
+
+        if (!$location) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'العنوان غير موجود',
+            ], 404);
+        }
+
+        DB::transaction(function () use ($user, $location) {
+            $user->locations()->update([
+                'active' => 0,
+            ]);
+
+            $location->update([
+                'active' => 1,
+            ]);
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم تعيين العنوان كعنوان نشط',
+        ]);
+    }
+
+    // حذف عنوان
+    public function deleteLocation(Request $r, $id)
+    {
+        $user = $r->user();
+
+        $location = $user->locations()->where('id', $id)->first();
+
+        if (!$location) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'العنوان غير موجود',
+            ], 404);
+        }
+
+        $wasActive = $location->active;
+
+        $location->delete();
+
+        // إذا حذفت العنوان النشط، اجعل أحدث عنوان متبقي active
+        if ($wasActive) {
+            $newActive = $user->locations()->latest('id')->first();
+
+            if ($newActive) {
+                $newActive->update(['active' => 1]);
+            }
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم حذف العنوان بنجاح',
+        ]);
+    }
+
+    public function updateLocation(Request $r, $id)
+    {
+        $r->validate([
+            "address" => "required|string|max:255",
+            "latitude" => "required|numeric",
+            "longitude" => "required|numeric",
+        ]);
+
+        $user = $r->user();
+
+        $location = $user->locations()->where('id', $id)->first();
+
+        if (!$location) {
+            return response()->json([
+                "status" => "error",
+                "message" => "العنوان غير موجود"
+            ], 404);
+        }
+
+        $location->address = $r->address;
+        $location->latitude = $r->latitude;
+        $location->longitude = $r->longitude;
+        $location->save();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "تم تعديل الموقع بنجاح",
+            "location" => $location
+        ]);
+    }
+
+
 
 
 }

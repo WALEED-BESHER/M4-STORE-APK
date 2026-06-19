@@ -72,4 +72,14 @@ Route::middleware('auth:sanctum')->post(
     '/change-password',[AuthController::class,'changePassword']
 );
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/getUserLocations', [AuthController::class, 'getUserLocations']);
+    Route::post('/addNewLocation', [AuthController::class, 'addNewLocation']);
+    Route::post('/setActiveLocation/{id}/active', [AuthController::class, 'setActiveLocation']);
+    Route::delete('/deleteLocation/{id}', [AuthController::class, 'deleteLocation']);
+    Route::put('/updateLocation/{id}', [AuthController::class, 'updateLocation']);
+});
+
+
+
 

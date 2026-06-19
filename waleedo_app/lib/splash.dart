@@ -53,11 +53,19 @@ class _SplashState extends State<Splash> {
         var data = jsonDecode(response.body);
         int activation = data["user"]["activation"];
         int verification = data["user"]["verification"];
+        int completeInformation = data["user"]["complete_information"] ?? 0;
         if (activation == 1 && verification == 1 ) {
-          Navigator.pushReplacementNamed(
-            context,
-            "home",
-          );
+          if(completeInformation == 1){
+            Navigator.pushReplacementNamed(context,"home");
+          }else{
+            p_snackbar.show(
+              context: context,
+              title: "يرجى إكمال البيانات أولاً",
+              timer: const Duration(seconds: 3),
+              showIcon: false
+            );
+            Navigator.of(context).pushReplacementNamed("completeinformation");
+          }
         } else if(verification == 0) {
           p_snackbar.show(
             context: context,
