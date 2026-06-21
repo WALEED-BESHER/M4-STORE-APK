@@ -458,8 +458,8 @@ Widget build(BuildContext context) {
                                 ),
 
                                 Positioned(
-                                  top: 10,
-                                  right: 10,
+                                  bottom: 5,
+                                  left: 7,
                                   child: Material(
                                     color: color.p500,
                                     shape: const CircleBorder(),

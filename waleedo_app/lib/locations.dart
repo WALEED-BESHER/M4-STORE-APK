@@ -332,7 +332,7 @@ class _LocationsState extends State<Locations> {
 
           Positioned(
             left: 10,
-            right: 10,
+            right: 50,
             bottom: 20 + bottomInset,
             child: Container(
               padding: const EdgeInsets.all(12),

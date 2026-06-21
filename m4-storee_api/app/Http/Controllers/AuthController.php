@@ -529,6 +529,16 @@ class AuthController extends Controller
     {
         $user = $r->user();
 
+        // عدد عناوين المستخدم
+        $locationsCount = $user->locations()->count();
+        // إذا كان لديه عنوان واحد فقط لا نحذف
+        if ($locationsCount <= 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'لا يمكنك حذف هذا العنوان لأنك يجب أن تحتفظ بعنوان واحد على الأقل',
+            ], 400);
+        }
+
         $location = $user->locations()->where('id', $id)->first();
 
         if (!$location) {

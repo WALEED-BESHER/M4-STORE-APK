@@ -22,7 +22,8 @@ import 'change_password.dart';
 import 'terms_conditions.dart';
 import 'socail_media.dart';
 import 'locations_management.dart';
-
+import 'faq.dart';
+import 'Admin/addFAQ.dart';
 
 void main() {
   runApp(const MyApp());
@@ -65,6 +66,8 @@ class MyApp extends StatelessWidget {
         "socailmedia":(context)=>SocailMedia(),
         "completeinformation":(context)=>CompleteInfomation(),
         "locationsmanagement":(context)=>LocationsManagement(),
+        "faq":(context)=>FAQ(),
+        "addfaq":(context)=>AddFAQ(),
         
       },
      

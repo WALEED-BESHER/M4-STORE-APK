@@ -620,7 +620,9 @@ class _AccountState extends State<Account> {
               accountItems(
                 "الاسئله الشاىعه (FAQ)",
                 Icons.help_outline,
-                (){},
+                (){
+                  Navigator.pushNamed(context, "faq");
+                },
               ),
               // عن التطبيق
               accountItems(

@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants/api.dart';
 import 'locations.dart';
+import 'Design System/SnackBar/primary_snackbar.dart';
 
 
 // class LocationItem {
@@ -129,8 +130,17 @@ class _LocationsManagementState extends State<LocationsManagement> {
       },
     );
 
+    final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
       await getLocations();
+    }else{
+      p_snackbar.show(
+        context: context, 
+        title: data['message'] ?? 'حدث خطأ أثناء الحذف',
+        timer: Duration(seconds: 5),
+        background: color.error,
+        icon: Icons.cancel,
+      );
     }
   }
 
@@ -318,7 +328,17 @@ class _LocationsManagementState extends State<LocationsManagement> {
                                     child: Directionality(
                                       textDirection: TextDirection.rtl,
                                       child: OutlinedButton.icon(
-                                        onPressed: () {
+                                        onPressed: locations.length <= 1 
+                                        ? (){
+                                          p_snackbar.show(
+                                            context: context, 
+                                            title: 'لا يمكنك حذف هذا العنوان لأنك يجب أن تحتفظ بعنوان واحد على الأقل',
+                                            timer: Duration(seconds: 5),
+                                            background: color.error,
+                                            icon: Icons.cancel,
+                                          );
+                                        } 
+                                        :() {
                                           deleteingLocation(location.id,location.address);
                                         },
                                         icon: const Icon(
@@ -366,7 +386,6 @@ class _LocationsManagementState extends State<LocationsManagement> {
                   builder: (_) => const Locations(),
                 ),
               );
-
               if (result == true) {
                 getLocations();
               }
