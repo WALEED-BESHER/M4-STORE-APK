@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Otp;
 use App\Mail\SendOtpMail;
+use App\Models\Faq;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use App\Http\Resources\UserResource;
@@ -567,6 +568,7 @@ class AuthController extends Controller
         ]);
     }
 
+    // تعديل الموقع
     public function updateLocation(Request $r, $id)
     {
         $r->validate([
@@ -595,6 +597,94 @@ class AuthController extends Controller
             "status" => "success",
             "message" => "تم تعديل الموقع بنجاح",
             "location" => $location
+        ]);
+    }
+    
+    // جلب الاسئله الشائعة
+    public function getFAQ()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'FAQ list',
+            'data' => Faq::orderBy('id', 'desc')->get(),
+        ]);
+    }
+
+    // عرض الاسئلة الفعالة فقط للمستخدم
+    public function getActiveFAQ()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'FAQ active list',
+            'data' => Faq::where('status', 1)->orderBy('id', 'desc')->get(),
+        ]);
+    }
+
+    // اضافه الاسئله الشائعه 
+    public function addFAQ(Request $r)
+    {
+        $r->validate([
+            'question' => 'required|string|max:255',
+            'answer'   => 'required|string',
+        ]);
+
+        $faq = Faq::create([
+            'question' => $r->question,
+            'answer'   => $r->answer,
+            'status'   => true,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم اضافه السوال بنجاح',
+            'data' => $faq,
+        ], 201);
+    }
+
+    // تعديل سؤال
+    public function updateFAQ(Request $r, $id)
+    {
+        $r->validate([
+            'question' => 'required|string|max:255',
+            'answer'   => 'required|string',
+        ]);
+
+        $faq = Faq::findOrFail($id);
+        $faq->update([
+            'question' => $r->question,
+            'answer'   => $r->answer,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم تعديل السؤال بنجاح',
+            'data' => $faq,
+        ]);
+    }
+
+    // حذف سؤال
+    public function deleteFAQ($id)
+    {
+        $faq = Faq::findOrFail($id);
+        $faq->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم حذف السؤال بنجاح',
+        ]);
+    }
+
+    // تفعيل / إيقاف
+    public function toggleFAQStatus($id)
+    {
+        $faq = Faq::findOrFail($id);
+        $faq->status = !$faq->status;
+        $faq->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => $faq->status ? 'تم تفعيل السؤال' : 'تم ايقاف السؤال',
+            'data' => $faq,
         ]);
     }
 

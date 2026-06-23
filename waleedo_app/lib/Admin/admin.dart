@@ -79,9 +79,13 @@ class Admin extends StatelessWidget {
               sections("إداره المستخدمين ", Icons.person_2_outlined, (){
                 Navigator.pushNamed(context, "usermanagment");
               }),
-              sections("اضافه الاسئله الشائعه", Icons.help_outline, (){
-                Navigator.pushNamed(context, "addfaq");
+              sections("إدارة الاسئله الشائعه", Icons.rule_folder_outlined, (){
+                Navigator.pushNamed(context, "faqManagment");
               }),
+              
+              // sections("اضافه الاسئله الشائعه", Icons.help_outline, (){
+              //   Navigator.pushNamed(context, "addfaq");
+              // }),
 
 
             ],

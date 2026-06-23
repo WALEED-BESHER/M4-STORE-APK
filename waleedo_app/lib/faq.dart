@@ -1,126 +1,12 @@
-// import 'package:flutter/material.dart';
-// import 'constants/colors.dart';
-// import 'constants/fonts.dart';
-// import 'Design System/AppBar/primary_appbar.dart';
-
-// class FAQ extends StatefulWidget {
-//   const FAQ({super.key});
-
-//   @override
-//   State<FAQ> createState() => _FAQState();
-// }
-
-// Widget QuestionBox(String Question,String Answar,bool show, VoidCallback onTap){
-//   return Container(
-//     width: double.infinity,
-//     padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-//     margin: EdgeInsets.symmetric(vertical: 6),
-//     decoration: BoxDecoration(
-//       color: color.dark2,
-//       borderRadius: BorderRadius.circular(10),
-//     ),
-//     child: Column(
-//       mainAxisSize: MainAxisSize.min,
-//       children: [
-
-//         Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             InkWell(
-//               onTap: onTap,
-//               child: Padding(
-//                 padding: EdgeInsets.all(4),
-//                 child: Icon(
-//                   show ? Icons.expand_less : Icons.expand_more,
-//                   color: color.p,
-//                 ),
-//               ),
-//             ),
-//             Expanded(
-//               child: Text(
-//                 Question,
-//                 textAlign: TextAlign.end,
-//                 style: fonts.lb.copyWith(color: color.white),
-//               ),
-//             ),
-//           ],
-//         ),
-
-//         if(show)
-//         Divider(color: color.g600,height: 4,),
-//         if(show)
-//         Padding(
-//           padding: EdgeInsets.symmetric(vertical: 8,horizontal: 2),
-//           child: Row(
-//             children: [
-//               Expanded(
-//                 child: Text(
-//                   Answar,
-//                   textAlign: TextAlign.end,
-//                   style: fonts.sm.copyWith(color: color.g200),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
-
-// class _FAQState extends State<FAQ> {
-//   bool qes1 = false;
-
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: color.dark1,
-//       appBar: p_appbar(
-//         title: "الاسلئه الشائعه",
-//         centerTheTitles: true,
-//       ),
-
-//       body: SingleChildScrollView(
-//         child: Container(
-//           width: double.infinity,
-//           padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
-//           child: Column(
-//             children: [
-
-//               QuestionBox(
-//                 "عنوان البوكس",
-//                 "الاجابه", qes1,
-//                 (){
-//                   setState(() {
-//                     qes1 = !qes1;
-//                   });
-//                 } 
-//               ),
-
-//             ],
-//           ),
-//         ),
-//       ),
-
-//     );
-//   }
-// }
-
-
-
-
-
-
-
-
-
-
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 import 'constants/colors.dart';
 import 'constants/fonts.dart';
 import 'Design System/AppBar/primary_appbar.dart';
+import 'constants/api.dart';
+import 'Design System/SnackBar/primary_snackbar.dart';
 
 class FAQ extends StatefulWidget {
   const FAQ({super.key});
@@ -130,15 +16,25 @@ class FAQ extends StatefulWidget {
 }
 
 class FaqItem {
+  final int id;
   final String question;
   final String answer;
   bool isExpanded;
 
   FaqItem({
+    required this.id,
     required this.question,
     required this.answer,
     this.isExpanded = false,
   });
+
+  factory FaqItem.fromJson(Map<String, dynamic> json) {
+    return FaqItem(
+      id: json['id'],
+      question: json['question'] ?? '',
+      answer: json['answer'] ?? '',
+    );
+  }
 }
 
 Widget questionBox({
@@ -230,94 +126,60 @@ Widget questionBox({
 }
 
 class _FAQState extends State<FAQ> {
-  late List<FaqItem> faqs;
+  List<FaqItem> faqs = [];
+  bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
+    fetchFaqs();
+  }
 
-    faqs = [
-      FaqItem(
-        question: "ماهي الاسلحة",
-        answer: "الاسلحة هي أدوات أو معدات مخصصة لأغراض محددة حسب النظام المعتمد.",
-      ),
-      FaqItem(
-        question: "كيف استطيع ان ادفع",
-        answer: "يمكنك الدفع من خلال وسائل الدفع المتاحة داخل التطبيق.",
-      ),
-      FaqItem(
-        question: "كيف احذف حسابي",
-        answer: "يمكنك حذف الحساب من صفحة الإعدادات أو من خلال الدعم الفني.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-      FaqItem(
-        question: "كيف اضيف عنوان جديد",
-        answer: "ادخل إلى صفحة العناوين ثم اضغط على إضافة عنوان جديد.",
-      ),
-    ];
+  Future<void> fetchFaqs() async {
+    try {
+      setState(() {
+        isLoading = true;
+        errorMessage = null;
+      });
+      final response = await http.get(
+        Uri.parse(Api.getActiveFAQ),
+        headers: {
+          'Accept': 'application/json',
+        },
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data['status'] == true) {
+        final List items = data['data'] ?? [];
+        setState(() {
+          faqs = items.map((e) => FaqItem.fromJson(e)).toList();
+        });
+      } else {
+        setState(() {
+          errorMessage = data['message'] ?? 'حدث خطأ أثناء جلب الأسئلة';
+        });
+        p_snackbar.show(
+            context: context,
+            title: data['message'] ?? 'حدث خطأ أثناء جلب الأسئلة',
+            background: color.error,
+            icon: Icons.cancel);
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'تعذر الاتصال بالسيرفر: $e';
+      });
+      p_snackbar.show(
+          context: context,
+          title: 'تعذر الاتصال بالسيرفر: $e',
+          background: color.error,
+          icon: Icons.cancel);
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -328,22 +190,56 @@ class _FAQState extends State<FAQ> {
         title: "الاسئله الشائعه",
         centerTheTitles: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: Column(
-          children: [
-            for (int i = 0; i < faqs.length; i++)
-              questionBox(
-                question: faqs[i].question,
-                answer: faqs[i].answer,
-                show: faqs[i].isExpanded,
-                onTap: () {
-                  setState(() {
-                    faqs[i].isExpanded = !faqs[i].isExpanded;
-                  });
-                },
-              ),
-          ],
+      body: RefreshIndicator(
+        onRefresh: fetchFaqs,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: isLoading
+              ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 40),
+                    child: CircularProgressIndicator(
+                      color: color.p500,
+                    ),
+                  ),
+                )
+              : errorMessage != null
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 40),
+                        child: Text(
+                          errorMessage!,
+                          textAlign: TextAlign.center,
+                          style: fonts.sm.copyWith(color: color.white),
+                        ),
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        for (int i = 0; i < faqs.length; i++)
+                          questionBox(
+                            question: faqs[i].question,
+                            answer: faqs[i].answer,
+                            show: faqs[i].isExpanded,
+                            onTap: () {
+                              setState(() {
+                                faqs[i].isExpanded = !faqs[i].isExpanded;
+                              });
+                            },
+                          ),
+                        if (faqs.isEmpty)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 40),
+                              child: Text(
+                                'لا توجد أسئلة حالياً',
+                                style: fonts.lb.copyWith(color: color.g200),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
         ),
       ),
     );

@@ -23,7 +23,9 @@ import 'terms_conditions.dart';
 import 'socail_media.dart';
 import 'locations_management.dart';
 import 'faq.dart';
-import 'Admin/addFAQ.dart';
+import 'Admin/FAQ Managment Section/addFAQ.dart';
+import 'Admin/faq_managment.dart';
+import 'Admin/FAQ Managment Section/viewFAQ.dart';
 
 void main() {
   runApp(const MyApp());
@@ -68,6 +70,8 @@ class MyApp extends StatelessWidget {
         "locationsmanagement":(context)=>LocationsManagement(),
         "faq":(context)=>FAQ(),
         "addfaq":(context)=>AddFAQ(),
+        "faqManagment":(context)=>FaqManagment(),
+        "viewfaq":(context)=>ViewFAQ(),
         
       },
      

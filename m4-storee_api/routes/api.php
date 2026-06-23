@@ -79,7 +79,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/deleteLocation/{id}', [AuthController::class, 'deleteLocation']);
     Route::put('/updateLocation/{id}', [AuthController::class, 'updateLocation']);
 });
-
+// جلب الاسئلة الشائعة للأدمن
+Route::get('/getFAQ', [AuthController::class, 'getFAQ']); 
+// جلب الاسئلة الشائعة للمستخدم
+Route::get('/getActiveFAQ', [AuthController::class, 'getActiveFAQ']); 
+// اضافه الاسئله الشائعه
+Route::post('/addFAQ', [AuthController::class, 'addFAQ']);
+// تعديل السوال
+Route::put('/updateFAQ/{id}', [AuthController::class, 'updateFAQ']);
+// حذف السوال
+Route::delete('/deleteFAQ/{id}', [AuthController::class, 'deleteFAQ']);
+// تشغيل + ايقاف تشغيل السوال
+Route::post('/toggleFAQStatus/{id}', [AuthController::class, 'toggleFAQStatus']);
 
 
 

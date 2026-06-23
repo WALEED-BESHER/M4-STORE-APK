@@ -44,5 +44,13 @@ class Api {
   static String updateLocation(int id) => "$baseURL/updateLocation/$id";
 
 
+  static const String getFAQ = "$baseURL/getFAQ";
+  static const String getActiveFAQ = "$baseURL/getActiveFAQ";
+  static const String addFAQ = "$baseURL/addFAQ";
+  static String updateFAQ(int id) => "$baseURL/updateFAQ/$id";
+  static String deleteFAQ(int id) => "$baseURL/deleteFAQ/$id";
+  static String toggleFAQStatus(int id) => "$baseURL/toggleFAQStatus/$id";
+
+
 
 }
